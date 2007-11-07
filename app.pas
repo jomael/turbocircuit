@@ -118,6 +118,7 @@ begin
   { Base setup }
   
   vComponentsDatabase := TComponentsDatabase.Create;
+  vComponentsDatabase.LoadComponents;
 
   vDocument := TDocument.Create;
 

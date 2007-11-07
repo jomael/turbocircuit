@@ -4,6 +4,8 @@ unit constants;
 
 interface
 
+uses Graphics;
+
 {*******************************************************************
 *  Main data structures
 *******************************************************************}
@@ -12,6 +14,13 @@ type
     Name: string;
     TypeID: Integer;
     PosX, PosY: Integer;
+  end;
+  
+  TCComponentType = record
+    ID: Integer;
+    Name: string;
+    ImageFile: string;
+    ImageObject: TBitmap;
   end;
 
 {*******************************************************************

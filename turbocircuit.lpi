@@ -2,12 +2,12 @@
 <CONFIG>
   <ProjectOptions>
     <PathDelim Value="/"/>
-    <Version Value="5"/>
+    <Version Value="6"/>
     <General>
       <MainUnit Value="0"/>
       <IconPath Value="./"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="6"/>
+      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
@@ -31,7 +31,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="30">
+    <Units Count="35">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -39,27 +39,27 @@
         <CursorPos X="48" Y="17"/>
         <TopLine Value="1"/>
         <EditorIndex Value="0"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="app.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="app"/>
-        <CursorPos X="23" Y="160"/>
-        <TopLine Value="146"/>
+        <CursorPos X="37" Y="121"/>
+        <TopLine Value="114"/>
         <EditorIndex Value="3"/>
-        <UsageCount Value="32"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="drawer.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="drawer"/>
-        <CursorPos X="1" Y="95"/>
-        <TopLine Value="77"/>
+        <CursorPos X="16" Y="38"/>
+        <TopLine Value="34"/>
         <EditorIndex Value="6"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="35"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -68,7 +68,7 @@
         <UnitName Value="schematics"/>
         <CursorPos X="7" Y="13"/>
         <TopLine Value="1"/>
-        <UsageCount Value="31"/>
+        <UsageCount Value="35"/>
       </Unit3>
       <Unit4>
         <Filename Value="../lazarus/lcl/interfaces/qt/qtobjects.pas"/>
@@ -190,10 +190,10 @@
         <Filename Value="dbcomponents.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="dbcomponents"/>
-        <CursorPos X="1" Y="11"/>
-        <TopLine Value="4"/>
+        <CursorPos X="1" Y="66"/>
+        <TopLine Value="57"/>
         <EditorIndex Value="1"/>
-        <UsageCount Value="27"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit21>
       <Unit22>
@@ -208,27 +208,27 @@
         <CursorPos X="13" Y="89"/>
         <TopLine Value="75"/>
         <EditorIndex Value="2"/>
-        <UsageCount Value="11"/>
+        <UsageCount Value="13"/>
         <Loaded Value="True"/>
       </Unit23>
       <Unit24>
         <Filename Value="translationstc.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="translationstc"/>
-        <CursorPos X="7" Y="14"/>
-        <TopLine Value="1"/>
+        <CursorPos X="14" Y="23"/>
+        <TopLine Value="102"/>
         <EditorIndex Value="4"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
       </Unit24>
       <Unit25>
         <Filename Value="constants.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="constants"/>
-        <CursorPos X="21" Y="42"/>
-        <TopLine Value="21"/>
+        <CursorPos X="15" Y="7"/>
+        <TopLine Value="1"/>
         <EditorIndex Value="5"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="29"/>
         <Loaded Value="True"/>
       </Unit25>
       <Unit26>
@@ -238,7 +238,7 @@
         <CursorPos X="11" Y="15"/>
         <TopLine Value="1"/>
         <EditorIndex Value="7"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="28"/>
         <Loaded Value="True"/>
       </Unit26>
       <Unit27>
@@ -261,21 +261,41 @@
         <TopLine Value="50"/>
         <UsageCount Value="10"/>
       </Unit29>
+      <Unit30>
+        <Filename Value="../fpgfx/core/carbon/gfx_carbon.pas"/>
+        <UnitName Value="gfx_carbon"/>
+        <CursorPos X="83" Y="97"/>
+        <TopLine Value="69"/>
+        <UsageCount Value="11"/>
+      </Unit30>
+      <Unit31>
+        <Filename Value="../fpgfx/core/fpgfxbase.pas"/>
+        <UnitName Value="fpgfxbase"/>
+        <CursorPos X="1" Y="318"/>
+        <TopLine Value="304"/>
+        <UsageCount Value="11"/>
+      </Unit31>
+      <Unit32>
+        <Filename Value="../lazarus/lcl/interfaces/qt/qtwinapih.inc"/>
+        <CursorPos X="15" Y="123"/>
+        <TopLine Value="106"/>
+        <UsageCount Value="10"/>
+      </Unit32>
+      <Unit33>
+        <Filename Value="../lazarus/lcl/interfaces/qt/qtwinapi.inc"/>
+        <CursorPos X="1" Y="2974"/>
+        <TopLine Value="2952"/>
+        <UsageCount Value="10"/>
+      </Unit33>
+      <Unit34>
+        <Filename Value="../lazarus/lcl/lcltype.pp"/>
+        <UnitName Value="LCLType"/>
+        <CursorPos X="3" Y="2067"/>
+        <TopLine Value="2042"/>
+        <UsageCount Value="10"/>
+      </Unit34>
     </Units>
-    <JumpHistory Count="3" HistoryIndex="2">
-      <Position1>
-        <Filename Value="drawer.pas"/>
-        <Caret Line="37" Column="1" TopLine="3"/>
-      </Position1>
-      <Position2>
-        <Filename Value="drawer.pas"/>
-        <Caret Line="35" Column="46" TopLine="26"/>
-      </Position2>
-      <Position3>
-        <Filename Value="drawer.pas"/>
-        <Caret Line="101" Column="1" TopLine="77"/>
-      </Position3>
-    </JumpHistory>
+    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
