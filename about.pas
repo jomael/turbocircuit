@@ -1,7 +1,7 @@
 {
-turbocircuit.dpr
+about.pas
 
-Main program file and program initialization
+About box
 
 Copyright (C) 2007 Felipe Monteiro de Carvalho
 
@@ -22,31 +22,30 @@ incorporating Turbo Circuit into proprietary programs.
 
 AUTHORS: Felipe Monteiro de Carvalho
 }
-program turbocircuit;
+unit about;
 
 {$mode objfpc}{$H+}
 
-uses
-  Interfaces, // this includes the LCL widgetset
-  Forms,
-  app,
-  schematics,
-  dbcomponents,
-  translationstc,
-  constants,
-  document,
-  about,
-  componentseditor,
-  tcutils,
-  tcdbutils,
-  sqlite3laz,
-  drawer;
+interface
 
-begin
-  Application.Initialize;
-  Application.CreateForm(TMainForm, vMainForm);
-  Application.CreateForm(TvAbout, vAbout);
-  Application.CreateForm(TvComponentsEditor, vComponentsEditor);
-  Application.Run;
+uses
+  Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs; 
+
+type
+  TvAbout = class(TForm)
+  private
+    { private declarations }
+  public
+    { public declarations }
+  end; 
+
+var
+  vAbout: TvAbout;
+
+implementation
+
+initialization
+  {$I about.lrs}
+
 end.
 

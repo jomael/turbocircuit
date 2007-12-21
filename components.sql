@@ -1,0 +1,6 @@
+CREATE TABLE Componentes (
+ ID INTEGER NOT NULL,
+ Name CHAR(100),
+ Image CHAR(256),
+ PRIMARY KEY (ID));
+.exit

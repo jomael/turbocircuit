@@ -1,7 +1,7 @@
 {
 translationstc.pas
 
-Class which stores the translated strings
+Class to store and translate user interface strings
 
 Copyright (C) 2007 Felipe Monteiro de Carvalho
 
@@ -53,7 +53,6 @@ type
     { Methods }
     procedure TranslateToEnglish;
     procedure TranslateToPortuguese;
-    procedure UpdateTranslations;
   end;
 
 var
@@ -112,41 +111,6 @@ end;
 procedure TTranslations.TranslateToPortuguese;
 begin
 
-end;
-
-{*******************************************************************
-*  TTranslations.UpdateTranslations ()
-*
-*  DESCRIPTION:    Under Desktop Windows, this procedure converts the
-*                  UTF-8 strings to ISO 8859-1
-*
-*                  Under all other platforms no changes are required
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
-procedure TTranslations.UpdateTranslations;
-
-  {$ifndef fpc}
-{  procedure UpdateString(var AStr: string);
-  var
-    CharBuffer: array[0..255] of Char;
-    WideBuffer: array[0..255] of WideChar;
-  begin
-    FillChar(CharBuffer, SizeOf(CharBuffer), #0);
-    FillChar(WideBuffer, SizeOf(WideBuffer), #0);
-    MultibyteToWideChar(CP_UTF8, 0, PChar(AStr), -1, @WideBuffer, 255);
-    WideCharToMultibyte(CP_ACP, 0, @WideBuffer, -1, @CharBuffer, 255, nil, nil);
-    AStr := PChar(@CharBuffer);
-  end;     }
-  {$endif}
-
-begin
-  {$ifndef fpc}
-  { Menu strings }
-  {$endif}
 end;
 
 {*******************************************************************

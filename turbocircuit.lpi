@@ -1,313 +1,120 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
+    <PathDelim Value="\"/>
     <Version Value="6"/>
     <General>
+      <Flags>
+        <AlwaysBuild Value="False"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
+      <IconPath Value=".\"/>
       <TargetFileExt Value=""/>
-      <ActiveEditorIndexAtStart Value="2"/>
     </General>
     <VersionInfo>
       <ProjectVersion Value=""/>
-      <Language Value=""/>
-      <CharSet Value=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
-      <IgnoreBinaries Value="False"/>
       <IncludeFileFilter Value="*.(pas|pp|inc|lfm|lpr|lrs|lpi|lpk|sh|xml)"/>
       <ExcludeFileFilter Value="*.(bak|ppu|ppw|o|so);*~;backup"/>
     </PublishOptions>
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="sqlite3laz"/>
+        <MinVersion Minor="3" Valid="True"/>
+      </Item3>
     </RequiredPackages>
-    <Units Count="35">
+    <Units Count="11">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="turbocircuit"/>
-        <CursorPos X="48" Y="17"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="0"/>
-        <UsageCount Value="36"/>
-        <Loaded Value="True"/>
       </Unit0>
       <Unit1>
         <Filename Value="app.pas"/>
+        <ComponentName Value="MainForm"/>
+        <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="app.lrs"/>
         <UnitName Value="app"/>
-        <CursorPos X="37" Y="121"/>
-        <TopLine Value="114"/>
-        <EditorIndex Value="3"/>
-        <UsageCount Value="36"/>
-        <Loaded Value="True"/>
       </Unit1>
       <Unit2>
-        <Filename Value="drawer.pas"/>
-        <IsPartOfProject Value="True"/>
-        <UnitName Value="drawer"/>
-        <CursorPos X="16" Y="38"/>
-        <TopLine Value="34"/>
-        <EditorIndex Value="6"/>
-        <UsageCount Value="35"/>
-        <Loaded Value="True"/>
-      </Unit2>
-      <Unit3>
         <Filename Value="schematics.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="schematics"/>
-        <CursorPos X="7" Y="13"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="35"/>
-      </Unit3>
-      <Unit4>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qtobjects.pas"/>
-        <UnitName Value="qtobjects"/>
-        <CursorPos X="95" Y="336"/>
-        <TopLine Value="318"/>
-        <UsageCount Value="10"/>
-      </Unit4>
-      <Unit5>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qtwidgets.pas"/>
-        <UnitName Value="qtwidgets"/>
-        <CursorPos X="5" Y="965"/>
-        <TopLine Value="926"/>
-        <UsageCount Value="10"/>
-      </Unit5>
-      <Unit6>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qt4.pas"/>
-        <UnitName Value="qt4"/>
-        <CursorPos X="3" Y="2"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit6>
-      <Unit7>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qt43.pas"/>
-        <UnitName Value="qt43"/>
-        <CursorPos X="19" Y="6"/>
-        <TopLine Value="1"/>
-        <UsageCount Value="10"/>
-      </Unit7>
-      <Unit8>
-        <Filename Value="../lazarus/lcl/extctrls.pp"/>
-        <UnitName Value="ExtCtrls"/>
-        <CursorPos X="1" Y="1084"/>
-        <TopLine Value="1066"/>
-        <UsageCount Value="12"/>
-      </Unit8>
-      <Unit9>
-        <Filename Value="../lazarus/components/trayicon/trayicon.pas"/>
-        <UnitName Value="TrayIcon"/>
-        <CursorPos X="9" Y="248"/>
-        <TopLine Value="233"/>
-        <UsageCount Value="12"/>
-      </Unit9>
-      <Unit10>
-        <Filename Value="../lazarus/lcl/include/customtrayicon.inc"/>
-        <CursorPos X="3" Y="79"/>
-        <TopLine Value="72"/>
-        <UsageCount Value="12"/>
-      </Unit10>
-      <Unit11>
-        <Filename Value="../lazarus/lcl/widgetset/wsextctrls.pp"/>
-        <UnitName Value="WSExtCtrls"/>
-        <CursorPos X="1" Y="173"/>
-        <TopLine Value="157"/>
-        <UsageCount Value="11"/>
-      </Unit11>
-      <Unit12>
-        <Filename Value="../lazarus/lcl/widgetset/wsspin.pp"/>
-        <UnitName Value="WSSpin"/>
-        <CursorPos X="1" Y="1"/>
-        <TopLine Value="46"/>
-        <UsageCount Value="10"/>
-      </Unit12>
-      <Unit13>
-        <Filename Value="../lazarus/lcl/include/customaction.inc"/>
-        <CursorPos X="12" Y="18"/>
-        <TopLine Value="138"/>
-        <UsageCount Value="11"/>
-      </Unit13>
-      <Unit14>
-        <Filename Value="../lazarus/lcl/widgetset/wsactnlist.pp"/>
-        <UnitName Value="WSActnList"/>
-        <CursorPos X="34" Y="54"/>
-        <TopLine Value="46"/>
-        <UsageCount Value="10"/>
-      </Unit14>
-      <Unit15>
-        <Filename Value="../lazarus/lcl/actnlist.pas"/>
-        <UnitName Value="ActnList"/>
-        <CursorPos X="36" Y="72"/>
-        <TopLine Value="58"/>
-        <UsageCount Value="10"/>
-      </Unit15>
-      <Unit16>
-        <Filename Value="../lazarus/lcl/lclclasses.pp"/>
-        <UnitName Value="LCLClasses"/>
-        <CursorPos X="7" Y="49"/>
-        <TopLine Value="34"/>
-        <UsageCount Value="10"/>
-      </Unit16>
-      <Unit17>
-        <Filename Value="../lazarus/lcl/widgetset/wsbuttons.pp"/>
-        <UnitName Value="WSButtons"/>
-        <CursorPos X="24" Y="57"/>
-        <TopLine Value="46"/>
-        <UsageCount Value="10"/>
-      </Unit17>
-      <Unit18>
-        <Filename Value="../lazarus/lcl/include/bitbtn.inc"/>
-        <CursorPos X="26" Y="87"/>
-        <TopLine Value="73"/>
-        <UsageCount Value="11"/>
-      </Unit18>
-      <Unit19>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qtwsextctrls.pp"/>
-        <UnitName Value="QtWSExtCtrls"/>
-        <CursorPos X="36" Y="520"/>
-        <TopLine Value="506"/>
-        <UsageCount Value="10"/>
-      </Unit19>
-      <Unit20>
-        <Filename Value="../lazarus/components/trayicon/wsqttrayicon.pas"/>
-        <UnitName Value="wsqttrayicon"/>
-        <CursorPos X="1" Y="186"/>
-        <TopLine Value="166"/>
-        <UsageCount Value="10"/>
-      </Unit20>
-      <Unit21>
+      </Unit2>
+      <Unit3>
         <Filename Value="dbcomponents.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="dbcomponents"/>
-        <CursorPos X="1" Y="66"/>
-        <TopLine Value="57"/>
-        <EditorIndex Value="1"/>
-        <UsageCount Value="31"/>
-        <Loaded Value="True"/>
-      </Unit21>
-      <Unit22>
-        <Filename Value="../fpc/rtl/inc/objpash.inc"/>
-        <CursorPos X="8" Y="142"/>
-        <TopLine Value="132"/>
-        <UsageCount Value="10"/>
-      </Unit22>
-      <Unit23>
-        <Filename Value="../fpc/packages/base/sqlite/sqlite3.pp"/>
-        <UnitName Value="sqlite3"/>
-        <CursorPos X="13" Y="89"/>
-        <TopLine Value="75"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="13"/>
-        <Loaded Value="True"/>
-      </Unit23>
-      <Unit24>
+      </Unit3>
+      <Unit4>
         <Filename Value="translationstc.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="translationstc"/>
-        <CursorPos X="14" Y="23"/>
-        <TopLine Value="102"/>
-        <EditorIndex Value="4"/>
-        <UsageCount Value="30"/>
-        <Loaded Value="True"/>
-      </Unit24>
-      <Unit25>
+      </Unit4>
+      <Unit5>
         <Filename Value="constants.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="constants"/>
-        <CursorPos X="15" Y="7"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="5"/>
-        <UsageCount Value="29"/>
-        <Loaded Value="True"/>
-      </Unit25>
-      <Unit26>
+      </Unit5>
+      <Unit6>
         <Filename Value="document.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="document"/>
-        <CursorPos X="11" Y="15"/>
-        <TopLine Value="1"/>
-        <EditorIndex Value="7"/>
-        <UsageCount Value="28"/>
-        <Loaded Value="True"/>
-      </Unit26>
-      <Unit27>
-        <Filename Value="../lazarus/lcl/comctrls.pp"/>
-        <UnitName Value="ComCtrls"/>
-        <CursorPos X="18" Y="131"/>
-        <TopLine Value="118"/>
-        <UsageCount Value="10"/>
-      </Unit27>
-      <Unit28>
-        <Filename Value="../lazarus/lcl/include/statusbar.inc"/>
-        <CursorPos X="1" Y="7"/>
-        <TopLine Value="7"/>
-        <UsageCount Value="10"/>
-      </Unit28>
-      <Unit29>
-        <Filename Value="../lazarus/lcl/controls.pp"/>
-        <UnitName Value="Controls"/>
-        <CursorPos X="15" Y="110"/>
-        <TopLine Value="50"/>
-        <UsageCount Value="10"/>
-      </Unit29>
-      <Unit30>
-        <Filename Value="../fpgfx/core/carbon/gfx_carbon.pas"/>
-        <UnitName Value="gfx_carbon"/>
-        <CursorPos X="83" Y="97"/>
-        <TopLine Value="69"/>
-        <UsageCount Value="11"/>
-      </Unit30>
-      <Unit31>
-        <Filename Value="../fpgfx/core/fpgfxbase.pas"/>
-        <UnitName Value="fpgfxbase"/>
-        <CursorPos X="1" Y="318"/>
-        <TopLine Value="304"/>
-        <UsageCount Value="11"/>
-      </Unit31>
-      <Unit32>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qtwinapih.inc"/>
-        <CursorPos X="15" Y="123"/>
-        <TopLine Value="106"/>
-        <UsageCount Value="10"/>
-      </Unit32>
-      <Unit33>
-        <Filename Value="../lazarus/lcl/interfaces/qt/qtwinapi.inc"/>
-        <CursorPos X="1" Y="2974"/>
-        <TopLine Value="2952"/>
-        <UsageCount Value="10"/>
-      </Unit33>
-      <Unit34>
-        <Filename Value="../lazarus/lcl/lcltype.pp"/>
-        <UnitName Value="LCLType"/>
-        <CursorPos X="3" Y="2067"/>
-        <TopLine Value="2042"/>
-        <UsageCount Value="10"/>
-      </Unit34>
+      </Unit6>
+      <Unit7>
+        <Filename Value="about.pas"/>
+        <ComponentName Value="vAbout"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="about.lrs"/>
+        <UnitName Value="about"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="componentseditor.pas"/>
+        <ComponentName Value="vComponentsEditor"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="componentseditor.lrs"/>
+        <UnitName Value="componentseditor"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="tcutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tcutils"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="tcdbutils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tcdbutils"/>
+      </Unit10>
     </Units>
-    <JumpHistory Count="0" HistoryIndex="-1"/>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="5"/>
+    <PathDelim Value="\"/>
     <SearchPaths>
-      <LCLWidgetType Value="gtk"/>
+      <UnitOutputDirectory Value="C:\Programas\turbocircuit"/>
     </SearchPaths>
     <CodeGeneration>
       <Generate Value="Faster"/>
     </CodeGeneration>
     <Linking>
       <Options>
-        <PassLinkerOptions Value="True"/>
         <LinkerOptions Value="-framework Qt4Intf -lobjc -lsqlite3"/>
         <Win32>
           <GraphicApplication Value="True"/>

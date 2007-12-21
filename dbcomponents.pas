@@ -5,7 +5,8 @@ unit dbcomponents;
 interface
 
 uses
-  Classes, SysUtils, sqlite3, ctypes, constants;
+  Classes, SysUtils, sqlite3ds,
+  constants;
 
 type
 
@@ -13,9 +14,15 @@ type
 
   TComponentsDatabase = class(TObject)
   public
-    ComponentTypes: array of TCComponentType;
+    FDataset: TSqlite3Dataset;
     constructor Create;
-    procedure LoadComponents;
+    destructor  Destroy; override;
+    { Database access methods }
+    procedure FillStringListWithNames(AStringList: TStrings);
+    function  GetDrawingCode(AID: Integer): string;
+    function  GetHeight(AID: Integer): Integer;
+    function  GetPins(AID: Integer): Integer;
+    function  GetWidth(AID: Integer): Integer;
   end;
 
 var
@@ -25,64 +32,68 @@ implementation
 
 { TComponentsDatabase }
 
-function dbcallback(UserData: Pointer; argc: cint; argv, azColName: PPChar): cint; cdecl;
-var
-  i: Integer;
-begin
-{  for i := 0 to argc - 1 do
-    if argv[i] <> nil then
-      WriteLn(azColName[i], ' = ',  argv[i])
-    else
-      WriteLn(azColName[i], ' = ',  'NIL');}
-
-//  WriteLn('');
-
-  if argc < 3 then
-  begin
-    WriteLn('Too few collums');
-    Exit;
-  end;
-
-  SetLength(vComponentsDatabase.ComponentTypes, Length(vComponentsDatabase.ComponentTypes) + 1);
-
-  vComponentsDatabase.ComponentTypes[Length(vComponentsDatabase.ComponentTypes) - 1].ID := StrToInt(argv[0]);
-  vComponentsDatabase.ComponentTypes[Length(vComponentsDatabase.ComponentTypes) - 1].Name := argv[1];
-  vComponentsDatabase.ComponentTypes[Length(vComponentsDatabase.ComponentTypes) - 1].ImageFile := argv[2];
-end;
-
 constructor TComponentsDatabase.Create;
 begin
   inherited Create;
 
+  FDataset := TSqlite3Dataset.Create(nil);
+  FDataset.FileName := STR_DB_COMPONENTS_FILE;
+  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
+  FDataset.PrimaryKey := STR_DB_COMPONENTS_ID;
+  FDataset.Active := True;
 end;
 
-procedure TComponentsDatabase.LoadComponents;
-var
-  db: Psqlite3;
-  zErrMsg: PChar = nil;
-  rc: cint;
-  DBFileName: string;
+destructor TComponentsDatabase.Destroy;
 begin
-  DBFileName := '/Users/felipemonteirodecarvalho/turbocircuit/turbocircuit.dat';
+  FDataset.Free;
 
-  rc := sqlite3_open(PChar(DBFileName), @db);
-
-  if (rc <> 0) then
-  begin
-    WriteLn('Can''t open database ', DBFileName);
-    sqlite3_close(db);
-    Halt(1);
-  end;
-
-  rc := sqlite3_exec(db, 'SELECT * FROM Componentes;', @dbcallback, nil, @zErrMsg);
-  if (rc <> SQLITE_OK) then
-  begin
-    WriteLn('SQL error: ', zErrMsg);
-    sqlite3_free(zErrMsg);
-  end;
-
-  sqlite3_close(db);
+  inherited Destroy;
 end;
+
+procedure TComponentsDatabase.FillStringListWithNames(AStringList: TStrings);
+var
+  i: Integer;
+begin
+  AStringList.Clear;
+
+  for i := 1 to FDataset.RecordCount do
+  begin
+    FDataset.RecNo := i;
+    AStringList.Add(FDataset.FieldByName(STR_DB_COMPONENTS_NAMEEN).Value);
+  end;
+end;
+
+function TComponentsDatabase.GetDrawingCode(AID: Integer): string;
+begin
+  FDataset.RecNo := AID;
+  Result := FDataset.FieldByName(STR_DB_COMPONENTS_DRAWINGCODE).Value;
+end;
+
+function TComponentsDatabase.GetHeight(AID: Integer): Integer;
+begin
+  FDataset.RecNo := AID;
+  Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_HEIGHT).Value);
+end;
+
+function TComponentsDatabase.GetPins(AID: Integer): Integer;
+begin
+  FDataset.RecNo := AID;
+  Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_PINS).Value);
+end;
+
+function TComponentsDatabase.GetWidth(AID: Integer): Integer;
+begin
+  FDataset.RecNo := AID;
+  Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_WIDTH).Value);
+end;
+
+initialization
+
+  vComponentsDatabase := TComponentsDatabase.Create;
+
+finalization
+
+  vComponentsDatabase.Free;
 
 end.
 

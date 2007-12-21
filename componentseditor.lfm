@@ -1,0 +1,193 @@
+object vComponentsEditor: TvComponentsEditor
+  Left = 290
+  Height = 425
+  Top = 149
+  Width = 400
+  HorzScrollBar.Page = 399
+  VertScrollBar.Page = 424
+  ActiveControl = btnClose
+  Caption = 'vComponentsEditor'
+  ClientHeight = 425
+  ClientWidth = 400
+  OnClose = FormClose
+  OnShow = FormShow
+  object imgPreview: TImage
+    Left = 240
+    Height = 100
+    Top = 232
+    Width = 100
+    Transparent = False
+  end
+  object lblID: TLabel
+    Left = 8
+    Height = 14
+    Top = 49
+    Width = 22
+    Caption = 'lblID'
+    ParentColor = False
+  end
+  object lblNameEn: TLabel
+    Left = 8
+    Height = 14
+    Top = 80
+    Width = 50
+    Caption = 'lblNameEn'
+    ParentColor = False
+  end
+  object lblNamePt: TLabel
+    Left = 8
+    Height = 14
+    Top = 112
+    Width = 48
+    Caption = 'lblNamePt'
+    ParentColor = False
+  end
+  object lblWidth: TLabel
+    Left = 232
+    Height = 14
+    Top = 144
+    Width = 39
+    Caption = 'lblWidth'
+    ParentColor = False
+  end
+  object lblDrawingCode: TLabel
+    Left = 8
+    Height = 14
+    Top = 208
+    Width = 75
+    Caption = 'lblDrawingCode'
+    ParentColor = False
+  end
+  object lblPins: TLabel
+    Left = 8
+    Height = 14
+    Top = 177
+    Width = 30
+    Caption = 'lblPins'
+    ParentColor = False
+  end
+  object lblHeight: TLabel
+    Left = 8
+    Height = 14
+    Top = 144
+    Width = 42
+    Caption = 'lblHeight'
+    ParentColor = False
+  end
+  object btnClose: TButton
+    Left = 128
+    Height = 29
+    Top = 384
+    Width = 144
+    BorderSpacing.InnerBorder = 4
+    Caption = 'btnClose'
+    ModalResult = 1
+    TabOrder = 8
+  end
+  object FNavigator: TDBNavigator
+    Left = 8
+    Height = 23
+    Top = 9
+    Width = 316
+    BevelOuter = bvNone
+    ClientHeight = 23
+    ClientWidth = 316
+    DataSource = FDatasource
+  end
+  object txtID: TDBEdit
+    Left = 112
+    Height = 23
+    Top = 48
+    Width = 80
+    DataField = 'ID'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 0
+  end
+  object txtNameEn: TDBEdit
+    Left = 112
+    Height = 23
+    Top = 80
+    Width = 150
+    DataField = 'NAMEEN'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 1
+  end
+  object txtWidth: TDBEdit
+    Left = 304
+    Height = 23
+    Top = 144
+    Width = 80
+    DataField = 'WIDTH'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 4
+  end
+  object txtNamePt: TDBEdit
+    Left = 112
+    Height = 23
+    Top = 112
+    Width = 150
+    DataField = 'NAMEPT'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 2
+  end
+  object txtHeight: TDBEdit
+    Left = 112
+    Height = 23
+    Top = 144
+    Width = 80
+    DataField = 'HEIGHT'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 3
+  end
+  object txtPins: TDBEdit
+    Left = 112
+    Height = 23
+    Top = 176
+    Width = 80
+    DataField = 'PINS'
+    DataSource = FDatasource
+    ParentColor = False
+    TabOrder = 5
+  end
+  object memoDrawingCode: TDBMemo
+    Left = 16
+    Height = 112
+    Top = 232
+    Width = 176
+    DataField = 'DRAWINGCODE'
+    DataSource = FDatasource
+    Lines.Strings = (
+      'memoDrawingCode'
+    )
+    TabOrder = 6
+  end
+  object btnPreview: TButton
+    Left = 248
+    Height = 25
+    Top = 344
+    Width = 75
+    BorderSpacing.InnerBorder = 4
+    Caption = 'btnPreview'
+    OnClick = btnPreviewClick
+    TabOrder = 7
+  end
+  object FSqlite3Dataset: TSqlite3Dataset
+    FileName = 'U:\turbocircuit\Components.dat'
+    PrimaryKey = 'ID'
+    SaveOnClose = True
+    SQL = 'Select * from Components;'
+    TableName = 'Components'
+    left = 64
+    top = 336
+  end
+  object FDatasource: TDatasource
+    DataSet = FSqlite3Dataset
+    left = 64
+    top = 296
+  end
+end
