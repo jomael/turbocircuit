@@ -42,13 +42,15 @@ type
 
   TTranslations = class(TObject)
   public
-    { Main Menu strings }
-    lpFile, lpComponents, lpHelp: string;
-    { File Menu strings }
+    { Main menu strings }
+    lpFile, lpDocument, lpComponents, lpHelp: string;
+    { Document menu strings }
+    lpDocumentOptions: string;
+    { File menu strings }
     lpFileNew, lpFileOpen, lpFileSave, lpFileSaveAs, lpFileExit: string;
-    { Components Menu strings }
-    lpCheckComponentsDB, lpEditComponents: string;
-    { Help Menu strings }
+    { Components menu strings }
+    lpRecreateComponentsDatabase, lpComponentsEditor: string;
+    { Help menu strings }
     lpHelpAbout: string;
     { Methods }
     procedure TranslateToEnglish;
@@ -66,48 +68,38 @@ uses Windows;
 
 { TTranslations }
 
-{*******************************************************************
-*  TTranslations.TranslateToEnglish ()
-*
-*  DESCRIPTION:    Translates the user interface strings to english
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
+{@@
+  Translates the user interface strings to english
+}
 procedure TTranslations.TranslateToEnglish;
 begin
-  { Main Menu strings }
+  { Main menu strings }
   lpFile := 'File';
+  lpDocument := 'Document';
   lpComponents := 'Components';
   lpHelp := 'Help';
   
-  { File Menu strings }
+  { Document menu strings }
+  lpDocumentOptions := 'Document Options';
+
+  { File menu strings }
   lpFileNew := 'New';
   lpFileOpen := 'Open';
   lpFileSave := 'Save';
   lpFileSaveAs := 'Save As';
   lpFileExit := 'Exit';
 
-  { Components Menu strings }
-  lpCheckComponentsDB := 'Check Components Database';
-  lpEditComponents := 'Edit Components';
+  { Components menu strings }
+  lpRecreateComponentsDatabase := 'Recreate Components Database';
+  lpComponentsEditor := 'Components Editor';
 
-  { Help Menu strings }
+  { Help menu strings }
   lpHelpAbout := 'About';
 end;
 
-{*******************************************************************
-*  TTranslations.TranslateToPortuguese ()
-*
-*  DESCRIPTION:    Translates the user interface strings to portuguese
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
+{@@
+  Translates the user interface strings to portuguese
+}
 procedure TTranslations.TranslateToPortuguese;
 begin
 

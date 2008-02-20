@@ -1,7 +1,7 @@
 object vComponentsEditor: TvComponentsEditor
-  Left = 290
+  Left = 291
   Height = 425
-  Top = 149
+  Top = 150
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 424

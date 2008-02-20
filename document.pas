@@ -1,18 +1,27 @@
 unit document;
 
-{$mode objfpc}{$H+}
+{$mode delphi}
 
 interface
 
 uses
-  Classes, SysUtils,
-  constants, dbcomponents;
+  Classes, SysUtils, LCLIntf,
+  constants, dbcomponents, tcfileformat, tclists;
 
 type
 
   { TDocument }
 
   TDocument = class(TObject)
+  private
+    function  ReadBOF(AStream: TStream): Boolean;
+    procedure WriteBOF(AStream: TStream);
+    procedure WriteSCHEMATICS_GUI_DATA(AStream: TStream);
+    procedure WriteSCHEMATICS_DOC_DATA(AStream: TStream);
+    procedure WriteCOMPONENT(AStream: TStream; AElement: PTCElement);
+    procedure WriteWIRE(AStream: TStream; AElement: PTCElement);
+    procedure WriteTEXT(AStream: TStream; AElement: PTCElement);
+    procedure WriteEOF(AStream: TStream);
   public
     { Persistent information of the user interface }
     CurrentTool: TCTool;
@@ -20,11 +29,13 @@ type
     { Selection fields }
     SelectedComponent: PTCComponent;
     SelectedWire: PTCWire;
-    SelectedWirePart: TCWirePart;
+    SelectedText: PTCText;
+    SelectionInfo: DWord;
     { Document information }
     SheetWidth, SheetHeight: Integer;
-    Components: PTCComponent;
-    Wires: PTCWire;
+    Components: TCComponentList;
+    Wires: TCWireList;
+    TextList: TCTextList;
     { Base methods }
     constructor Create;
     destructor Destroy; override;
@@ -35,20 +46,8 @@ type
     { General document methods }
     function  GetDocumentPos(X, Y: Integer): TPoint;
     { Components methods }
-    procedure ClearComponents;
-    function  GetComponentCount: Cardinal;
-    procedure InsertComponent(AComponent: PTCComponent);
-    procedure MoveComponent(AComponent: PTCComponent; ADelta: TPoint);
-    procedure RemoveComponent(AComponent: PTCComponent);
     procedure RotateNewComponentOrientation;
-    function  SearchComponent(Pos: TPoint): PTCComponent;
-    { Wires methods }
-    procedure ClearWires;
-    function  GetWireCount: Cardinal;
-    procedure InsertWire(AWire: PTCWire);
-    procedure MoveWire(AWire: PTCWire; APos: TPoint; APart: TCWirePart);
-    procedure RemoveWire(AWire: PTCWire);
-    function  SearchWire(Pos: TPoint): PTCWire;
+    function  GetComponentTopLeft(AComponent: PTCComponent): TPoint;
     { Selection methods }
     procedure ClearSelection;
     function  IsSomethingSelected: Boolean;
@@ -61,29 +60,100 @@ implementation
 
 { TDocument }
 
+function TDocument.ReadBOF(AStream: TStream): Boolean;
+var
+  vID: array[0..INT_TCFILE_IDENTIFIER_SIZE-1] of Char;
+begin
+  Result := False;
+
+  AStream.ReadBuffer(vID, INT_TCFILE_IDENTIFIER_SIZE);
+
+  if not CompareMem(@vID, @STR_TCFILE_IDENTIFIER[1], INT_TCFILE_IDENTIFIER_SIZE) then Exit;
+
+  if AStream.ReadByte <> TCRECORD_BOF then Exit;
+  
+  AStream.ReadByte;
+  AStream.ReadWord;
+  
+  Result := True;
+end;
+
+procedure TDocument.WriteBOF(AStream: TStream);
+begin
+  AStream.WriteBuffer(STR_TCFILE_IDENTIFIER[1], INT_TCFILE_IDENTIFIER_SIZE);
+  AStream.WriteByte(TCRECORD_BOF);
+  AStream.WriteByte(TCRECORD_BOF_VER);
+  AStream.WriteWord($0);
+end;
+
+procedure TDocument.WriteSCHEMATICS_GUI_DATA(AStream: TStream);
+begin
+
+end;
+
+procedure TDocument.WriteSCHEMATICS_DOC_DATA(AStream: TStream);
+begin
+
+end;
+
+procedure TDocument.WriteCOMPONENT(AStream: TStream; AElement: PTCElement);
+var
+  AComponent: PTCComponent absolute AElement;
+begin
+  AStream.WriteByte(TCRECORD_COMPONENT);
+  AStream.WriteByte(TCRECORD_COMPONENT_VER);
+  AStream.WriteWord(TCRECORD_COMPONENT_SIZE);
+  AStream.WriteBuffer(AComponent^, SizeOf(TCComponent));
+end;
+
+procedure TDocument.WriteWIRE(AStream: TStream; AElement: PTCElement);
+var
+  AWire: PTCWire absolute AElement;
+begin
+  AStream.WriteByte(TCRECORD_WIRE);
+  AStream.WriteByte(TCRECORD_WIRE_VER);
+  AStream.WriteWord(TCRECORD_WIRE_SIZE);
+  AStream.WriteBuffer(AWire^, SizeOf(TCWire));
+end;
+
+procedure TDocument.WriteTEXT(AStream: TStream; AElement: PTCElement);
+var
+  AText: PTCText absolute AElement;
+begin
+  AStream.WriteByte(TCRECORD_TEXT);
+  AStream.WriteByte(TCRECORD_TEXT_VER);
+  AStream.WriteWord(TCRECORD_TEXT_SIZE);
+  AStream.WriteBuffer(AText^, SizeOf(TCText));
+end;
+
+procedure TDocument.WriteEOF(AStream: TStream);
+begin
+
+end;
+
 constructor TDocument.Create;
 begin
   inherited Create;
 
+  { Creates the lists of items }
+  Components := TCComponentList.Create;
+  Wires := TCWireList.Create;
+  TextList := TCTextList.Create;
+
+  { Initialization of various fields }
   CurrentTool := toolArrow;
   NewComponentOrientation := coEast;
 
   SheetWidth := INT_SHEET_DEFAULT_WIDTH;
   SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
-  Components := nil;
-  Wires := nil;
 end;
 
 destructor TDocument.Destroy;
-var
-  AComponent, NextComponent: PTCComponent;
-  AWire, NextWire: PTCWire;
 begin
-  { Cleans the memory of the components }
-  ClearComponents;
-
-  { Cleans the memory of the wires }
-  ClearWires;
+  { Cleans the memory of the lists of items }
+  Components.Free;
+  Wires.Free;
+  TextList.Free;
 
   inherited Destroy;
 end;
@@ -102,63 +172,75 @@ end;
 
 procedure TDocument.LoadFromStream(AStream: TStream);
 var
-  AComponent, LastComponent: PTCComponent;
-  AWire, LastWire: PTCWire;
-  i, NewComponentCount, NewWireCount: Cardinal;
-  AStr: string;
+  ARecID, ARecVer: Byte;
+  ARecSize: Word;
+  AComponent: PTCComponent;
+  AWire: PTCWire;
+  AText: PTCText;
 begin
+  { First try to verify if the file is valid }
+  if not ReadBOF(AStream) then raise Exception.Create('Invalid Turbo Circuit BOF');
+
   { clears old data }
-  ClearComponents;
-  ClearWires;
+  Components.Clear;
+  Wires.Clear;
 
-  { First the identifier of any TurboCircuit schematics file }
-  AStr := AStream.ReadAnsiString;
+  { Reads all records }
+  while AStream.Position < AStream.Size do
+  begin
+    ARecID := AStream.ReadByte;
+    ARecVer := AStream.ReadByte;
+    ARecSize := AStream.ReadWord;
+    
+    case ARecID of
+    
+    TCRECORD_BOF: Exit; // Shouldn't be here
 
-  { Persistent information of the user interface }
-  CurrentTool := TCTool(AStream.ReadDWord);
-  NewComponentOrientation := TCComponentOrientation(AStream.ReadDWord);
+    TCRECORD_GUI_DATA:
+    begin
+      { Persistent information of the user interface }
+//  CurrentTool := TCTool(AStream.ReadDWord);
+//  NewComponentOrientation := TCComponentOrientation(AStream.ReadDWord);
     { Selection fields }
 //    SelectedComponent: PTCComponent;
 //    SelectedWire: PTCWire;
 //    SelectedWirePart: TCWirePart;
     { Document information }
-  SheetWidth := AStream.ReadDWord;
-  SheetHeight := AStream.ReadDWord;
+//  SheetWidth := AStream.ReadDWord;
+//  SheetHeight := AStream.ReadDWord;
+    end;
 
-  { Reads the components }
-  NewComponentCount := AStream.ReadDWord();
+    TCRECORD_DOC_DATA:
+    begin
+    end;
 
-  AComponent := GetMem(SizeOf(TCComponent));
-  Components := AComponent;
+    TCRECORD_COMPONENT:
+    begin
+      New(AComponent);
+      AStream.Read(AComponent^, SizeOf(TCComponent));
+    
+      Components.Insert(AComponent);
+    end;
 
-  AStream.Read(AComponent^, SizeOf(TCComponent));
+    TCRECORD_WIRE:
+    begin
+      New(AWire);
+      AStream.Read(AWire^, SizeOf(TCWire));
 
-  for i := 1 to NewComponentCount - 1 do
-  begin
-    LastComponent := AComponent;
-    AComponent := GetMem(SizeOf(TCComponent));
-    LastComponent^.Next := AComponent;
-    AComponent^.Previous := LastComponent;
+      Wires.Insert(AWire);
+    end;
 
-    AStream.Read(AComponent^, SizeOf(TCComponent));
-  end;
+    TCRECORD_TEXT:
+    begin
+      New(AText);
+      AStream.Read(AText^, SizeOf(TCText));
 
-  { Reads the wires }
-  NewWireCount := AStream.ReadDWord();
+      TextList.Insert(AText);
+    end;
 
-  AWire := GetMem(SizeOf(TCWire));
-  Wires := AWire;
-
-  AStream.Read(AWire^, SizeOf(TCWire));
-
-  for i := 1 to NewWireCount - 1 do
-  begin
-    LastWire := AWire;
-    AWire := GetMem(SizeOf(TCWire));
-    LastWire^.Next := AWire;
-    AWire^.Previous := LastWire;
-
-    AStream.Read(AWire^, SizeOf(TCWire));
+    TCRECORD_EOF: Exit;
+    
+    end;
   end;
 end;
 
@@ -175,120 +257,35 @@ begin
 end;
 
 procedure TDocument.SaveToStream(AStream: TStream);
-var
-  AComponent: PTCComponent;
-  AWire: PTCWire;
 begin
   { First the identifier of any TurboCircuit schematics file }
-  AStream.WriteAnsiString(STR_TCSCHEMATICS_IDENTIFIER);
-  
+  WriteBOF(AStream);
+
   { Persistent information of the user interface }
-  AStream.WriteDWord(LongWord(CurrentTool));
-  AStream.WriteDWord(LongWord(NewComponentOrientation));
+//  AStream.WriteDWord(LongWord(CurrentTool));
+//  AStream.WriteDWord(LongWord(NewComponentOrientation));
   { Selection fields }
 //    SelectedComponent: PTCComponent;
 //    SelectedWire: PTCWire;
 //    SelectedWirePart: TCWirePart;
   { Document information }
-  AStream.WriteDWord(SheetWidth);
-  AStream.WriteDWord(SheetHeight);
+//  AStream.WriteDWord(SheetWidth);
+//  AStream.WriteDWord(SheetHeight);
 
   { Stores the components }
-  AStream.WriteDWord(GetComponentCount);
+  Components.ForEachDoWrite(AStream, WriteCOMPONENT);
 
-  AComponent := Components;
-  while AComponent <> nil do
-  begin
-    AStream.Write(AComponent^, SizeOf(TCComponent));
-  
-    AComponent := AComponent^.Next;
-  end;
-  
   { Stores the wires }
-  AStream.WriteDWord(GetWireCount);
+  Wires.ForEachDoWrite(AStream, WriteWIRE);
 
-  AWire := Wires;
-  while AWire <> nil do
-  begin
-    AStream.Write(AWire^, SizeOf(TCWire));
-
-    AWire := AWire^.Next;
-  end;
+  { Stores the text elements }
+  TextList.ForEachDoWrite(AStream, WriteTEXT);
 end;
 
 function TDocument.GetDocumentPos(X, Y: Integer): TPoint;
 begin
   Result.X := Round(X / INT_SHEET_GRID_SPACING);
   Result.Y := Round(Y / INT_SHEET_GRID_SPACING);
-end;
-
-procedure TDocument.ClearComponents;
-var
-  AComponent, NextComponent: PTCComponent;
-begin
-  { Cleans the memory of the components }
-  AComponent := Components;
-  while (AComponent <> nil) do
-  begin
-    NextComponent := AComponent^.Next;
-    FreeMem(AComponent);
-    AComponent := NextComponent;
-  end;
-  
-  Components := nil;
-end;
-
-function TDocument.GetComponentCount: Cardinal;
-var
-  AComponent: PTCComponent;
-begin
-  Result := 0;
-  
-  AComponent := Components;
-  while AComponent <> nil do
-  begin
-    Inc(Result);
-    AComponent := AComponent^.Next;
-  end;
-end;
-
-procedure TDocument.InsertComponent(AComponent: PTCComponent);
-var
-  LastComponent: PTCComponent;
-begin
-  AComponent^.Next := nil;
-  AComponent^.Previous := nil;
-
-  { Handles the case where we don't have any items yet }
-  if (Components = nil) then
-   Components := AComponent
-  else
-  begin
-    { Finds the last item }
-    LastComponent := Components;
-    
-    while LastComponent^.Next <> nil do
-     LastComponent := LastComponent^.Next;
-     
-    { Stablishes the links between the items }
-    LastComponent^.Next := AComponent;
-    AComponent^.Previous := LastComponent;
-  end;
-end;
-
-procedure TDocument.MoveComponent(AComponent: PTCComponent; ADelta: TPoint);
-begin
-  AComponent^.PosX := AComponent^.PosX + ADelta.X;
-  AComponent^.PosY := AComponent^.PosY + ADelta.Y;
-end;
-
-procedure TDocument.RemoveComponent(AComponent: PTCComponent);
-begin
-  if Assigned(AComponent^.Previous) then AComponent^.Previous^.Next := AComponent^.Next;
-
-  if Assigned(AComponent^.Next) then AComponent^.Next^.Previous := AComponent^.Previous;
-
-  FreeMem(AComponent);
 end;
 
 procedure TDocument.RotateNewComponentOrientation;
@@ -301,132 +298,38 @@ begin
   end;
 end;
 
-function TDocument.SearchComponent(Pos: TPoint): PTCComponent;
+function TDocument.GetComponentTopLeft(AComponent: PTCComponent): TPoint;
 var
-  AComponent: PTCComponent;
-  ACompHeight, ACompWidth: Integer;
+  ComponentWidth, ComponentHeight: Integer;
 begin
-  Result := nil;
+  ComponentWidth := vComponentsDatabase.GetWidth(AComponent^.TypeID);
+  ComponentHeight := vComponentsDatabase.GetHeight(AComponent^.TypeID);
 
-  AComponent := Components;
+  case AComponent^.Orientation of
 
-  while AComponent <> nil do
-  begin
-    ACompHeight := vComponentsDatabase.GetHeight(AComponent^.TypeID);
-    ACompWidth := vComponentsDatabase.GetWidth(AComponent^.TypeID);
-  
-    if (AComponent^.PosX < Pos.X) and (Pos.X < AComponent^.PosX + ACompWidth)
-     and (AComponent^.PosY < Pos.Y) and (Pos.Y < AComponent^.PosY + ACompHeight) then
+    coEast:
     begin
-      Result := AComponent;
-    
-      Exit;
+      Result.X := AComponent^.Pos.X;
+      Result.Y := AComponent^.Pos.Y;
     end;
 
-    AComponent := AComponent^.Next;
-  end;
-end;
-
-procedure TDocument.ClearWires;
-var
-  AWire, NextWire: PTCWire;
-begin
-  { Cleans the memory of the wires }
-  AWire := Wires;
-  while (AWire <> nil) do
-  begin
-    NextWire := AWire^.Next;
-    FreeMem(AWire);
-    AWire := NextWire;
-  end;
-
-  Wires := nil;
-end;
-
-function TDocument.GetWireCount: Cardinal;
-var
-  AWire: PTCWire;
-begin
-  Result := 0;
-
-  AWire := Wires;
-  while AWire <> nil do
-  begin
-    Inc(Result);
-    AWire := AWire^.Next;
-  end;
-end;
-
-procedure TDocument.InsertWire(AWire: PTCWire);
-var
-  LastWire: PTCWire;
-begin
-  AWire^.Next := nil;
-  AWire^.Previous := nil;
-
-  { Handles the case where we don't have any items yet }
-  if (Wires = nil) then
-   Wires := AWire
-  else
-  begin
-    { Finds the last item }
-    LastWire := Wires;
-
-    while LastWire^.Next <> nil do
-     LastWire := LastWire^.Next;
-
-    { Stablishes the links between the items }
-    LastWire^.Next := AWire;
-    AWire^.Previous := LastWire;
-  end;
-end;
-
-procedure TDocument.MoveWire(AWire: PTCWire; APos: TPoint; APart: TCWirePart);
-begin
-  case APart of
-    wpPtFrom: AWire^.PtFrom := APos;
-    wpPtTo:   AWire^.PtTo := APos;
-  end;
-end;
-
-procedure TDocument.RemoveWire(AWire: PTCWire);
-begin
-  if Assigned(AWire^.Previous) then AWire^.Previous^.Next := AWire^.Next;
-
-  if Assigned(AWire^.Next) then AWire^.Next^.Previous := AWire^.Previous;
-
-  FreeMem(AWire);
-end;
-
-function TDocument.SearchWire(Pos: TPoint): PTCWire;
-var
-  AWire: PTCWire;
-begin
-  Result := nil;
-
-  AWire := Wires;
-
-  while AWire <> nil do
-  begin
-    { Verifies PtFrom }
-    if (AWire^.PtFrom.X = Pos.X) and (AWire^.PtFrom.Y = Pos.Y) then
+    coNorth:
     begin
-      Result := AWire;
-      SelectedWirePart := wpPtFrom;
-
-      Exit;
+      Result.X := AComponent^.Pos.X;
+      Result.Y := AComponent^.Pos.Y - ComponentWidth;
     end;
 
-    { Verifies PtTo }
-    if (AWire^.PtTo.X = Pos.X) and (AWire^.PtTo.Y = Pos.Y) then
+    coWest:
     begin
-      Result := AWire;
-      SelectedWirePart := wpPtTo;
-
-      Exit;
+      Result.X := AComponent^.Pos.X - ComponentWidth;
+      Result.Y := AComponent^.Pos.Y - ComponentHeight;
     end;
 
-    AWire := AWire^.Next;
+    coSouth:
+    begin
+      Result.X := AComponent^.Pos.X - ComponentHeight;
+      Result.Y := AComponent^.Pos.Y;
+    end;
   end;
 end;
 
@@ -434,6 +337,8 @@ procedure TDocument.ClearSelection;
 begin
   SelectedComponent := nil;
   SelectedWire := nil;
+  SelectedText := nil;
+  SelectionInfo := ELEMENT_DOES_NOT_MATCH;
 end;
 
 function TDocument.IsSomethingSelected: Boolean;

@@ -16,6 +16,7 @@ type
   private
     NewComponent: PTCComponent;
     NewWire: PTCWire;
+    NewText: PTCText;
     MouseMoveDocPos: TPoint;
     DragDropStarted: Boolean;
     DragStartPos: TPoint;
@@ -33,11 +34,17 @@ type
     procedure   HandleMouseDown(Sender: TOBject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure   HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure   HandleMouseUp(Sender: TOBject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure   HandleUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
     { Paint methods }
-    procedure   UpdateAndRepaint;
+    procedure   DrawBackground(ACanvas: TCanvas);
+    procedure   DrawComponents(ACanvas: TCanvas);
+    procedure   DrawComponentPreview(ACanvas: TCanvas);
+    procedure   DrawGrid(ACanvas: TCanvas);
     procedure   DrawToCanvas(ACanvas: TCanvas);
-    procedure   Paint; override;
+    procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
+    procedure   Paint; override;
+    procedure   UpdateAndRepaint;
   end;
 
 var
@@ -45,12 +52,16 @@ var
 
 implementation
 
+{@@
+  Allocates an instance of the TScrematics class
+}
 constructor TSchematics.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
   OnKeyDown := HandleKeyDown;
   OnKeyPress := HandleKeyPress;
+  OnUTF8KeyPress := HandleUTF8KeyPress;
 
   OnMouseDown := HandleMouseDown;
   OnMouseMove := HandleMouseMove;
@@ -63,6 +74,9 @@ begin
   NewComponentType := 1;
 end;
 
+{@@
+  Releases an instance of the TSchematics class
+}
 destructor TSchematics.Destroy;
 begin
   bmpOutput.Free;
@@ -70,29 +84,45 @@ begin
   inherited Destroy;
 end;
 
+{@@
+  Handles KeyDown events
+}
 procedure TSchematics.HandleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
    VK_DELETE:
    begin
-     if Assigned(vDocument.SelectedComponent) then vDocument.RemoveComponent(vDocument.SelectedComponent);
-     if Assigned(vDocument.SelectedWire) then vDocument.RemoveWire(vDocument.SelectedWire);
+     if Assigned(vDocument.SelectedComponent) then vDocument.Components.Remove(vDocument.SelectedComponent);
+     if Assigned(vDocument.SelectedWire) then vDocument.Wires.Remove(vDocument.SelectedWire);
      if vDocument.IsSomethingSelected then UpdateAndRepaint;
    end;
   end;
 end;
 
+{@@
+  Handles ASCII KeyPress events
+}
 procedure TSchematics.HandleKeyPress(Sender: TObject; var Key: char);
 begin
-  case Key of
-   ^R:
-   begin
-     vDocument.RotateNewComponentOrientation;
-     UpdateAndRepaint;
-   end;
+  case vDocument.CurrentTool of
+
+  toolArrow:
+  begin
+    case Key of
+     ^R:
+     begin
+       vDocument.RotateNewComponentOrientation;
+       UpdateAndRepaint;
+     end;
+    end;
+  end;
+
   end;
 end;
 
+{@@
+  Handles MouseDown events
+}
 procedure TSchematics.HandleMouseDown(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -109,9 +139,9 @@ begin
     vDocument.ClearSelection;
 
     { Attempts to select a component }
-    vDocument.SelectedComponent := vDocument.SearchComponent(DocPos);
-
-    if vDocument.SelectedComponent <> nil then
+    vDocument.SelectionInfo := vDocument.Components.FindElement(DocPos, vDocument.SelectedComponent);
+    
+    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       DragDropStarted := True;
       vDocument.NewComponentOrientation := vDocument.SelectedComponent^.Orientation;
@@ -120,9 +150,19 @@ begin
     end;
       
     { Attempts to select a wire }
-    vDocument.SelectedWire := vDocument.SearchWire(DocPos);
+    vDocument.SelectionInfo := vDocument.Wires.FindElement(DocPos, vDocument.SelectedWire);
 
-    if vDocument.SelectedWire <> nil then
+    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
+    begin
+      DragDropStarted := True;
+      UpdateAndRepaint;
+      Exit;
+    end;
+
+    { Attempts to select an existing text }
+    vDocument.SelectionInfo := vDocument.TextList.FindElement(DocPos, vDocument.SelectedText);
+
+    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       DragDropStarted := True;
       UpdateAndRepaint;
@@ -135,14 +175,27 @@ begin
   begin
     DragDropStarted := True;
 
-    NewWire := GetMem(SizeOf(TCWire));
+    New(NewWire);
       
-    NewWire^.PtFrom := DocPos;
+    NewWire^.Pos := DocPos;
+  end;
+
+  { Places a new text element on the document and selects it }
+  toolText:
+  begin
+    vDocument.ClearSelection;
+
+    New(NewText);
+    FillChar(NewText^, SizeOf(TCText), #0);
+    NewText^.Pos := DocPos;
   end;
 
   end;
 end;
 
+{@@
+  Handles MouseMove events
+}
 procedure TSchematics.HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   MouseMoveDocPos := vDocument.GetDocumentPos(X, Y);
@@ -159,6 +212,9 @@ begin
   end;
 end;
 
+{@@
+  Handles MouseUp events
+}
 procedure TSchematics.HandleMouseUp(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
@@ -177,12 +233,17 @@ begin
     begin
       if vDocument.SelectedComponent <> nil then
       begin
-        vDocument.MoveComponent(vDocument.SelectedComponent,
+        vDocument.Components.MoveElement(vDocument.SelectedComponent,
          Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
       end
       else if vDocument.SelectedWire <> nil then
       begin
-        vDocument.MoveWire(vDocument.SelectedWire, DocPos, vDocument.SelectedWirePart);
+        vDocument.Wires.MoveWire(vDocument.SelectedWire, DocPos, vDocument.SelectionInfo);
+      end
+      else if vDocument.SelectedText <> nil then
+      begin
+        vDocument.TextList.MoveElement(vDocument.SelectedText,
+         Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
       end;
     end;
 
@@ -191,14 +252,14 @@ begin
 
   toolComponent:
   begin
-    NewComponent := GetMem(SizeOf(TCComponent));
+    New(NewComponent);
       
-    NewComponent^.PosX := DocPos.X;
-    NewComponent^.PosY := DocPos.Y;
+    NewComponent^.Pos.X := DocPos.X;
+    NewComponent^.Pos.Y := DocPos.Y;
     NewComponent^.TypeID := NewComponentType;
     NewComponent^.Orientation := vDocument.NewComponentOrientation;
 
-    vDocument.InsertComponent(NewComponent);
+    vDocument.Components.Insert(NewComponent);
       
     UpdateAndRepaint;
   end;
@@ -207,70 +268,83 @@ begin
   begin
     NewWire^.PtTo := DocPos;
 
-    vDocument.InsertWire(NewWire);
+    vDocument.Wires.Insert(NewWire);
 
     UpdateAndRepaint;
   end;
 
+  toolText:
+  begin
+    vDocument.TextList.Insert(NewText);
+    vDocument.SelectedText := NewText;
+  end;
+
   end;
 end;
 
-procedure TSchematics.UpdateAndRepaint;
+{@@
+  Handles text input in utf-8 format
+}
+procedure TSchematics.HandleUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
 begin
-  { Ask for update of the whole window }
-  DrawToCanvas(bmpOutput.Canvas);
+  case vDocument.CurrentTool of
 
-  Invalidate;
+  toolText:
+  begin
+    if vDocument.SelectedText <> nil then
+    begin
+      vDocument.SelectedText.Text += UTF8Key;
+      UpdateAndRepaint;
+    end;
+  end;
+
+  end;
 end;
 
-procedure TSchematics.DrawToCanvas(ACanvas: TCanvas);
-var
-  x, y: Integer;
-  NextComponent: PTCComponent;
-  NextWire: PTCWire;
-  TmpString: string;
-  TmpWire: TCWire;
+{@@
+  Fills the background of the schematics screen
+}
+procedure TSchematics.DrawBackground(ACanvas: TCanvas);
 begin
-  NextComponent := nil;
-
-  { Background }
   ACanvas.Brush.Color := clBlack;
   ACanvas.FillRect(0, 0, Width, Height);
+end;
 
-  { Sheet Background with dots showing the grid }
-  ACanvas.Brush.Color := clWhite;
-  ACanvas.FillRect(0, 0, vDocument.SheetWidth, vDocument.SheetHeight);
+{@@
+  Draws all components on the document
+}
+procedure TSchematics.DrawComponents(ACanvas: TCanvas);
+var
+  NextComponent: PTCComponent;
+  TmpString: string;
+begin
+  ACanvas.Pen.Color := clBlack;
 
-  ACanvas.Brush.Color := clBlack;
-  for x := 0 to (vDocument.SheetWidth div INT_SHEET_GRID_SPACING) do
-   for y := 0 to (vDocument.SheetHeight div INT_SHEET_GRID_SPACING) do
-    ACanvas.FillRect(x * INT_SHEET_GRID_SPACING, y * INT_SHEET_GRID_SPACING,
-     x * INT_SHEET_GRID_SPACING + 1, y * INT_SHEET_GRID_SPACING + 1);
+  if vDocument.Components = nil then Exit;
 
-  { Components }
-  NextComponent := vDocument.Components;
-  
+  NextComponent := PTCComponent(vDocument.Components.Elements);
+
   while (NextComponent <> nil) do
   begin
-    vItemsDrawer.DeltaX := NextComponent^.PosX;
-    vItemsDrawer.DeltaY := NextComponent^.PosY;
+    vItemsDrawer.DeltaX := NextComponent^.Pos.X;
+    vItemsDrawer.DeltaY := NextComponent^.Pos.Y;
     vItemsDrawer.Orientation := NextComponent^.Orientation;
 
     TmpString := vComponentsDatabase.GetDrawingCode(NextComponent^.TypeID);
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
-  
-    NextComponent := NextComponent^.Next;
+
+    NextComponent := PTCComponent(NextComponent^.Next);
   end;
+end;
 
-  { Wires }
-  NextWire := vDocument.Wires;
-
-  while (NextWire <> nil) do
-  begin
-    vItemsDrawer.DrawWire(ACanvas, NextWire);
-
-    NextWire := NextWire^.Next;
-  end;
+{@@
+  Draws the preview to help place and move components
+}
+procedure TSchematics.DrawComponentPreview(ACanvas: TCanvas);
+var
+  TmpString: string;
+begin
+  ACanvas.Pen.Color := clRed;
 
   { Help to place components }
   if (vDocument.CurrentTool = toolComponent) then
@@ -286,14 +360,79 @@ begin
   { Help to move components }
   if (vDocument.CurrentTool = toolArrow) and (vDocument.SelectedComponent <> nil) and DragDropStarted then
   begin
-    vItemsDrawer.DeltaX := vDocument.SelectedComponent^.PosX + MouseMoveDocPos.X - DragStartPos.X;
-    vItemsDrawer.DeltaY := vDocument.SelectedComponent^.PosY + MouseMoveDocPos.Y - DragStartPos.Y;
+    vItemsDrawer.DeltaX := vDocument.SelectedComponent^.Pos.X + MouseMoveDocPos.X - DragStartPos.X;
+    vItemsDrawer.DeltaY := vDocument.SelectedComponent^.Pos.Y + MouseMoveDocPos.Y - DragStartPos.Y;
     vItemsDrawer.Orientation := vDocument.NewComponentOrientation;
 
     TmpString := vComponentsDatabase.GetDrawingCode(vDocument.SelectedComponent^.TypeID);
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
   end;
+end;
 
+{@@
+  Draws the default grid of the schematics
+}
+procedure TSchematics.DrawGrid(ACanvas: TCanvas);
+var
+  x, y: Integer;
+  OldColor: TColor;
+begin
+  ACanvas.Brush.Color := clWhite;
+  ACanvas.FillRect(0, 0, vDocument.SheetWidth, vDocument.SheetHeight);
+
+  ACanvas.Brush.Color := clBlack;
+  for x := 0 to (vDocument.SheetWidth div INT_SHEET_GRID_SPACING) do
+   for y := 0 to (vDocument.SheetHeight div INT_SHEET_GRID_SPACING) do
+    ACanvas.FillRect(x * INT_SHEET_GRID_SPACING, y * INT_SHEET_GRID_SPACING,
+     x * INT_SHEET_GRID_SPACING + 1, y * INT_SHEET_GRID_SPACING + 1);
+end;
+
+{@@
+  Draws all schmatics elements on the document
+}
+procedure TSchematics.DrawToCanvas(ACanvas: TCanvas);
+begin
+  { Background }
+  DrawBackground(ACanvas);
+
+  { Sheet Background with dots showing the grid }
+  DrawGrid(ACanvas);
+  
+  { Components }
+  DrawComponents(ACanvas);
+
+  { Wires }
+  ACanvas.Pen.Color := clGreen;
+  vDocument.Wires.ForEachDoPaint(ACanvas, vItemsDrawer.DrawWire);
+  
+  { Text elements }
+  ACanvas.Pen.Color := clBlack;
+  ACanvas.Brush.Color := clWhite;
+  vDocument.TextList.ForEachDoPaint(ACanvas, vItemsDrawer.DrawText);
+
+  { Preview when placing/moving a component }
+  DrawComponentPreview(ACanvas);
+  
+  { Preview when placing/moving a wire }
+  DrawWirePreview(ACanvas);
+
+  { Component selection }
+  if vDocument.SelectedComponent <> nil then
+   vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.SelectedComponent);
+
+  { Wire selection }
+  if vDocument.SelectedWire <> nil then
+   vItemsDrawer.DrawWireSelection(ACanvas, vDocument.SelectedWire, vDocument.SelectionInfo);
+end;
+
+{@@
+  Draws the preview to help place and move wires
+}
+procedure TSchematics.DrawWirePreview(ACanvas: TCanvas);
+var
+  TmpWire: TCWire;
+begin
+  ACanvas.Pen.Color := clRed;
 
   { Help to place wires }
   if ((vDocument.CurrentTool = toolWire) and DragDropStarted) then
@@ -302,46 +441,42 @@ begin
 
     vItemsDrawer.DrawWire(ACanvas, NewWire);
   end;
-  
+
   { Help to move wires }
   if (vDocument.CurrentTool = toolArrow) and (vDocument.SelectedWire <> nil) and DragDropStarted then
   begin
-    case vDocument.SelectedWirePart of
-     wpPtFrom:
+    case vDocument.SelectionInfo of
+     ELEMENT_START_POINT:
      begin
-       TmpWire.PtFrom := MouseMoveDocPos;
+       TmpWire.Pos := MouseMoveDocPos;
        TmpWire.PtTo := vDocument.SelectedWire^.PtTo;
      end;
 
-     wpPtTo:
+     ELEMENT_END_POINT:
      begin
-       TmpWire.PtFrom := vDocument.SelectedWire^.PtFrom;
+       TmpWire.Pos := vDocument.SelectedWire^.Pos;
        TmpWire.PtTo := MouseMoveDocPos;
      end;
     end;
-    
+
     vItemsDrawer.DrawWire(ACanvas, @TmpWire);
   end;
-
-  { Component selection }
-  if vDocument.SelectedComponent <> nil then
-   vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.SelectedComponent);
-
-  { Wire selection }
-  if vDocument.SelectedWire <> nil then
-   vItemsDrawer.DrawWireSelection(ACanvas, vDocument.SelectedWire, vDocument.SelectedWirePart);
 end;
 
-{*******************************************************************
-*  TSchematics.Paint ()
-*
-*  DESCRIPTION:    Processes Paint messages for the TDrawer control
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
+{@@
+  Handles the EraseBackground message by doing nothing
+
+  This prevents flickering on Windows
+}
+procedure TSchematics.EraseBackground(DC: HDC);
+begin
+  // Uncomment this to enable default background erasing
+  //inherited EraseBackground(DC);
+end;
+
+{@@
+  Processes Paint messages for the TDrawer control
+}
 procedure TSchematics.Paint;
 begin
   { Copies the buffer bitmap to the canvas }
@@ -350,10 +485,16 @@ begin
   inherited Paint;
 end;
 
-procedure TSchematics.EraseBackground(DC: HDC);
+{@@
+  Updates the schematics screen with the current data
+  and repaints it
+}
+procedure TSchematics.UpdateAndRepaint;
 begin
-  // Uncomment this to enable default background erasing
-  //inherited EraseBackground(DC);
+  { Ask for update of the whole window }
+  DrawToCanvas(bmpOutput.Canvas);
+
+  Invalidate;
 end;
 
 end.

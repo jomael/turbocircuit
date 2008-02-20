@@ -35,18 +35,20 @@ uses
   translationstc,
   constants,
   document,
-  about,
-  componentseditor,
+  dlgabout,
+  dlgcomponentseditor,
   tcutils,
   tcdbutils,
   sqlite3laz,
-  drawer;
+  drawer,
+  tcfileformat, dlgdocumentopts, tclists;
 
 begin
   Application.Initialize;
   Application.CreateForm(TMainForm, vMainForm);
   Application.CreateForm(TvAbout, vAbout);
   Application.CreateForm(TvComponentsEditor, vComponentsEditor);
+  Application.CreateForm(TDocumentOptions, vDocumentOptions);
   Application.Run;
 end.
 

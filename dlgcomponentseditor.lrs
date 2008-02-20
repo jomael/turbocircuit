@@ -1,8 +1,8 @@
-{ Das ist eine automatisch erzeugte Lazarus-Ressourcendatei }
+{ This is an automatically generated lazarus resource file }
 
 LazarusResources.Add('TvComponentsEditor','FORMDATA',[
-  'TPF0'#18'TvComponentsEditor'#17'vComponentsEditor'#4'Left'#3'"'#1#6'Height'#3
-  +#169#1#3'Top'#3#149#0#5'Width'#3#144#1#18'HorzScrollBar.Page'#3#143#1#18'Ver'
+  'TPF0'#18'TvComponentsEditor'#17'vComponentsEditor'#4'Left'#3'#'#1#6'Height'#3
+  +#169#1#3'Top'#3#150#0#5'Width'#3#144#1#18'HorzScrollBar.Page'#3#143#1#18'Ver'
   +'tScrollBar.Page'#3#168#1#13'ActiveControl'#7#8'btnClose'#7'Caption'#6#17'vC'
   +'omponentsEditor'#12'ClientHeight'#3#169#1#11'ClientWidth'#3#144#1#7'OnClose'
   +#7#9'FormClose'#6'OnShow'#7#8'FormShow'#0#6'TImage'#10'imgPreview'#4'Left'#3

@@ -1,0 +1,22 @@
+{ This is an automatically generated lazarus resource file }
+
+LazarusResources.Add('TDocumentOptions','FORMDATA',[
+  'TPF0'#16'TDocumentOptions'#15'DocumentOptions'#4'Left'#3#13#2#6'Height'#3','
+  +#1#3'Top'#3#139#1#5'Width'#3#144#1#18'HorzScrollBar.Page'#3#143#1#18'VertScr'
+  +'ollBar.Page'#3'+'#1#13'ActiveControl'#7#9'btnCancel'#11'BorderIcons'#11#12
+  +'biSystemMenu'#0#11'BorderStyle'#7#8'bsDialog'#7'Caption'#6#15'DocumentOptio'
+  +'ns'#12'ClientHeight'#3','#1#11'ClientWidth'#3#144#1#6'OnShow'#7#8'LoadData'
+  +#0#7'TButton'#9'btnCancel'#4'Left'#3#225#0#6'Height'#2#29#3'Top'#3#248#0#5'W'
+  +'idth'#2'd'#25'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#9'btnCancel'#11'M'
+  +'odalResult'#2#2#8'TabOrder'#2#0#0#0#9'TGroupBox'#9'GroupBox1'#4'Left'#2#16#6
+  +'Height'#2'Q'#3'Top'#2'@'#5'Width'#3#185#0#7'Caption'#6#10'Sheet Size'#12'Cl'
+  +'ientHeight'#2'?'#11'ClientWidth'#3#181#0#8'TabOrder'#2#1#0#6'TLabel'#6'Labe'
+  +'l1'#4'Left'#2#14#6'Height'#2#14#3'Top'#2#5#5'Width'#2#29#7'Caption'#6#5'Wid'
+  +'th'#11'ParentColor'#8#0#0#6'TLabel'#6'Label2'#4'Left'#2#14#6'Height'#2#14#3
+  +'Top'#2'%'#5'Width'#2' '#7'Caption'#6#6'Height'#11'ParentColor'#8#0#0#9'TSpi'
+  +'nEdit'#14'spinSheetWidth'#4'Left'#2'^'#6'Height'#2#24#5'Width'#2'K'#8'TabOr'
+  +'der'#2#0#0#0#9'TSpinEdit'#15'spinSheetHeight'#4'Left'#2'^'#6'Height'#2#24#3
+  +'Top'#2' '#5'Width'#2'K'#8'TabOrder'#2#1#0#0#0#7'TButton'#7'btnSave'#4'Left'
+  +#2'K'#6'Height'#2#30#3'Top'#3#248#0#5'Width'#2'd'#7'Caption'#6#7'btnSave'#7
+  +'OnClick'#7#16'SaveDataAndClose'#8'TabOrder'#2#2#0#0#0
+]);

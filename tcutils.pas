@@ -29,13 +29,22 @@ unit tcutils;
 interface
 
 uses
-  Classes, SysUtils, StrUtils,
+  Classes, SysUtils, {StrUtils,}
   constants;
 
 function SeparateString(AString: string; ASeparator: Char): T10Strings;
 
 implementation
 
+{@@
+  Reads a string and separates it in substring
+  using ASeparator to delimite them.
+
+  Limits:
+
+  Number of substrings: 10 (indexed 0 to 9)
+  Length of each substring: 255 (they are shortstrings)
+}
 function SeparateString(AString: string; ASeparator: Char): T10Strings;
 var
   i, CurrentPart: Integer;

@@ -1,6 +1,8 @@
 unit constants;
 
-{$mode objfpc}{$H+}
+{$ifdef fpc}
+  {$mode delphi}
+{$endif}
 
 interface
 
@@ -10,41 +12,75 @@ uses Classes, Graphics;
 *  Main data structures
 *******************************************************************}
 type
+  { Base data structures for components }
+  
+  PTCElement = ^TCElement;
+
+  TCElement = object
+    Pos: TPoint;
+    Next, Previous: PTCElement;
+  end;
+
+  { Data structures for components }
+
   TCComponentOrientation = (coEast = 0, coNorth = 1, coWest = 2, coSouth = 3);
 
   PTCComponent = ^TCComponent;
-  
-  TCComponent = record
+
+  TCComponent = object(TCElement)
     Name: string;
     TypeID: Integer;
     Orientation: TCComponentOrientation;
-    PosX, PosY: Integer;
-    Next, Previous: PTCComponent;
   end;
   
+  { Data structures for wires }
+
   PTCWire = ^TCWire;
 
-  TCWire = record
-    PtFrom: TPoint;
+  TCWire = object(TCElement)
     PtTo: TPoint;
-    Next, Previous: PTCWire;
   end;
   
-  TCWirePart = (wpPtFrom, wpPtTo);
+  { Data structures for text }
+
+  PTCText = ^TCText;
+
+  TCText = object(TCElement)
+    BottomRight: TPoint;
+    Text: shortstring;
+  end;
+
+  { Data structures for tools }
+
+  TCTool = (toolArrow = 0, toolComponent, toolWire, toolText);
   
-  TCTool = (toolArrow, toolComponent, toolWire);
-  
+{*******************************************************************
+*  Element verification constants
+*******************************************************************}
+const
+  ELEMENT_DOES_NOT_MATCH = 0;
+  ELEMENT_MATCHES        = 1;
+  ELEMENT_START_POINT    = 2;
+  ELEMENT_END_POINT      = 3;
+
 {*******************************************************************
 *  General use data structures
 *******************************************************************}
 type
+  { Used by tcutils.SeparateString }
   T10Strings = array[0..9] of shortstring;
+  
+  { Used by CalculateCoordinate }
+  TFloatPoint = record
+    X, Y: Double;
+  end;
 
 {*******************************************************************
 *  Drawing code commands
 *******************************************************************}
 const
   STR_DRAWINGCODE_LINE      = 'LINE';
+  STR_DRAWINGCODE_TEXT      = 'TEXT';
 
 {*******************************************************************
 *  Database field names
@@ -59,12 +95,6 @@ const
   STR_DB_COMPONENTS_HEIGHT      = 'HEIGHT';
   STR_DB_COMPONENTS_WIDTH       = 'WIDTH';
   STR_DB_COMPONENTS_PINS        = 'PINS';
-
-{*******************************************************************
-*  Schematics file constants
-*******************************************************************}
-const
-  STR_TCSCHEMATICS_IDENTIFIER   = 'Turbo Circuit 1.0';
 
 {*******************************************************************
 *  StatusBar panel identifiers

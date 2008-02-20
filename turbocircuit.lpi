@@ -28,18 +28,18 @@
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="FCL"/>
-        <MinVersion Major="1" Valid="True"/>
+        <PackageName Value="sqlite3laz"/>
+        <MinVersion Minor="3" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
       </Item2>
       <Item3>
-        <PackageName Value="sqlite3laz"/>
-        <MinVersion Minor="3" Valid="True"/>
+        <PackageName Value="FCL"/>
+        <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="11">
+    <Units Count="15">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -79,18 +79,18 @@
         <UnitName Value="document"/>
       </Unit6>
       <Unit7>
-        <Filename Value="about.pas"/>
+        <Filename Value="dlgabout.pas"/>
         <ComponentName Value="vAbout"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="about.lrs"/>
-        <UnitName Value="about"/>
+        <ResourceFilename Value="dlgabout.lrs"/>
+        <UnitName Value="dlgabout"/>
       </Unit7>
       <Unit8>
-        <Filename Value="componentseditor.pas"/>
+        <Filename Value="dlgcomponentseditor.pas"/>
         <ComponentName Value="vComponentsEditor"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="componentseditor.lrs"/>
-        <UnitName Value="componentseditor"/>
+        <ResourceFilename Value="dlgcomponentseditor.lrs"/>
+        <UnitName Value="dlgcomponentseditor"/>
       </Unit8>
       <Unit9>
         <Filename Value="tcutils.pas"/>
@@ -102,6 +102,28 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tcdbutils"/>
       </Unit10>
+      <Unit11>
+        <Filename Value="tcfileformat.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tcfileformat"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="drawer.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="drawer"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="dlgdocumentopts.pas"/>
+        <ComponentName Value="DocumentOptions"/>
+        <IsPartOfProject Value="True"/>
+        <ResourceFilename Value="dlgdocumentopts.lrs"/>
+        <UnitName Value="dlgdocumentopts"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="tclists.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tclists"/>
+      </Unit14>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

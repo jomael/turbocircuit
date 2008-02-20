@@ -1,7 +1,7 @@
 object vAbout: TvAbout
-  Left = 290
+  Left = 291
   Height = 300
-  Top = 149
+  Top = 150
   Width = 400
   HorzScrollBar.Page = 399
   VertScrollBar.Page = 299

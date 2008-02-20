@@ -30,29 +30,34 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Menus, ExtCtrls, ComCtrls,
-  ActnList, Buttons, StdCtrls, Dialogs;
-  
+  ActnList, Buttons, StdCtrls, Dialogs,
+  schematics, dbcomponents, constants, translationstc, document,
+  dlgcomponentseditor, dlgabout, dlgdocumentopts;
+
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    btnText: TSpeedButton;
     cmbComponents: TComboBox;
     lblChooseComponent: TLabel;
-    mnuAbout: TMenuItem;
+    mnuDocument: TMenuItem;
+    mnuDocumentOptions: TMenuItem;
+    mnuHelpAbout: TMenuItem;
     mnuMainMenu: TMainMenu;
-    mnuExit: TMenuItem;
+    mnuFileExit: TMenuItem;
     mnuFile: TMenuItem;
-    mnuOpen: TMenuItem;
-    mnuSave: TMenuItem;
-    mnuSaveAs: TMenuItem;
+    mnuFileOpen: TMenuItem;
+    mnuFileSave: TMenuItem;
+    mnuFileSaveAs: TMenuItem;
     mnuHelp: TMenuItem;
     mnuComponents: TMenuItem;
     mnuHelpHelp: TMenuItem;
     mnuHelpSeparator: TMenuItem;
     mnuRecreateComponentsDatabase: TMenuItem;
     mnuComponentsEditor: TMenuItem;
-    mnuNew: TMenuItem;
+    mnuFileNew: TMenuItem;
     mnuFileSeparator: TMenuItem;
     FToolsNotebook: TNotebook;
     dialogOpen: TOpenDialog;
@@ -74,6 +79,7 @@ type
     procedure HandleFileSaveAs(ASender: TObject);
     procedure HandleShowAboutBox(ASender: TObject);
     procedure HandleShowComponentsEditor(ASender: TObject);
+    procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
     procedure TranslateMainMenu;
@@ -87,18 +93,15 @@ var
   
 implementation
 
-uses
-  schematics, dbcomponents, constants, translationstc, document,
-  componentseditor, about;
-
 { TMainForm }
 
 procedure TMainForm.HandleChangeTool(ASender: TObject);
 begin
   if ASender = btnArrow then vDocument.CurrentTool := toolArrow
   else if ASender = btnComponent then vDocument.CurrentTool := toolComponent
-  else if ASender = btnWire then vDocument.CurrentTool := toolWire;
-  
+  else if ASender = btnWire then vDocument.CurrentTool := toolWire
+  else if ASender = btnText then vDocument.CurrentTool := toolText;
+
   vSchematics.UpdateAndRepaint;
 end;
 
@@ -142,25 +145,45 @@ begin
   vComponentsEditor.ShowModal;
 end;
 
+procedure TMainForm.HandleShowDocumentOptions(ASender: TObject);
+begin
+  vDocumentOptions.ShowModal;
+end;
+
 procedure TMainForm.HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
   pnlStatusBar.Panels.Items[ID_STATUS_MOUSEPOS].Text :=
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
 end;
 
-{*******************************************************************
-*  TMainForm.TranslateMainMenu ()
-*
-*  DESCRIPTION:    Translates the main menu of the application
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
+{@@
+  Translates the main menu of the application
+}
 procedure TMainForm.TranslateMainMenu;
 begin
+  { Main menu strings }
   mnuFile.Caption := vTranslations.lpFile;
+  mnuDocument.Caption := vTranslations.lpDocument;
+  mnuComponents.Caption := vTranslations.lpComponents;
+  mnuHelp.Caption := vTranslations.lpHelp;
+
+  { File menu strings }
+  mnuFileNew.Caption := vTranslations.lpFileNew;
+  mnuFileOpen.Caption := vTranslations.lpFileOpen;
+  mnuFileSave.Caption := vTranslations.lpFileSave;
+  mnuFileSaveAs.Caption := vTranslations.lpFileSaveAs;
+  mnuFileExit.Caption := vTranslations.lpFileExit;
+
+  { Document menu strings }
+  mnuDocumentOptions.Caption := vTranslations.lpDocumentOptions;
+
+  { Components menu strings }
+  mnuRecreateComponentsDatabase.Caption := vTranslations.lpRecreateComponentsDatabase;
+  mnuComponentsEditor.Caption := vTranslations.lpComponentsEditor;
+
+  { Help Menu strings }
+  mnuHelpHelp.Caption := vTranslations.lpHelp;
+  mnuHelpAbout.Caption := vTranslations.lpHelpAbout;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
