@@ -94,6 +94,7 @@ end;
 
 procedure TvComponentsEditor.FormShow(Sender: TObject);
 begin
+  FSqlite3Dataset.FileName := ExtractFilePath(Application.ExeName) + 'Components.dat';
   FSqlite3Dataset.Active := True;
 end;
 

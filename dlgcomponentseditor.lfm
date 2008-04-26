@@ -11,6 +11,7 @@ object vComponentsEditor: TvComponentsEditor
   ClientWidth = 400
   OnClose = FormClose
   OnShow = FormShow
+  LCLVersion = '0.9.25'
   object imgPreview: TImage
     Left = 240
     Height = 100
@@ -93,6 +94,7 @@ object vComponentsEditor: TvComponentsEditor
     ClientHeight = 23
     ClientWidth = 316
     DataSource = FDatasource
+    TabOrder = 9
   end
   object txtID: TDBEdit
     Left = 112
@@ -177,7 +179,6 @@ object vComponentsEditor: TvComponentsEditor
     TabOrder = 7
   end
   object FSqlite3Dataset: TSqlite3Dataset
-    FileName = 'U:\turbocircuit\Components.dat'
     PrimaryKey = 'ID'
     SaveOnClose = True
     SQL = 'Select * from Components;'
