@@ -77,11 +77,11 @@ type
     procedure HandleFileOpen(ASender: TObject);
     procedure HandleFileSave(ASender: TObject);
     procedure HandleFileSaveAs(ASender: TObject);
+    procedure HandleRecreateComponentsDatabaseClick(Sender: TObject);
     procedure HandleShowAboutBox(ASender: TObject);
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure mnuRecreateComponentsDatabaseClick(Sender: TObject);
   private
     procedure TranslateMainMenu;
   public
@@ -157,7 +157,7 @@ begin
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
 end;
 
-procedure TMainForm.mnuRecreateComponentsDatabaseClick(Sender: TObject);
+procedure TMainForm.HandleRecreateComponentsDatabaseClick(Sender: TObject);
 begin
 
 end;

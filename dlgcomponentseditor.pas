@@ -40,15 +40,7 @@ type
   TvComponentsEditor = class(TForm)
     btnClose: TButton;
     btnPreview: TButton;
-    FDatasetDRAWINGCODE1: TMemoField;
-    FDatasetHEIGHT1: TLongintField;
-    FDatasetID1: TLongintField;
-    FDatasetNAMEEN1: TStringField;
-    FDatasetNAMEPT1: TStringField;
-    FDatasetPINS1: TLongintField;
-    FDatasetWIDTH1: TLongintField;
     FDatasource: TDatasource;
-    FDataset: TSdfDataSet;
     txtID: TDBEdit;
     txtNameEn: TDBEdit;
     txtWidth: TDBEdit;
@@ -96,13 +88,13 @@ end;
 procedure TvComponentsEditor.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
-  FDataset.Close;
+//  FDataset.Close;
 end;
 
 procedure TvComponentsEditor.FormShow(Sender: TObject);
 begin
-  FDataset.FileName := vConfigurations.ComponentsDBFile;
-  FDataset.Active := True;
+//  FDataset.FileName := vConfigurations.ComponentsDBFile;
+//  FDataset.Active := True;
 end;
 
 initialization

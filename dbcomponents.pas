@@ -33,8 +33,6 @@ implementation
 { TComponentsDatabase }
 
 constructor TComponentsDatabase.Create;
-var
-  MyField: TField;
 begin
   inherited Create;
 
@@ -43,42 +41,17 @@ begin
 //  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
 //  FDataset.PrimaryKey := STR_DB_COMPONENTS_ID;
 
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'ID';
-  MyField.SetFieldType(ftInteger);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'NAMEEN';
-  MyField.SetFieldType(ftString);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'NAMEPT';
-  MyField.SetFieldType(ftString);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'HEIGHT';
-  MyField.SetFieldType(ftString);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'WIDTH';
-  MyField.SetFieldType(ftInteger);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'PINS';
-  MyField.SetFieldType(ftInteger);
-  FDataset.Fields.Add(MyField);
-
-  MyField := TField.Create(nil);
-  MyField.FieldName := 'DRAWINGCODE';
-  MyField.SetFieldType(ftMemo);
-  FDataset.Fields.Add(MyField);
+  // Adds field definitions
+  FDataset.FieldDefs.Add('ID', ftString);
+  FDataset.FieldDefs.Add('NAMEEN', ftString);
+  FDataset.FieldDefs.Add('NAMEPT', ftString);
+  FDataset.FieldDefs.Add('HEIGHT', ftString);
+  FDataset.FieldDefs.Add('WIDTH', ftString);
+  FDataset.FieldDefs.Add('PINS', ftString);
+  FDataset.FieldDefs.Add('DRAWINGCODE', ftString);
 
   FDataset.Delimiter := ',';
+//  FDataset.FirstLineAsSchema := True;
 
   FDataset.Active := True;
 end;
@@ -93,13 +66,15 @@ end;
 procedure TComponentsDatabase.FillStringListWithNames(AStringList: TStrings);
 var
   i: Integer;
+  CurField: TField;
 begin
   AStringList.Clear;
 
   for i := 1 to FDataset.RecordCount do
   begin
     FDataset.RecNo := i;
-    AStringList.Add(FDataset.FieldByName(STR_DB_COMPONENTS_NAMEEN).Value);
+    CurField := FDataset.FieldByName(STR_DB_COMPONENTS_NAMEEN);
+    AStringList.Add(CurField.Value);
   end;
 end;
 

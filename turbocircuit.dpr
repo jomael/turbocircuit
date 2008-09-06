@@ -40,7 +40,7 @@ uses
   tcutils,
   tcdbutils,
   drawer,
-  tcfileformat, dlgdocumentopts, tclists, SDFLaz, tcsettings;
+  tcfileformat, dlgdocumentopts, tclists, tcsettings;
 
 begin
   Application.Initialize;

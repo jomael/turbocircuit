@@ -4,7 +4,7 @@ object MainForm: TMainForm
   Top = 192
   Width = 556
   Caption = 'MainForm'
-  ClientHeight = 441
+  ClientHeight = 421
   ClientWidth = 556
   Menu = mnuMainMenu
   LCLVersion = '0.9.25'
@@ -15,11 +15,11 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object pnlTools: TPanel
-    Height = 368
+    Height = 348
     Top = 50
     Width = 150
     Align = alLeft
-    ClientHeight = 368
+    ClientHeight = 348
     ClientWidth = 150
     TabOrder = 1
     object btnArrow: TSpeedButton
@@ -604,8 +604,8 @@ object MainForm: TMainForm
       end
       object Page2: TPage
         Caption = 'Page2'
-        ClientWidth = 130
-        ClientHeight = 169
+        ClientWidth = 128
+        ClientHeight = 200
         object lblChooseComponent: TLabel
           Left = 4
           Height = 14
@@ -619,6 +619,8 @@ object MainForm: TMainForm
           Height = 21
           Top = 51
           Width = 120
+          AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
+          ItemHeight = 13
           OnChange = HandleChooseNewComponentType
           TabOrder = 0
           Text = 'cmbComponents'
@@ -628,7 +630,7 @@ object MainForm: TMainForm
   end
   object pnlStatusBar: TStatusBar
     Height = 23
-    Top = 418
+    Top = 398
     Width = 556
     Panels = <    
       item
@@ -679,7 +681,7 @@ object MainForm: TMainForm
       Caption = 'mnuComponents'
       object mnuRecreateComponentsDatabase: TMenuItem
         Caption = 'mnuRecreateComponentsDatabase'
-        OnClick = mnuRecreateComponentsDatabaseClick
+        OnClick = HandleRecreateComponentsDatabaseClick
       end
       object mnuComponentsEditor: TMenuItem
         Caption = 'mnuComponentsEditor'

@@ -6,18 +6,18 @@ LazarusResources.Add('TvComponentsEditor','FORMDATA',[
   +'tion'#6#17'vComponentsEditor'#12'ClientHeight'#3#169#1#11'ClientWidth'#3#144
   +#1#7'OnClose'#7#9'FormClose'#6'OnShow'#7#8'FormShow'#10'LCLVersion'#6#6'0.9.'
   +'25'#0#6'TImage'#10'imgPreview'#4'Left'#3#240#0#6'Height'#2'd'#3'Top'#3#232#0
-  +#5'Width'#2'd'#0#0#6'TLabel'#5'lblID'#4'Left'#2#8#6'Height'#2#18#3'Top'#2'1'
-  +#5'Width'#2#27#7'Caption'#6#5'lblID'#11'ParentColor'#8#0#0#6'TLabel'#9'lblNa'
-  +'meEn'#4'Left'#2#8#6'Height'#2#18#3'Top'#2'P'#5'Width'#2'B'#7'Caption'#6#9'l'
+  +#5'Width'#2'd'#0#0#6'TLabel'#5'lblID'#4'Left'#2#8#6'Height'#2#16#3'Top'#2'1'
+  +#5'Width'#2#22#7'Caption'#6#5'lblID'#11'ParentColor'#8#0#0#6'TLabel'#9'lblNa'
+  +'meEn'#4'Left'#2#8#6'Height'#2#16#3'Top'#2'P'#5'Width'#2'4'#7'Caption'#6#9'l'
   +'blNameEn'#11'ParentColor'#8#0#0#6'TLabel'#9'lblNamePt'#4'Left'#2#8#6'Height'
-  +#2#18#3'Top'#2'p'#5'Width'#2'@'#7'Caption'#6#9'lblNamePt'#11'ParentColor'#8#0
-  +#0#6'TLabel'#8'lblWidth'#4'Left'#3#232#0#6'Height'#2#18#3'Top'#3#144#0#5'Wid'
-  +'th'#2'4'#7'Caption'#6#8'lblWidth'#11'ParentColor'#8#0#0#6'TLabel'#14'lblDra'
-  +'wingCode'#4'Left'#2#8#6'Height'#2#18#3'Top'#3#208#0#5'Width'#2'a'#7'Caption'
+  +#2#16#3'Top'#2'p'#5'Width'#2'1'#7'Caption'#6#9'lblNamePt'#11'ParentColor'#8#0
+  +#0#6'TLabel'#8'lblWidth'#4'Left'#3#232#0#6'Height'#2#16#3'Top'#3#144#0#5'Wid'
+  +'th'#2'&'#7'Caption'#6#8'lblWidth'#11'ParentColor'#8#0#0#6'TLabel'#14'lblDra'
+  +'wingCode'#4'Left'#2#8#6'Height'#2#16#3'Top'#3#208#0#5'Width'#2'M'#7'Caption'
   +#6#14'lblDrawingCode'#11'ParentColor'#8#0#0#6'TLabel'#7'lblPins'#4'Left'#2#8
-  +#6'Height'#2#18#3'Top'#3#177#0#5'Width'#2'('#7'Caption'#6#7'lblPins'#11'Pare'
-  +'ntColor'#8#0#0#6'TLabel'#9'lblHeight'#4'Left'#2#8#6'Height'#2#18#3'Top'#3
-  +#144#0#5'Width'#2'8'#7'Caption'#6#9'lblHeight'#11'ParentColor'#8#0#0#7'TButt'
+  +#6'Height'#2#16#3'Top'#3#177#0#5'Width'#2' '#7'Caption'#6#7'lblPins'#11'Pare'
+  +'ntColor'#8#0#0#6'TLabel'#9'lblHeight'#4'Left'#2#8#6'Height'#2#16#3'Top'#3
+  +#144#0#5'Width'#2'*'#7'Caption'#6#9'lblHeight'#11'ParentColor'#8#0#0#7'TButt'
   +'on'#8'btnClose'#4'Left'#3#128#0#6'Height'#2#29#3'Top'#3#128#1#5'Width'#3#144
   +#0#25'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#8'btnClose'#11'ModalResult'
   +#2#1#8'TabOrder'#2#8#0#0#12'TDBNavigator'#10'FNavigator'#4'Left'#2#8#6'Heigh'
@@ -42,25 +42,6 @@ LazarusResources.Add('TvComponentsEditor','FORMDATA',[
   +#13'Lines.Strings'#1#6#15'memoDrawingCode'#0#8'TabOrder'#2#6#0#0#7'TButton'
   +#10'btnPreview'#4'Left'#3#248#0#6'Height'#2#25#3'Top'#3'X'#1#5'Width'#2'K'#25
   +'BorderSpacing.InnerBorder'#2#4#7'Caption'#6#10'btnPreview'#7'OnClick'#7#15
-  +'btnPreviewClick'#8'TabOrder'#2#7#0#0#11'TDatasource'#11'FDatasource'#7'Data'
-  +'Set'#7#8'FDataset'#4'left'#2' '#3'top'#3'`'#1#0#0#11'TSdfDataSet'#8'FDatase'
-  +'t'#13'FileMustExist'#9#9'FieldDefs'#14#0#9'Delimiter'#6#1','#4'left'#2'H'#3
-  +'top'#3'`'#1#0#13'TLongintField'#11'FDatasetID1'#12'DisplayWidth'#2#10#9'Fie'
-  +'ldKind'#7#12'fkCalculated'#9'FieldName'#6#2'ID'#13'ProviderFlags'#11#10'pfI'
-  +'nUpdate'#9'pfInWhere'#0#0#0#12'TStringField'#15'FDatasetNAMEEN1'#12'Display'
-  +'Width'#2#20#9'FieldKind'#7#12'fkCalculated'#9'FieldName'#6#6'NAMEEN'#5'Inde'
-  +'x'#2#1#13'ProviderFlags'#11#10'pfInUpdate'#9'pfInWhere'#0#0#0#12'TStringFie'
-  +'ld'#15'FDatasetNAMEPT1'#12'DisplayWidth'#2#20#9'FieldKind'#7#12'fkCalculate'
-  +'d'#9'FieldName'#6#6'NAMEPT'#5'Index'#2#2#13'ProviderFlags'#11#10'pfInUpdate'
-  +#9'pfInWhere'#0#0#0#13'TLongintField'#15'FDatasetHEIGHT1'#12'DisplayWidth'#2
-  +#10#9'FieldKind'#7#12'fkCalculated'#9'FieldName'#6#6'HEIGHT'#5'Index'#2#3#13
-  +'ProviderFlags'#11#10'pfInUpdate'#9'pfInWhere'#0#0#0#13'TLongintField'#14'FD'
-  +'atasetWIDTH1'#12'DisplayWidth'#2#10#9'FieldKind'#7#12'fkCalculated'#9'Field'
-  +'Name'#6#5'WIDTH'#5'Index'#2#4#13'ProviderFlags'#11#10'pfInUpdate'#9'pfInWhe'
-  +'re'#0#0#0#13'TLongintField'#13'FDatasetPINS1'#12'DisplayWidth'#2#10#9'Field'
-  +'Kind'#7#12'fkCalculated'#9'FieldName'#6#4'PINS'#5'Index'#2#5#13'ProviderFla'
-  +'gs'#11#10'pfInUpdate'#9'pfInWhere'#0#0#0#10'TMemoField'#20'FDatasetDRAWINGC'
-  +'ODE1'#12'DisplayWidth'#2#10#9'FieldKind'#7#12'fkCalculated'#9'FieldName'#6
-  +#11'DRAWINGCODE'#5'Index'#2#6#13'ProviderFlags'#11#10'pfInUpdate'#9'pfInWher'
-  +'e'#0#13'Transliterate'#8#0#0#0#0
+  +'btnPreviewClick'#8'TabOrder'#2#7#0#0#11'TDatasource'#11'FDatasource'#4'left'
+  +#2' '#3'top'#3'`'#1#0#0#0
 ]);

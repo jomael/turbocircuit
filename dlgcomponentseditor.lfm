@@ -18,57 +18,57 @@ object vComponentsEditor: TvComponentsEditor
   end
   object lblID: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 49
-    Width = 27
+    Width = 22
     Caption = 'lblID'
     ParentColor = False
   end
   object lblNameEn: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 80
-    Width = 66
+    Width = 52
     Caption = 'lblNameEn'
     ParentColor = False
   end
   object lblNamePt: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 112
-    Width = 64
+    Width = 49
     Caption = 'lblNamePt'
     ParentColor = False
   end
   object lblWidth: TLabel
     Left = 232
-    Height = 18
+    Height = 16
     Top = 144
-    Width = 52
+    Width = 38
     Caption = 'lblWidth'
     ParentColor = False
   end
   object lblDrawingCode: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 208
-    Width = 97
+    Width = 77
     Caption = 'lblDrawingCode'
     ParentColor = False
   end
   object lblPins: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 177
-    Width = 40
+    Width = 32
     Caption = 'lblPins'
     ParentColor = False
   end
   object lblHeight: TLabel
     Left = 8
-    Height = 18
+    Height = 16
     Top = 144
-    Width = 56
+    Width = 42
     Caption = 'lblHeight'
     ParentColor = False
   end
@@ -176,64 +176,7 @@ object vComponentsEditor: TvComponentsEditor
     TabOrder = 7
   end
   object FDatasource: TDatasource
-    DataSet = FDataset
     left = 32
     top = 352
-  end
-  object FDataset: TSdfDataSet
-    FileMustExist = True
-    FieldDefs = <>
-    Delimiter = ','
-    left = 72
-    top = 352
-    object FDatasetID1: TLongintField
-      DisplayWidth = 10
-      FieldKind = fkCalculated
-      FieldName = 'ID'
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetNAMEEN1: TStringField
-      DisplayWidth = 20
-      FieldKind = fkCalculated
-      FieldName = 'NAMEEN'
-      Index = 1
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetNAMEPT1: TStringField
-      DisplayWidth = 20
-      FieldKind = fkCalculated
-      FieldName = 'NAMEPT'
-      Index = 2
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetHEIGHT1: TLongintField
-      DisplayWidth = 10
-      FieldKind = fkCalculated
-      FieldName = 'HEIGHT'
-      Index = 3
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetWIDTH1: TLongintField
-      DisplayWidth = 10
-      FieldKind = fkCalculated
-      FieldName = 'WIDTH'
-      Index = 4
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetPINS1: TLongintField
-      DisplayWidth = 10
-      FieldKind = fkCalculated
-      FieldName = 'PINS'
-      Index = 5
-      ProviderFlags = [pfInUpdate, pfInWhere]
-    end
-    object FDatasetDRAWINGCODE1: TMemoField
-      DisplayWidth = 10
-      FieldKind = fkCalculated
-      FieldName = 'DRAWINGCODE'
-      Index = 6
-      ProviderFlags = [pfInUpdate, pfInWhere]
-      Transliterate = False
-    end
   end
 end

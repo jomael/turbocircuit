@@ -17,7 +17,7 @@ uses
 {$ifdef Darwin}
   MacOSAll,
 {$endif}
-  Classes, SysUtils, IniFiles,
+  Classes, SysUtils, IniFiles, Forms,
   constants;
 
 type
