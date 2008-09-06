@@ -30,8 +30,8 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Buttons,
-  DbCtrls, ExtCtrls, StdCtrls, sqlite3ds, db,
-  drawer, constants;
+  DbCtrls, ExtCtrls, StdCtrls, db, SdfData,
+  drawer, constants, tcsettings;
 
 type
 
@@ -40,8 +40,15 @@ type
   TvComponentsEditor = class(TForm)
     btnClose: TButton;
     btnPreview: TButton;
+    FDatasetDRAWINGCODE1: TMemoField;
+    FDatasetHEIGHT1: TLongintField;
+    FDatasetID1: TLongintField;
+    FDatasetNAMEEN1: TStringField;
+    FDatasetNAMEPT1: TStringField;
+    FDatasetPINS1: TLongintField;
+    FDatasetWIDTH1: TLongintField;
     FDatasource: TDatasource;
-    FSqlite3Dataset: TSqlite3Dataset;
+    FDataset: TSdfDataSet;
     txtID: TDBEdit;
     txtNameEn: TDBEdit;
     txtWidth: TDBEdit;
@@ -89,13 +96,13 @@ end;
 procedure TvComponentsEditor.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
-  FSqlite3Dataset.Close;
+  FDataset.Close;
 end;
 
 procedure TvComponentsEditor.FormShow(Sender: TObject);
 begin
-  FSqlite3Dataset.FileName := ExtractFilePath(Application.ExeName) + 'Components.dat';
-  FSqlite3Dataset.Active := True;
+  FDataset.FileName := vConfigurations.ComponentsDBFile;
+  FDataset.Active := True;
 end;
 
 initialization

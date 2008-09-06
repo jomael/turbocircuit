@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="\"/>
+    <PathDelim Value="/"/>
     <Version Value="6"/>
     <General>
       <Flags>
@@ -9,7 +9,7 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <IconPath Value=".\"/>
+      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
     </General>
     <VersionInfo>
@@ -23,13 +23,13 @@
     <RunParams>
       <local>
         <FormatVersion Value="1"/>
-        <LaunchingApplication PathPlusParams="\usr\X11R6\bin\xterm -T 'Lazarus Run Output' -e $(LazarusDir)\tools\runwait.sh $(TargetCmdLine)"/>
+        <LaunchingApplication PathPlusParams="/usr/X11R6/bin/xterm -T 'Lazarus Run Output' -e $(LazarusDir)/tools/runwait.sh $(TargetCmdLine)"/>
       </local>
     </RunParams>
     <RequiredPackages Count="3">
       <Item1>
-        <PackageName Value="sqlite3laz"/>
-        <MinVersion Minor="3" Valid="True"/>
+        <PackageName Value="SDFLaz"/>
+        <MinVersion Minor="1" Release="1" Valid="True"/>
       </Item1>
       <Item2>
         <PackageName Value="LCL"/>
@@ -39,7 +39,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="15">
+    <Units Count="16">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -50,6 +50,7 @@
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <ResourceFilename Value="app.lrs"/>
         <UnitName Value="app"/>
       </Unit1>
@@ -89,6 +90,7 @@
         <Filename Value="dlgcomponentseditor.pas"/>
         <ComponentName Value="vComponentsEditor"/>
         <IsPartOfProject Value="True"/>
+        <ResourceBaseClass Value="Form"/>
         <ResourceFilename Value="dlgcomponentseditor.lrs"/>
         <UnitName Value="dlgcomponentseditor"/>
       </Unit8>
@@ -124,17 +126,20 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tclists"/>
       </Unit14>
+      <Unit15>
+        <Filename Value="tcsettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="tcsettings"/>
+      </Unit15>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="5"/>
-    <PathDelim Value="\"/>
-    <SearchPaths>
-      <UnitOutputDirectory Value="C:\Programas\turbocircuit"/>
-    </SearchPaths>
-    <CodeGeneration>
-      <Generate Value="Faster"/>
-    </CodeGeneration>
+    <Version Value="8"/>
+    <Parsing>
+      <SyntaxOptions>
+        <CStyleOperator Value="False"/>
+      </SyntaxOptions>
+    </Parsing>
     <Linking>
       <Options>
         <LinkerOptions Value="-framework Qt4Intf -lobjc -lsqlite3"/>

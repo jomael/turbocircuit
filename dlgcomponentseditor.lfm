@@ -3,8 +3,6 @@ object vComponentsEditor: TvComponentsEditor
   Height = 425
   Top = 150
   Width = 400
-  HorzScrollBar.Page = 399
-  VertScrollBar.Page = 424
   ActiveControl = btnClose
   Caption = 'vComponentsEditor'
   ClientHeight = 425
@@ -17,61 +15,60 @@ object vComponentsEditor: TvComponentsEditor
     Height = 100
     Top = 232
     Width = 100
-    Transparent = False
   end
   object lblID: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 49
-    Width = 22
+    Width = 27
     Caption = 'lblID'
     ParentColor = False
   end
   object lblNameEn: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 80
-    Width = 50
+    Width = 66
     Caption = 'lblNameEn'
     ParentColor = False
   end
   object lblNamePt: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 112
-    Width = 48
+    Width = 64
     Caption = 'lblNamePt'
     ParentColor = False
   end
   object lblWidth: TLabel
     Left = 232
-    Height = 14
+    Height = 18
     Top = 144
-    Width = 39
+    Width = 52
     Caption = 'lblWidth'
     ParentColor = False
   end
   object lblDrawingCode: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 208
-    Width = 75
+    Width = 97
     Caption = 'lblDrawingCode'
     ParentColor = False
   end
   object lblPins: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 177
-    Width = 30
+    Width = 40
     Caption = 'lblPins'
     ParentColor = False
   end
   object lblHeight: TLabel
     Left = 8
-    Height = 14
+    Height = 18
     Top = 144
-    Width = 42
+    Width = 56
     Caption = 'lblHeight'
     ParentColor = False
   end
@@ -178,17 +175,65 @@ object vComponentsEditor: TvComponentsEditor
     OnClick = btnPreviewClick
     TabOrder = 7
   end
-  object FSqlite3Dataset: TSqlite3Dataset
-    PrimaryKey = 'ID'
-    SaveOnClose = True
-    SQL = 'Select * from Components;'
-    TableName = 'Components'
-    left = 64
-    top = 336
-  end
   object FDatasource: TDatasource
-    DataSet = FSqlite3Dataset
-    left = 64
-    top = 296
+    DataSet = FDataset
+    left = 32
+    top = 352
+  end
+  object FDataset: TSdfDataSet
+    FileMustExist = True
+    FieldDefs = <>
+    Delimiter = ','
+    left = 72
+    top = 352
+    object FDatasetID1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkCalculated
+      FieldName = 'ID'
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetNAMEEN1: TStringField
+      DisplayWidth = 20
+      FieldKind = fkCalculated
+      FieldName = 'NAMEEN'
+      Index = 1
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetNAMEPT1: TStringField
+      DisplayWidth = 20
+      FieldKind = fkCalculated
+      FieldName = 'NAMEPT'
+      Index = 2
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetHEIGHT1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkCalculated
+      FieldName = 'HEIGHT'
+      Index = 3
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetWIDTH1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkCalculated
+      FieldName = 'WIDTH'
+      Index = 4
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetPINS1: TLongintField
+      DisplayWidth = 10
+      FieldKind = fkCalculated
+      FieldName = 'PINS'
+      Index = 5
+      ProviderFlags = [pfInUpdate, pfInWhere]
+    end
+    object FDatasetDRAWINGCODE1: TMemoField
+      DisplayWidth = 10
+      FieldKind = fkCalculated
+      FieldName = 'DRAWINGCODE'
+      Index = 6
+      ProviderFlags = [pfInUpdate, pfInWhere]
+      Transliterate = False
+    end
   end
 end

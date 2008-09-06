@@ -39,9 +39,8 @@ uses
   dlgcomponentseditor,
   tcutils,
   tcdbutils,
-  sqlite3laz,
   drawer,
-  tcfileformat, dlgdocumentopts, tclists;
+  tcfileformat, dlgdocumentopts, tclists, SDFLaz, tcsettings;
 
 begin
   Application.Initialize;

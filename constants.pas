@@ -86,7 +86,7 @@ const
 *  Database field names
 *******************************************************************}
 const
-  STR_DB_COMPONENTS_FILE        = 'U:\turbocircuit\Components.dat';
+  STR_DB_COMPONENTS_FILE        = 'components.dat';
   STR_DB_COMPONENTS_TABLE       = 'Components';
   STR_DB_COMPONENTS_ID          = 'ID';
   STR_DB_COMPONENTS_NAMEEN      = 'NAMEEN';
@@ -125,6 +125,13 @@ const
   
   lpEnglish   = 'English';
   lpPortugues = 'Português';
+
+{$ifdef GoboLinux}
+  DefaultDirectory = '/Programs/TurboCircuit/0.1/';
+{$else}
+  DefaultDirectory = '/usr/share/magnifier/';
+{$endif}
+  BundleResourcesDirectory = '/Contents/Resources/';
 
 implementation
 

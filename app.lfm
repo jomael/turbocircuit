@@ -3,13 +3,11 @@ object MainForm: TMainForm
   Height = 441
   Top = 192
   Width = 556
-  HorzScrollBar.Page = 555
-  VertScrollBar.Page = 420
-  ActiveControl = cmbComponents
   Caption = 'MainForm'
-  ClientHeight = 421
+  ClientHeight = 441
   ClientWidth = 556
   Menu = mnuMainMenu
+  LCLVersion = '0.9.25'
   object pnlToolbar: TPanel
     Height = 50
     Width = 556
@@ -17,11 +15,11 @@ object MainForm: TMainForm
     TabOrder = 0
   end
   object pnlTools: TPanel
-    Height = 348
+    Height = 368
     Top = 50
     Width = 150
     Align = alLeft
-    ClientHeight = 348
+    ClientHeight = 368
     ClientWidth = 150
     TabOrder = 1
     object btnArrow: TSpeedButton
@@ -606,8 +604,8 @@ object MainForm: TMainForm
       end
       object Page2: TPage
         Caption = 'Page2'
-        ClientWidth = 128
-        ClientHeight = 200
+        ClientWidth = 130
+        ClientHeight = 169
         object lblChooseComponent: TLabel
           Left = 4
           Height = 14
@@ -621,9 +619,6 @@ object MainForm: TMainForm
           Height = 21
           Top = 51
           Width = 120
-          AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
-          ItemHeight = 13
-          MaxLength = 0
           OnChange = HandleChooseNewComponentType
           TabOrder = 0
           Text = 'cmbComponents'
@@ -633,7 +628,7 @@ object MainForm: TMainForm
   end
   object pnlStatusBar: TStatusBar
     Height = 23
-    Top = 398
+    Top = 418
     Width = 556
     Panels = <    
       item
@@ -684,6 +679,7 @@ object MainForm: TMainForm
       Caption = 'mnuComponents'
       object mnuRecreateComponentsDatabase: TMenuItem
         Caption = 'mnuRecreateComponentsDatabase'
+        OnClick = mnuRecreateComponentsDatabaseClick
       end
       object mnuComponentsEditor: TMenuItem
         Caption = 'mnuComponentsEditor'
@@ -705,12 +701,10 @@ object MainForm: TMainForm
     end
   end
   object dialogOpen: TOpenDialog
-    Title = 'Open existing file'
     left = 380
     top = 70
   end
   object dialogSave: TSaveDialog
-    Title = 'Save file as'
     left = 416
     top = 70
   end

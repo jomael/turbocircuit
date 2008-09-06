@@ -5,8 +5,8 @@ unit dbcomponents;
 interface
 
 uses
-  Classes, SysUtils, sqlite3ds,
-  constants;
+  Classes, SysUtils, sdfdata, db,{sqlite3ds,}
+  constants, tcsettings;
 
 type
 
@@ -14,7 +14,7 @@ type
 
   TComponentsDatabase = class(TObject)
   public
-    FDataset: TSqlite3Dataset;
+    FDataset: TSdfDataset; //TSqlite3Dataset;
     constructor Create;
     destructor  Destroy; override;
     { Database access methods }
@@ -33,13 +33,53 @@ implementation
 { TComponentsDatabase }
 
 constructor TComponentsDatabase.Create;
+var
+  MyField: TField;
 begin
   inherited Create;
 
-  FDataset := TSqlite3Dataset.Create(nil);
-  FDataset.FileName := STR_DB_COMPONENTS_FILE;
-  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
-  FDataset.PrimaryKey := STR_DB_COMPONENTS_ID;
+  FDataset := TSdfDataset.Create(nil);
+  FDataset.FileName := vConfigurations.ComponentsDBFile;
+//  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
+//  FDataset.PrimaryKey := STR_DB_COMPONENTS_ID;
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'ID';
+  MyField.SetFieldType(ftInteger);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'NAMEEN';
+  MyField.SetFieldType(ftString);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'NAMEPT';
+  MyField.SetFieldType(ftString);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'HEIGHT';
+  MyField.SetFieldType(ftString);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'WIDTH';
+  MyField.SetFieldType(ftInteger);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'PINS';
+  MyField.SetFieldType(ftInteger);
+  FDataset.Fields.Add(MyField);
+
+  MyField := TField.Create(nil);
+  MyField.FieldName := 'DRAWINGCODE';
+  MyField.SetFieldType(ftMemo);
+  FDataset.Fields.Add(MyField);
+
+  FDataset.Delimiter := ',';
+
   FDataset.Active := True;
 end;
 

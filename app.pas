@@ -81,6 +81,7 @@ type
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure mnuRecreateComponentsDatabaseClick(Sender: TObject);
   private
     procedure TranslateMainMenu;
   public
@@ -154,6 +155,11 @@ procedure TMainForm.HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShif
 begin
   pnlStatusBar.Panels.Items[ID_STATUS_MOUSEPOS].Text :=
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
+end;
+
+procedure TMainForm.mnuRecreateComponentsDatabaseClick(Sender: TObject);
+begin
+
 end;
 
 {@@
