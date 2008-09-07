@@ -84,6 +84,7 @@ type
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
     procedure TranslateMainMenu;
+    procedure LoadUIItemsFromComponentsTable;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -144,6 +145,9 @@ end;
 procedure TMainForm.HandleShowComponentsEditor(ASender: TObject);
 begin
   vComponentsEditor.ShowModal;
+
+  { Reload any UI elements that may have changed }
+  LoadUIItemsFromComponentsTable();
 end;
 
 procedure TMainForm.HandleShowDocumentOptions(ASender: TObject);
@@ -192,6 +196,16 @@ begin
   mnuHelpAbout.Caption := vTranslations.lpHelpAbout;
 end;
 
+{@@
+  Load user interface items which depend in the components table
+}
+procedure TMainForm.LoadUIItemsFromComponentsTable;
+begin
+  { Component selection combo box }
+  vComponentsDatabase.FillStringListWithNames(cmbComponents.Items);
+  cmbComponents.ItemIndex := 0;
+end;
+
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
@@ -200,9 +214,8 @@ begin
 
   TranslateMainMenu;
 
-  { Component selection combo box}
-  vComponentsDatabase.FillStringListWithNames(cmbComponents.Items);
-  cmbComponents.ItemIndex := 0;
+  { Load user interface items which depend in the components table }
+  LoadUIItemsFromComponentsTable();
 
   { Schematics area }
   vSchematics := TSchematics.Create(Self);

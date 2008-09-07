@@ -112,7 +112,7 @@ begin
 
   FDataset := TSdfDataset.Create(nil);
   FDataset.FileName := vConfigurations.ComponentsDBFile;
-  FDataset.MAXSTRLEN := 2048;
+  FDataset.MaxRecordLength := 2048;
 
   // Not necessary with TSdfDataset
 //  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
@@ -196,9 +196,9 @@ end;
 procedure TComponentsDatabase.GoToRec(AID: Integer);
 begin
   // We are before the desired record, move forward
-  if AID < CurrentRecNo then
+  if CurrentRecNo < AID then
   begin
-    while (not FDataset.EOF) and (AID < CurrentRecNo) do
+    while (not FDataset.EOF) and (CurrentRecNo < AID) do
     begin
       FDataset.Next;
       FDataset.CursorPosChanged;
@@ -206,9 +206,9 @@ begin
     end;
   end
   // We are after the desired record, move back
-  else if AID > FDataset.RecNo then
+  else if CurrentRecNo > AID  then
   begin
-    while (AID < FDataset.RecNo) do
+    while (CurrentRecNo >= 1) and (CurrentRecNo > AID) do
     begin
       FDataset.Prior;
       FDataset.CursorPosChanged;

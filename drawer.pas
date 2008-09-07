@@ -244,6 +244,21 @@ begin
       ACanvas.Pen.Color := clBlack;
 
       ACanvas.TextOut(PtTo.X, PtTo.Y, Cmds[3]);
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_ARC then
+    begin
+      PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+      PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+      PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
+      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+
+      PtFrom := FixCoordinates(PtFrom);
+      PtTo := FixCoordinates(PtTo);
+
+      ACanvas.Brush.Color := clWhite;
+      ACanvas.Pen.Color := clBlack;
+
+      ACanvas.Arc(PtFrom.X, PtFrom.Y, PtTo.X, PtTo.Y, StrToInt(Cmds[5]), StrToInt(Cmds[6]));
     end;
   except
     // Exit silently in floating-point conversion exceptions

@@ -619,7 +619,6 @@ object MainForm: TMainForm
           Height = 21
           Top = 51
           Width = 120
-          AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
           ItemHeight = 13
           OnChange = HandleChooseNewComponentType
           TabOrder = 0

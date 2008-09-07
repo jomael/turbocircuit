@@ -90,6 +90,10 @@ end;
 procedure TvComponentsEditor.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
+  // Avoids errors if we call Post without an edit or insert mode
+  if (FDatasource.DataSet.State = dsEdit) or (FDatasource.DataSet.State = dsInsert) then
+    FDatasource.DataSet.Post;
+  // Detach from dataset
   FDatasource.DataSet := nil;
 end;
 

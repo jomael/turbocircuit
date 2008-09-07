@@ -162,6 +162,7 @@ type
     FRecInfoOfs         :Integer;
     FBookmarkOfs        :Integer;
     FSaveChanges        :Boolean;
+    FMaxRecordLength    :Cardinal;
   protected
     function AllocRecordBuffer: PChar; override;
     procedure FreeRecordBuffer(var Buffer: PChar); override;
@@ -196,7 +197,7 @@ type
     function BufToStore(Buffer: PChar): String; virtual;
     function StoreToBuf(Source: String): String; virtual;
   public
-    MAXSTRLEN: Integer;
+    property MaxRecordLength: Cardinal read FMaxRecordLength write FMaxRecordLength default 250;
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
     function  GetFieldData(Field: TField; Buffer: Pointer): Boolean; override;
@@ -272,21 +273,20 @@ implementation
 //-----------------------------------------------------------------------------
 constructor TFixedFormatDataSet.Create(AOwner : TComponent);
 begin
- MAXSTRLEN := 250;
- FFileMustExist  := TRUE;
- FLoadfromStream := False;
- FRecordSize   := 0;
- FTrimSpace     := TRUE;
- FSchema       := TStringList.Create;
- FData         := TStringList.Create;  // Load the textfile into a stringlist
- inherited Create(AOwner);
+  FFileMustExist  := TRUE;
+  FLoadfromStream := False;
+  FRecordSize   := 0;
+  FTrimSpace     := TRUE;
+  FSchema       := TStringList.Create;
+  FData         := TStringList.Create;  // Load the textfile into a stringlist
+  inherited Create(AOwner);
 end;
 
 destructor TFixedFormatDataSet.Destroy;
 begin
- inherited Destroy;
- FData.Free;
- FSchema.Free;
+  inherited Destroy;
+  FData.Free;
+  FSchema.Free;
 end;
 
 procedure TFixedFormatDataSet.SetSchema(const Value: TStringList);
@@ -337,7 +337,7 @@ begin
     FData.Objects[i] := TObject(Pointer(i+1));   // Fabricate Bookmarks
   end;
   if (Maxlen = 0) then
-    Maxlen := MAXSTRLEN;
+    Maxlen := FMaxRecordLength;
   LstFields := TStringList.Create;
   try
     LoadFieldScheme(LstFields, Maxlen);
@@ -367,13 +367,13 @@ begin
   end;
   if not FLoadfromStream then
     FData.LoadFromFile(FileName);
-  FRecordSize := MAXSTRLEN;
+  FRecordSize := FMaxRecordLength;
   InternalInitFieldDefs;
   if DefaultFields then
     CreateFields;
   BindFields(TRUE);
   if FRecordSize = 0 then
-    FRecordSize := MAXSTRLEN;
+    FRecordSize := FMaxRecordLength;
   BookmarkSize := SizeOf(Integer);
   FRecInfoOfs := FRecordSize + CalcFieldsSize; // Initialize the offset for TRecInfo in the buffer
   FBookmarkOfs := FRecInfoOfs + SizeOf(TRecInfo);

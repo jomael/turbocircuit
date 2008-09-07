@@ -1,4 +1,7 @@
 ID,NAMEEN,NAMEPT,HEIGHT,WIDTH,PINS,DRAWINGCODE
-1,resistor,resistor,1,1,1,LINE 0.0 1.0 1.0 1.0#LINE 1.0 1.0 1.5 0.0#LINE 1.5 0.0 2.5 2.0#LINE 2.5 2.0 3.0 1.0#LINE 3.0 1.0 4.0 1.0
-2,capacitor,capacitor,2,3,1,LINE 0.0 1.0 1.3 1.0#LINE 1.3 0.0 1.3 2.0#LINE 1.7 0.0 1.7 2.0#LINE 1.7 1.0 3.0 1.0
+1,resistor,resistor,2,4,2,LINE 0.0 1.0 0.9 1.0#LINE 0.9 1.0 1.2 0.0#LINE 1.2 0.0 1.9 2.0#LINE 1.9 2.0 2.5 0.0#LINE 2.5 0.0 3.1 2.0#LINE 3.1 2.0 3.2 1.0#LINE 3.2 1.0 4.0 1.0
+2,capacitor,capacitor,2,3,2,LINE 0.0 1.0 1.3 1.0#LINE 1.3 0.0 1.3 2.0#LINE 1.7 0.0 1.7 2.0#LINE 1.7 1.0 3.0 1.0
 3,transistor npn,transistor npn
+4,Baterie,Bateria,2,3,2,LINE 0.0 1.0 1.3 1.0#LINE 1.3 0.0 1.3 2.0#LINE 1.7 0.7 1.7 1.3#LINE 1.7 1.0 3.0 1.0
+5,capacitor eletrolitico,capacitor eletrolítico,2,3,2,LINE 0.0 1.0 1.3 1.0#LINE 1.3 0.3 1.3 1.7#LINE 1.7 0.0 1.7 2.0#LINE 1.3 0.0 1.7 0.0#LINE 1.3 2.0 1.7 2.0#LINE 1.7 1.0 3.0 1.0
+7,inductor,indutor,2,6,2,LINE 0.0 1.0 1.0 1.0#LINE 1.0 1.0 1.0 0.5#ARC 1.0 0 2.1 1.5 0 2880#LINE 2.0 1.0 2.0 0.5#ARC 2.0 0 3.1 1.5 0 2880#LINE 3.0 1.0 3.0 0.5#ARC 3.0 0 4.1 1.5 0 2880#LINE 4.0 1.0 4.0 0.5#
