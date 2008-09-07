@@ -18,57 +18,57 @@ object vComponentsEditor: TvComponentsEditor
   end
   object lblID: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 49
-    Width = 22
+    Width = 27
     Caption = 'lblID'
     ParentColor = False
   end
   object lblNameEn: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 80
-    Width = 52
+    Width = 66
     Caption = 'lblNameEn'
     ParentColor = False
   end
   object lblNamePt: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 112
-    Width = 49
+    Width = 64
     Caption = 'lblNamePt'
     ParentColor = False
   end
   object lblWidth: TLabel
     Left = 232
-    Height = 16
+    Height = 18
     Top = 144
-    Width = 38
+    Width = 52
     Caption = 'lblWidth'
     ParentColor = False
   end
   object lblDrawingCode: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 208
-    Width = 77
+    Width = 97
     Caption = 'lblDrawingCode'
     ParentColor = False
   end
   object lblPins: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 177
-    Width = 32
+    Width = 40
     Caption = 'lblPins'
     ParentColor = False
   end
   object lblHeight: TLabel
     Left = 8
-    Height = 16
+    Height = 18
     Top = 144
-    Width = 42
+    Width = 56
     Caption = 'lblHeight'
     ParentColor = False
   end
@@ -86,10 +86,10 @@ object vComponentsEditor: TvComponentsEditor
     Left = 8
     Height = 23
     Top = 9
-    Width = 316
+    Width = 376
     BevelOuter = bvNone
     ClientHeight = 23
-    ClientWidth = 316
+    ClientWidth = 376
     DataSource = FDatasource
     TabOrder = 9
   end

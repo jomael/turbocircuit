@@ -46,6 +46,7 @@ type
     procedure DrawComponentFromStringList(ACanvas: TCanvas; AStringList: TStrings);
     procedure DrawComponentSelection(ACanvas: TCanvas; AComponent: PTCComponent); overload;
     procedure DrawComponentSelection(ACanvas: TCanvas; ARect: TRect); overload;
+    procedure DrawFromDrawingCodeLine(ACanvas: TCanvas; Cmds: T10Strings);
     { Wire drawing methods }
     procedure DrawWire(ACanvas: TCanvas; AElement: PTCElement);
     procedure DrawWireSelection(ACanvas: TCanvas; AWire: PTCWire; AWirePart: DWord);
@@ -75,7 +76,7 @@ var
 begin
   StringList := TStringList.Create;
   try
-    StringList.Text := AString;
+    StringList.Text := vComponentsDatabase.DBDrawingCodeToMemoString(AString);
     DrawComponentFromStringList(ACanvas, StringList);
   finally
     StringList.Free;
@@ -114,38 +115,12 @@ procedure TItemsDrawer.DrawComponentFromStringList(ACanvas: TCanvas;
 var
   i: Integer;
   Cmds: T10Strings;
-  PtFrom, PtTo: TPoint;
 begin
   for i := 0 to AStringList.Count - 1 do
   begin
     Cmds := SeparateString(AStringList.Strings[i], lpComma);
 
-    if Cmds[0] = STR_DRAWINGCODE_LINE then
-    begin
-      PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-      PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
-      PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
-      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
-
-      PtFrom := FixCoordinates(PtFrom);
-      PtTo := FixCoordinates(PtTo);
-
-      ACanvas.Line(PtFrom, PtTo);
-    end
-    else if Cmds[0] = STR_DRAWINGCODE_TEXT then
-    begin
-      PtTo.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
-
-      PtTo := FixCoordinates(PtTo);
-
-      if Cmds[4] <> '' then ACanvas.Font.Height := StrToInt(Cmds[4]);
-
-      ACanvas.Brush.Color := clWhite;
-      ACanvas.Pen.Color := clBlack;
-
-      ACanvas.TextOut(PtTo.X, PtTo.Y, Cmds[3]);
-    end;
+    DrawFromDrawingCodeLine(ACanvas, Cmds);
   end;
 end;
 
@@ -233,6 +208,38 @@ begin
    ARect.Bottom + INT_SHEET_GRID_HALFSPACING,
    ARect.Right,
    ARect.Bottom + INT_SHEET_GRID_HALFSPACING);
+end;
+
+procedure TItemsDrawer.DrawFromDrawingCodeLine(ACanvas: TCanvas; Cmds: T10Strings);
+var
+  PtFrom, PtTo: TPoint;
+begin
+  if Cmds[0] = STR_DRAWINGCODE_LINE then
+  begin
+    PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+    PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+    PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
+    PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+
+    PtFrom := FixCoordinates(PtFrom);
+    PtTo := FixCoordinates(PtTo);
+
+    ACanvas.Line(PtFrom, PtTo);
+  end
+  else if Cmds[0] = STR_DRAWINGCODE_TEXT then
+  begin
+    PtTo.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+    PtTo.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+
+    PtTo := FixCoordinates(PtTo);
+
+    if Cmds[4] <> '' then ACanvas.Font.Height := StrToInt(Cmds[4]);
+
+    ACanvas.Brush.Color := clWhite;
+    ACanvas.Pen.Color := clBlack;
+
+    ACanvas.TextOut(PtTo.X, PtTo.Y, Cmds[3]);
+  end;
 end;
 
 {@@

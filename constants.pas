@@ -122,7 +122,8 @@ const
 
   lpSeparator = '-';
   lpComma     = ',';
-  
+  lpSpace     = ' ';
+
   lpEnglish   = 'English';
   lpPortugues = 'Português';
 

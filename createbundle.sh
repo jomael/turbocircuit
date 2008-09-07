@@ -1,7 +1,7 @@
 #!/bin/sh
 # Force Bourne shell in case tcsh is default.
 #
-appname=Turbo Circuit
+appname=TurboCircuit
 appfolder=$appname.app
 macosfolder=$appfolder/Contents/MacOS
 plistfile=$appfolder/Contents/Info.plist
@@ -22,9 +22,10 @@ else
 #
 # Instead of copying executable into .app folder after each compile,
 # simply create a symbolic link to executable.
-  ln -s ../../../$appname $macosfolder/$appname
+  ln -s ../../../$appfile $macosfolder/$appfile
 # Copy the resource files to the correct place
   cp macicon.icns $appfolder/Contents/Resources
+  cp components.dat $appfolder/Contents/Resources
 #
 # Create PkgInfo file.
   echo "APPLMAG#" >$appfolder/Contents/PkgInfo
@@ -37,7 +38,7 @@ else
   echo '  <key>CFBundleDevelopmentRegion</key>' >>$plistfile
   echo '  <string>English</string>' >>$plistfile
   echo '  <key>CFBundleExecutable</key>' >>$plistfile
-  echo '  <string>'$appname'</string>' >>$plistfile
+  echo '  <string>'$appfile'</string>' >>$plistfile
   echo '  <key>CFBundleIconFile</key>' >>$plistfile
   echo '  <string>macicon.icns</string>' >>$plistfile
   echo '  <key>CFBundleIdentifier</key>' >>$plistfile

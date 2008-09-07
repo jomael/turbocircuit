@@ -24,6 +24,16 @@ type
     function  GetPins(AID: Integer): Integer;
     function  GetWidth(AID: Integer): Integer;
     procedure GoToRec(AID: Integer);
+    { Data conversion routines }
+    function  DBDrawingCodeToMemoString(AStr: string): string;
+  end;
+
+  { TDBDrawingCodeMemo }
+
+  TDBDrawingCodeMemo = class(TDBMemo)
+  protected
+    procedure DataChange(Sender: TObject); override;
+    procedure UpdateData(Sender: TObject); override;
   end;
 
 var
@@ -39,6 +49,8 @@ begin
 
   FDataset := TSdfDataset.Create(nil);
   FDataset.FileName := vConfigurations.ComponentsDBFile;
+
+  // Not necessary with TSdfDataset
 //  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
 //  FDataset.PrimaryKey := STR_DB_COMPONENTS_ID;
 
@@ -51,6 +63,7 @@ begin
   FDataset.FieldDefs.Add('PINS', ftString);
   FDataset.FieldDefs.Add('DRAWINGCODE', ftString);
 
+  // Necessary for TSdfDataset
   FDataset.Delimiter := ',';
   FDataset.FirstLineAsSchema := True;
 
@@ -136,6 +149,32 @@ begin
       FDataset.CursorPosChanged;
     end;
   end;
+end;
+
+function TComponentsDatabase.DBDrawingCodeToMemoString(AStr: string): string;
+begin
+  Result := StringReplace(AStr, '#', LineEnding, [rfReplaceAll, rfIgnoreCase]);
+end;
+
+{ TDBDrawingCodeMemo }
+
+{@@
+  Loads data from the database to the memo
+}
+procedure TDBDrawingCodeMemo.DataChange(Sender: TObject);
+begin
+  inherited DataChange(Sender);
+end;
+
+{@@
+  Loads data from the memo to the database
+}
+procedure TDBDrawingCodeMemo.UpdateData(Sender: TObject);
+begin
+  if not FDBMemoLoaded then exit;
+  if FDataLink=nil then exit;
+  if not FDataLink.CanModify then exit;
+  FDataLink.Field.AsString:=Text;
 end;
 
 initialization

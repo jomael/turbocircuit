@@ -31,7 +31,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Buttons,
   DbCtrls, ExtCtrls, StdCtrls, db, SdfData,
-  drawer, constants, tcsettings;
+  drawer, constants, tcsettings, dbcomponents;
 
 type
 
@@ -88,13 +88,13 @@ end;
 procedure TvComponentsEditor.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
-//  FDataset.Close;
+  FDatasource.DataSet := nil;
 end;
 
 procedure TvComponentsEditor.FormShow(Sender: TObject);
 begin
-//  FDataset.FileName := vConfigurations.ComponentsDBFile;
-//  FDataset.Active := True;
+  FDatasource.DataSet := vComponentsDatabase.FDataset;
+  vComponentsDatabase.FDataset.First;
 end;
 
 initialization
