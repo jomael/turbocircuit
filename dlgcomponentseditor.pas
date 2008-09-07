@@ -47,7 +47,6 @@ type
     txtNamePt: TDBEdit;
     txtHeight: TDBEdit;
     txtPins: TDBEdit;
-    memoDrawingCode: TDBMemo;
     FNavigator: TDBNavigator;
     imgPreview: TImage;
     lblID: TLabel;
@@ -59,9 +58,12 @@ type
     lblHeight: TLabel;
     procedure btnPreviewClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   private
     { private declarations }
+    memoDrawingCode: TDBDrawingCodeMemo;
   public
     { public declarations }
   end; 
@@ -89,6 +91,23 @@ procedure TvComponentsEditor.FormClose(Sender: TObject;
   var CloseAction: TCloseAction);
 begin
   FDatasource.DataSet := nil;
+end;
+
+procedure TvComponentsEditor.FormCreate(Sender: TObject);
+begin
+  memoDrawingCode := TDBDrawingCodeMemo.Create(nil);
+  memoDrawingCode.Parent := Self;
+  memoDrawingCode.Left := 16;
+  memoDrawingCode.Top := 232;
+  memoDrawingCode.Height := 112;
+  memoDrawingCode.Width := 176;
+  memoDrawingCode.DataField := 'DRAWINGCODE';
+  memoDrawingCode.DataSource := FDatasource;
+end;
+
+procedure TvComponentsEditor.FormDestroy(Sender: TObject);
+begin
+  memoDrawingCode.Free;
 end;
 
 procedure TvComponentsEditor.FormShow(Sender: TObject);

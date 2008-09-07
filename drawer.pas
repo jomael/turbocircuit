@@ -68,6 +68,10 @@ implementation
   Convenience method. Receives a multiline string
   and passes it to DrawComponentFromStringList
 
+  @param AString The string containing the drawing instructions.
+                 It should be in the internal database format, i.e. with #
+                 instead of new lines.
+
   @see    #DrawComponentFromStringList
 }
 procedure TItemsDrawer.DrawComponentFromString(ACanvas: TCanvas; AString: string);
@@ -76,7 +80,7 @@ var
 begin
   StringList := TStringList.Create;
   try
-    StringList.Text := vComponentsDatabase.DBDrawingCodeToMemoString(AString);
+    StringList.Text := TComponentsDatabase.DBDrawingCodeToMemoString(AString);
     DrawComponentFromStringList(ACanvas, StringList);
   finally
     StringList.Free;
@@ -118,7 +122,7 @@ var
 begin
   for i := 0 to AStringList.Count - 1 do
   begin
-    Cmds := SeparateString(AStringList.Strings[i], lpComma);
+    Cmds := SeparateString(AStringList.Strings[i], lpSpace);
 
     DrawFromDrawingCodeLine(ACanvas, Cmds);
   end;
@@ -214,31 +218,36 @@ procedure TItemsDrawer.DrawFromDrawingCodeLine(ACanvas: TCanvas; Cmds: T10String
 var
   PtFrom, PtTo: TPoint;
 begin
-  if Cmds[0] = STR_DRAWINGCODE_LINE then
-  begin
-    PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-    PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
-    PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
-    PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+  try
+    if Cmds[0] = STR_DRAWINGCODE_LINE then
+    begin
+      PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+      PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+      PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
+      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
 
-    PtFrom := FixCoordinates(PtFrom);
-    PtTo := FixCoordinates(PtTo);
+      PtFrom := FixCoordinates(PtFrom);
+      PtTo := FixCoordinates(PtTo);
 
-    ACanvas.Line(PtFrom, PtTo);
-  end
-  else if Cmds[0] = STR_DRAWINGCODE_TEXT then
-  begin
-    PtTo.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-    PtTo.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+      ACanvas.Line(PtFrom, PtTo);
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_TEXT then
+    begin
+      PtTo.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
 
-    PtTo := FixCoordinates(PtTo);
+      PtTo := FixCoordinates(PtTo);
 
-    if Cmds[4] <> '' then ACanvas.Font.Height := StrToInt(Cmds[4]);
+      if Cmds[4] <> '' then ACanvas.Font.Height := StrToInt(Cmds[4]);
 
-    ACanvas.Brush.Color := clWhite;
-    ACanvas.Pen.Color := clBlack;
+      ACanvas.Brush.Color := clWhite;
+      ACanvas.Pen.Color := clBlack;
 
-    ACanvas.TextOut(PtTo.X, PtTo.Y, Cmds[3]);
+      ACanvas.TextOut(PtTo.X, PtTo.Y, Cmds[3]);
+    end;
+  except
+    // Exit silently in floating-point conversion exceptions
+    Exit;
   end;
 end;
 
