@@ -125,7 +125,7 @@ begin
   FDataset.FieldDefs.Add('HEIGHT', ftString);
   FDataset.FieldDefs.Add('WIDTH', ftString);
   FDataset.FieldDefs.Add('PINS', ftString);
-  FDataset.FieldDefs.Add('DRAWINGCODE', ftMemo);
+  FDataset.FieldDefs.Add('DRAWINGCODE', ftMemo, 2048);
 
   // Necessary for TSdfDataset
   FDataset.Delimiter := ',';

@@ -605,7 +605,7 @@ object MainForm: TMainForm
       object Page2: TPage
         Caption = 'Page2'
         ClientWidth = 128
-        ClientHeight = 200
+        ClientHeight = 182
         object lblChooseComponent: TLabel
           Left = 4
           Height = 14
@@ -619,10 +619,11 @@ object MainForm: TMainForm
           Height = 21
           Top = 51
           Width = 120
+          AutoCompleteText = [cbactEndOfLineComplete, cbactSearchAscending]
           ItemHeight = 13
           OnChange = HandleChooseNewComponentType
+          Style = csDropDownList
           TabOrder = 0
-          Text = 'cmbComponents'
         end
       end
     end

@@ -71,7 +71,8 @@ begin
   bmpOutput.Width := INT_SHEET_MAX_WIDTH;
   bmpOutput.Height := INT_SHEET_MAX_HEIGHT;
 
-  NewComponentType := 1;
+  { Properties of the control }
+  TabStop := True;
 end;
 
 {@@
@@ -128,6 +129,8 @@ procedure TSchematics.HandleMouseDown(Sender: TOBject; Button: TMouseButton;
 var
   DocPos: TPoint;
 begin
+  Self.SetFocus;
+
   DocPos := vDocument.GetDocumentPos(X, Y);
   DragStartPos := DocPos;
   

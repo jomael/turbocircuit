@@ -196,6 +196,8 @@ begin
   if Assigned(AElement^.Next) then AElement^.Next^.Previous := AElement^.Previous;
 
   Dispose(AElement);
+
+  if (Elements = AElement) then Elements := nil;
 end;
 
 function TCElementList.FindElement(Pos: TPoint; var AElement: PTCElement): DWord;

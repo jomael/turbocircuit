@@ -204,6 +204,7 @@ begin
   { Component selection combo box }
   vComponentsDatabase.FillStringListWithNames(cmbComponents.Items);
   cmbComponents.ItemIndex := 0;
+  vSchematics.NewComponentType := 1;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -213,9 +214,6 @@ begin
   { Translations }
 
   TranslateMainMenu;
-
-  { Load user interface items which depend in the components table }
-  LoadUIItemsFromComponentsTable();
 
   { Schematics area }
   vSchematics := TSchematics.Create(Self);
@@ -234,6 +232,9 @@ begin
   OnKeyPress := @vSchematics.HandleKeyPress;
   pnlTools.OnKeyPress := @vSchematics.HandleKeyPress;
   pnlToolbar.OnKeyPress := @vSchematics.HandleKeyPress;
+
+  { Load user interface items which depend in the components table }
+  LoadUIItemsFromComponentsTable();
 end;
 
 destructor TMainForm.Destroy;
