@@ -112,7 +112,7 @@ begin
 
   FDataset := TSdfDataset.Create(nil);
   FDataset.FileName := vConfigurations.ComponentsDBFile;
-  FDataset.MaxRecordLength := 2048;
+//  FDataset.DefaultRecordLength := 1;
 
   // Not necessary with TSdfDataset
 //  FDataset.TableName := STR_DB_COMPONENTS_TABLE;
@@ -125,7 +125,7 @@ begin
   FDataset.FieldDefs.Add('HEIGHT', ftString);
   FDataset.FieldDefs.Add('WIDTH', ftString);
   FDataset.FieldDefs.Add('PINS', ftString);
-  FDataset.FieldDefs.Add('DRAWINGCODE', ftString);
+  FDataset.FieldDefs.Add('DRAWINGCODE', ftMemo);
 
   // Necessary for TSdfDataset
   FDataset.Delimiter := ',';

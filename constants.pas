@@ -82,6 +82,7 @@ const
   STR_DRAWINGCODE_LINE      = 'LINE';
   STR_DRAWINGCODE_TEXT      = 'TEXT';
   STR_DRAWINGCODE_ARC       = 'ARC';
+  STR_DRAWINGCODE_TRIANGLE  = 'TRIANGLE';
 
 {*******************************************************************
 *  Database field names

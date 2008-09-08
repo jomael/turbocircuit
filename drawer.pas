@@ -216,20 +216,26 @@ end;
 
 procedure TItemsDrawer.DrawFromDrawingCodeLine(ACanvas: TCanvas; Cmds: T10Strings);
 var
-  PtFrom, PtTo: TPoint;
+  Points: array of TPoint;
+  PtTo: TPoint;
 begin
+  SetLength(Points, 3);
+
+  ACanvas.Brush.Color := clWhite;
+  ACanvas.Pen.Color := clBlack;
+
   try
     if Cmds[0] = STR_DRAWINGCODE_LINE then
     begin
-      PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-      PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
-      PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
-      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+      Points[0].X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+      Points[0].Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+      Points[1].X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
+      Points[1].Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
 
-      PtFrom := FixCoordinates(PtFrom);
-      PtTo := FixCoordinates(PtTo);
+      Points[0] := FixCoordinates(Points[0]);
+      Points[1] := FixCoordinates(Points[1]);
 
-      ACanvas.Line(PtFrom, PtTo);
+      ACanvas.Line(Points[0], Points[1]);
     end
     else if Cmds[0] = STR_DRAWINGCODE_TEXT then
     begin
@@ -247,23 +253,28 @@ begin
     end
     else if Cmds[0] = STR_DRAWINGCODE_ARC then
     begin
-      PtFrom.X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-      PtFrom.Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
-      PtTo.X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
-      PtTo.Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+      Points[0].X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
+      Points[0].Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+      Points[1].X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
+      Points[1].Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
 
-      PtFrom := FixCoordinates(PtFrom);
-      PtTo := FixCoordinates(PtTo);
+      Points[0] := FixCoordinates(Points[0]);
+      Points[1] := FixCoordinates(Points[1]);
 
-      ACanvas.Brush.Color := clWhite;
-      ACanvas.Pen.Color := clBlack;
-
-      ACanvas.Arc(PtFrom.X, PtFrom.Y, PtTo.X, PtTo.Y, StrToInt(Cmds[5]), StrToInt(Cmds[6]));
+      ACanvas.Arc(
+        Points[0].X, Points[0].Y,
+        Points[1].X, Points[1].Y,
+        StrToInt(Cmds[5]), StrToInt(Cmds[6]));
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_TRIANGLE then
+    begin
+//      ACanvas.Polygon(Points);
     end;
   except
     // Exit silently in floating-point conversion exceptions
-    Exit;
   end;
+
+  SetLength(Points, 0);
 end;
 
 {@@
