@@ -191,13 +191,16 @@ end;
 
 procedure TCElementList.Remove(AElement: PTCElement);
 begin
-  if Assigned(AElement^.Previous) then AElement^.Previous^.Next := AElement^.Next;
+  if Assigned(AElement^.Previous) then
+   AElement^.Previous^.Next := AElement^.Next;
 
-  if Assigned(AElement^.Next) then AElement^.Next^.Previous := AElement^.Previous;
+  if Assigned(AElement^.Next) then
+   AElement^.Next^.Previous := AElement^.Previous;
+
+  if (Elements = AElement) then
+   Elements := AElement^.Next;
 
   Dispose(AElement);
-
-  if (Elements = AElement) then Elements := nil;
 end;
 
 function TCElementList.FindElement(Pos: TPoint; var AElement: PTCElement): DWord;

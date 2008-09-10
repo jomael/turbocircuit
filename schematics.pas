@@ -40,7 +40,7 @@ type
     procedure   DrawComponents(ACanvas: TCanvas);
     procedure   DrawComponentPreview(ACanvas: TCanvas);
     procedure   DrawGrid(ACanvas: TCanvas);
-    procedure   DrawToCanvas(ACanvas: TCanvas; ADrawGrid: Boolean);
+    procedure   DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
     procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
     procedure   Paint; override;
@@ -399,7 +399,7 @@ end;
 {@@
   Draws all schmatics elements on the document
 }
-procedure TSchematics.DrawToCanvas(ACanvas: TCanvas; ADrawGrid: Boolean);
+procedure TSchematics.DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
 begin
   ACanvas.Font.Height := 12;
 
@@ -407,7 +407,7 @@ begin
   DrawBackground(ACanvas);
 
   { Sheet Background dots showing the grid }
-  if ADrawGrid then DrawGrid(ACanvas);
+  if AEditMode then DrawGrid(ACanvas);
   
   { Components }
   DrawComponents(ACanvas);
@@ -422,18 +422,20 @@ begin
   vDocument.TextList.ForEachDoPaint(ACanvas, vItemsDrawer.DrawText);
 
   { Preview when placing/moving a component }
-  DrawComponentPreview(ACanvas);
+  if AEditMode then DrawComponentPreview(ACanvas);
   
   { Preview when placing/moving a wire }
-  DrawWirePreview(ACanvas);
+  if AEditMode then DrawWirePreview(ACanvas);
 
   { Component selection }
-  if vDocument.SelectedComponent <> nil then
-   vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.SelectedComponent);
+  if AEditMode then
+   if vDocument.SelectedComponent <> nil then
+    vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.SelectedComponent);
 
   { Wire selection }
-  if vDocument.SelectedWire <> nil then
-   vItemsDrawer.DrawWireSelection(ACanvas, vDocument.SelectedWire, vDocument.SelectionInfo);
+  if AEditMode then
+   if vDocument.SelectedWire <> nil then
+    vItemsDrawer.DrawWireSelection(ACanvas, vDocument.SelectedWire, vDocument.SelectionInfo);
 end;
 
 {@@
