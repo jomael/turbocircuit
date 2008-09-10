@@ -25,7 +25,7 @@ type
   public
     { Persistent information of the user interface }
     CurrentTool: TCTool;
-    NewComponentOrientation: TCComponentOrientation;
+    NewItemOrientation: TCComponentOrientation;
     { Selection fields }
     SelectedComponent: PTCComponent;
     SelectedWire: PTCWire;
@@ -46,7 +46,7 @@ type
     { General document methods }
     function  GetDocumentPos(X, Y: Integer): TPoint;
     { Components methods }
-    procedure RotateNewComponentOrientation;
+    procedure RotateOrientation(var AOrientation: TCComponentOrientation);
     function  GetComponentTopLeft(AComponent: PTCComponent): TPoint;
     { Selection methods }
     procedure ClearSelection;
@@ -142,7 +142,7 @@ begin
 
   { Initialization of various fields }
   CurrentTool := toolArrow;
-  NewComponentOrientation := coEast;
+  NewItemOrientation := coEast;
 
   SheetWidth := INT_SHEET_DEFAULT_WIDTH;
   SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
@@ -288,13 +288,13 @@ begin
   Result.Y := Round(Y / INT_SHEET_GRID_SPACING);
 end;
 
-procedure TDocument.RotateNewComponentOrientation;
+procedure TDocument.RotateOrientation(var AOrientation: TCComponentOrientation);
 begin
-  case NewComponentOrientation of
-    coEast:  NewComponentOrientation := coNorth;
-    coNorth: NewComponentOrientation := coWest;
-    coWest:  NewComponentOrientation := coSouth;
-    coSouth: NewComponentOrientation := coEast;
+  case AOrientation of
+    coEast:  AOrientation := coNorth;
+    coNorth: AOrientation := coWest;
+    coWest:  AOrientation := coSouth;
+    coSouth: AOrientation := coEast;
   end;
 end;
 

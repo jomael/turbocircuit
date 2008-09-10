@@ -40,7 +40,7 @@ type
     procedure   DrawComponents(ACanvas: TCanvas);
     procedure   DrawComponentPreview(ACanvas: TCanvas);
     procedure   DrawGrid(ACanvas: TCanvas);
-    procedure   DrawToCanvas(ACanvas: TCanvas);
+    procedure   DrawToCanvas(ACanvas: TCanvas; ADrawGrid: Boolean);
     procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
     procedure   Paint; override;
@@ -105,20 +105,23 @@ end;
 }
 procedure TSchematics.HandleKeyPress(Sender: TObject; var Key: char);
 begin
-  case vDocument.CurrentTool of
-
-  toolArrow:
-  begin
-    case Key of
-     ^R:
+  case Key of
+   ^R:
+   begin
+     { If a component is selected, rotate it }
+     if vDocument.SelectedComponent <> nil then
      begin
-       vDocument.RotateNewComponentOrientation;
+       vDocument.RotateOrientation(vDocument.SelectedComponent.Orientation);
+       UpdateAndRepaint;
+     end
+     { Otherwise rotate the new item to be added or moved }
+     else
+     begin
+       vDocument.RotateOrientation(vDocument.NewItemOrientation);
        UpdateAndRepaint;
      end;
-    end;
-  end;
-
-  end;
+   end;
+  end; // case
 end;
 
 {@@
@@ -147,7 +150,7 @@ begin
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       DragDropStarted := True;
-      vDocument.NewComponentOrientation := vDocument.SelectedComponent^.Orientation;
+      vDocument.NewItemOrientation := vDocument.SelectedComponent^.Orientation;
       UpdateAndRepaint;
       Exit;
     end;
@@ -260,7 +263,7 @@ begin
     NewComponent^.Pos.X := DocPos.X;
     NewComponent^.Pos.Y := DocPos.Y;
     NewComponent^.TypeID := NewComponentType;
-    NewComponent^.Orientation := vDocument.NewComponentOrientation;
+    NewComponent^.Orientation := vDocument.NewItemOrientation;
 
     vDocument.Components.Insert(NewComponent);
       
@@ -309,8 +312,13 @@ end;
 }
 procedure TSchematics.DrawBackground(ACanvas: TCanvas);
 begin
+  { Area outside the document }
   ACanvas.Brush.Color := clBlack;
   ACanvas.FillRect(0, 0, Width, Height);
+
+  { Document area }
+  ACanvas.Brush.Color := clWhite;
+  ACanvas.FillRect(0, 0, vDocument.SheetWidth, vDocument.SheetHeight);
 end;
 
 {@@
@@ -321,6 +329,7 @@ var
   NextComponent: PTCComponent;
   TmpString: string;
 begin
+  ACanvas.Brush.Color := clWhite;
   ACanvas.Pen.Color := clBlack;
 
   if vDocument.Components = nil then Exit;
@@ -354,7 +363,7 @@ begin
   begin
     vItemsDrawer.DeltaX := MouseMoveDocPos.X;
     vItemsDrawer.DeltaY := MouseMoveDocPos.Y;
-    vItemsDrawer.Orientation := vDocument.NewComponentOrientation;
+    vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
     TmpString := vComponentsDatabase.GetDrawingCode(NewComponentType);
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
@@ -365,7 +374,7 @@ begin
   begin
     vItemsDrawer.DeltaX := vDocument.SelectedComponent^.Pos.X + MouseMoveDocPos.X - DragStartPos.X;
     vItemsDrawer.DeltaY := vDocument.SelectedComponent^.Pos.Y + MouseMoveDocPos.Y - DragStartPos.Y;
-    vItemsDrawer.Orientation := vDocument.NewComponentOrientation;
+    vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
     TmpString := vComponentsDatabase.GetDrawingCode(vDocument.SelectedComponent^.TypeID);
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
@@ -380,9 +389,6 @@ var
   x, y: Integer;
   OldColor: TColor;
 begin
-  ACanvas.Brush.Color := clWhite;
-  ACanvas.FillRect(0, 0, vDocument.SheetWidth, vDocument.SheetHeight);
-
   ACanvas.Brush.Color := clBlack;
   for x := 0 to (vDocument.SheetWidth div INT_SHEET_GRID_SPACING) do
    for y := 0 to (vDocument.SheetHeight div INT_SHEET_GRID_SPACING) do
@@ -393,13 +399,15 @@ end;
 {@@
   Draws all schmatics elements on the document
 }
-procedure TSchematics.DrawToCanvas(ACanvas: TCanvas);
+procedure TSchematics.DrawToCanvas(ACanvas: TCanvas; ADrawGrid: Boolean);
 begin
+  ACanvas.Font.Height := 12;
+
   { Background }
   DrawBackground(ACanvas);
 
-  { Sheet Background with dots showing the grid }
-  DrawGrid(ACanvas);
+  { Sheet Background dots showing the grid }
+  if ADrawGrid then DrawGrid(ACanvas);
   
   { Components }
   DrawComponents(ACanvas);
@@ -495,7 +503,7 @@ end;
 procedure TSchematics.UpdateAndRepaint;
 begin
   { Ask for update of the whole window }
-  DrawToCanvas(bmpOutput.Canvas);
+  DrawToCanvas(bmpOutput.Canvas, True);
 
   Invalidate;
 end;

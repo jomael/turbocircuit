@@ -52,6 +52,10 @@ type
     lpRecreateComponentsDatabase, lpComponentsEditor: string;
     { Help menu strings }
     lpHelpAbout: string;
+
+    { I/O strings }
+    lpSaveDiagramFilter, lpSavePngFilter: string;
+
     { Methods }
     procedure TranslateToEnglish;
     procedure TranslateToPortuguese;
@@ -95,6 +99,10 @@ begin
 
   { Help menu strings }
   lpHelpAbout := 'About';
+
+  { I/O strings }
+  lpSaveDiagramFilter := 'Turbo Circuit Diagrams|*.tc|All files|*.*';
+  lpSavePngFilter := 'Portable Network Graphic|*.png|All files|*.*';
 end;
 
 {@@

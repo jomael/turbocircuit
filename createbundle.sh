@@ -24,8 +24,8 @@ else
 # simply create a symbolic link to executable.
   ln -s ../../../$appfile $macosfolder/$appfile
 # Copy the resource files to the correct place
-  cp macicon.icns $appfolder/Contents/Resources
-  cp components.dat $appfolder/Contents/Resources
+  #cp macicon.icns $appfolder/Contents/Resources
+  ln -s ../../../components.dat $appfolder/Contents/Resources/components.dat
 #
 # Create PkgInfo file.
   echo "APPLMAG#" >$appfolder/Contents/PkgInfo

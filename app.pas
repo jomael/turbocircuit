@@ -30,7 +30,7 @@ interface
 
 uses
   Classes, SysUtils, LResources, Forms, Controls, Menus, ExtCtrls, ComCtrls,
-  ActnList, Buttons, StdCtrls, Dialogs,
+  ActnList, Buttons, StdCtrls, Dialogs, Graphics,
   schematics, dbcomponents, constants, translationstc, document,
   dlgcomponentseditor, dlgabout, dlgdocumentopts;
 
@@ -39,9 +39,16 @@ type
   { TMainForm }
 
   TMainForm = class(TForm)
+    actExportPng: TAction;
+    actFileOpen: TAction;
+    actFileSave: TAction;
+    actFileSaveAs: TAction;
+    FMainFormAction: TActionList;
     btnText: TSpeedButton;
     cmbComponents: TComboBox;
+    listActionImages: TImageList;
     lblChooseComponent: TLabel;
+    mnuExportPng: TMenuItem;
     mnuDocument: TMenuItem;
     mnuDocumentOptions: TMenuItem;
     mnuHelpAbout: TMenuItem;
@@ -70,6 +77,12 @@ type
     btnComponent: TSpeedButton;
     btnWire: TSpeedButton;
     dialogSave: TSaveDialog;
+    barFileToolbar: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    procedure actExportPngExecute(Sender: TObject);
+    procedure barFileToolbarClick(Sender: TObject);
     procedure HandleChangeTool(ASender: TObject);
     procedure HandleChooseNewComponentType(ASender: TObject);
     procedure HandleClose(ASender: TObject);
@@ -82,6 +95,7 @@ type
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure mnuFileClick(Sender: TObject);
   private
     procedure TranslateMainMenu;
     procedure LoadUIItemsFromComponentsTable;
@@ -107,6 +121,31 @@ begin
   vSchematics.UpdateAndRepaint;
 end;
 
+procedure TMainForm.actExportPngExecute(Sender: TObject);
+var
+  PngImage: TPortableNetworkGraphic;
+begin
+  dialogSave.Filter := vTranslations.lpSavePngFilter;
+  if dialogSave.Execute then
+  begin
+    PngImage := TPortableNetworkGraphic.Create;
+    try
+      PngImage.Height := vDocument.SheetHeight;
+      PngImage.Width := vDocument.SheetWidth;
+
+      vSchematics.DrawToCanvas(PngImage.Canvas, False);
+      PngImage.SaveToFile(dialogSave.FileName);
+    finally
+      PngImage.Free;
+    end;
+  end;
+end;
+
+procedure TMainForm.barFileToolbarClick(Sender: TObject);
+begin
+
+end;
+
 procedure TMainForm.HandleChooseNewComponentType(ASender: TObject);
 begin
   vSchematics.NewComponentType := cmbComponents.ItemIndex + 1;
@@ -124,11 +163,17 @@ end;
 
 procedure TMainForm.HandleFileOpen(ASender: TObject);
 begin
-  if dialogOpen.Execute then vDocument.LoadFromFile(dialogOpen.FileName);
+  dialogOpen.Filter := vTranslations.lpSaveDiagramFilter;
+  if dialogOpen.Execute then
+  begin
+    vDocument.LoadFromFile(dialogOpen.FileName);
+    vSchematics.UpdateAndRepaint;
+  end;
 end;
 
 procedure TMainForm.HandleFileSave(ASender: TObject);
 begin
+  dialogSave.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogSave.Execute then vDocument.SaveToFile(dialogSave.FileName);
 end;
 
@@ -159,6 +204,11 @@ procedure TMainForm.HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShif
 begin
   pnlStatusBar.Panels.Items[ID_STATUS_MOUSEPOS].Text :=
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
+end;
+
+procedure TMainForm.mnuFileClick(Sender: TObject);
+begin
+
 end;
 
 procedure TMainForm.HandleRecreateComponentsDatabaseClick(Sender: TObject);

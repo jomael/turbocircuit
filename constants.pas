@@ -83,6 +83,11 @@ const
   STR_DRAWINGCODE_TEXT      = 'TEXT';
   STR_DRAWINGCODE_ARC       = 'ARC';
   STR_DRAWINGCODE_TRIANGLE  = 'TRIANGLE';
+  STR_DRAWINGCODE_IC        = 'IC';
+  STR_DRAWINGCODE_IC_TEXT_LEFT_1 = 'IC_TEXT_LEFT_1';
+  STR_DRAWINGCODE_IC_TEXT_LEFT_2 = 'IC_TEXT_LEFT_2';
+  STR_DRAWINGCODE_IC_TEXT_RIGHT_1 = 'IC_TEXT_RIGHT_1';
+  STR_DRAWINGCODE_IC_TEXT_RIGHT_2 = 'IC_TEXT_RIGHT_2';
 
 {*******************************************************************
 *  Database field names

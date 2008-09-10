@@ -229,16 +229,36 @@ end;
 function TCComponentList.DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord;
 var
   AComponent: PTCComponent absolute AElement;
-  ACompHeight, ACompWidth: Integer;
+  ACompHeight, ACompWidth, ABaseCompHeight, ABaseCompWidth: Integer;
 begin
   Result := ELEMENT_DOES_NOT_MATCH;
 
   ACompHeight := vComponentsDatabase.GetHeight(AComponent^.TypeID);
   ACompWidth := vComponentsDatabase.GetWidth(AComponent^.TypeID);
 
+  case AComponent.Orientation of
+
+  coEast:
   if (AComponent^.Pos.X < Pos.X) and (Pos.X < AComponent^.Pos.X + ACompWidth)
    and (AComponent^.Pos.Y < Pos.Y) and (Pos.Y < AComponent^.Pos.Y + ACompHeight) then
     Result := ELEMENT_MATCHES;
+
+  coNorth:
+  if (AComponent^.Pos.X < Pos.X) and (Pos.X < AComponent^.Pos.X + ACompHeight)
+   and (AComponent^.Pos.Y - ACompWidth < Pos.Y) and (Pos.Y < AComponent^.Pos.Y) then
+    Result := ELEMENT_MATCHES;
+
+  coWest:
+  if (AComponent^.Pos.X < Pos.X - ACompWidth) and (Pos.X < AComponent^.Pos.X)
+   and (AComponent^.Pos.Y - ACompHeight < Pos.Y) and (Pos.Y < AComponent^.Pos.Y) then
+    Result := ELEMENT_MATCHES;
+
+  coSouth:
+  if (AComponent^.Pos.X - ACompHeight< Pos.X) and (Pos.X < AComponent^.Pos.X)
+   and (AComponent^.Pos.Y < Pos.Y) and (Pos.Y < AComponent^.Pos.Y + ACompWidth) then
+    Result := ELEMENT_MATCHES;
+
+  end;
 end;
 
 { TCWireList }

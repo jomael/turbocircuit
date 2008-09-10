@@ -38,9 +38,11 @@ type
 
   TItemsDrawer = class(TObject)
   private
+    Points: array[0..2] of TPoint;
   public
     DeltaX, DeltaY: Integer;
     Orientation: TCComponentOrientation;
+    IC_Width, IC_Pins, IC_Half_Pins: Cardinal;
     { Component drawing methods  }
     procedure DrawComponentFromString(ACanvas: TCanvas; AString: string);
     procedure DrawComponentFromStringList(ACanvas: TCanvas; AStringList: TStrings);
@@ -55,6 +57,7 @@ type
     procedure DrawTextSelection(ACanvas: TCanvas; AText: PTCText);
     { General methods }
     function  FixCoordinates(APoint: TPoint): TPoint;
+    function  GridCoordsToSheet(AX, AY: Single): TPoint;
   end;
 
 var
@@ -90,29 +93,6 @@ end;
 {@@
   Draws a component given a string list with the
   instructions to draw it, one in each line.
-
-  The format of such instructions is:
-
-  [Command], [Param1], [Param2], etc ...
-
-  Possible commands are:
-
-  LINE     - Draws a line.
-
-             (Param1, Param2) forms a (x, y) point
-             indicating the inital point of the line.
-
-             (Param3, Param4) forms a (x, y) point
-             indicating the final point of the line.
-
-  TEXT     - Draws a text.
-
-             (Param1, Param2) forms a (left, top) point
-             indicating where the text will be placed
-
-             Param3 is the UTF-8 text to be written
-
-             Param4 is the height of the font
 }
 procedure TItemsDrawer.DrawComponentFromStringList(ACanvas: TCanvas;
  AStringList: TStrings);
@@ -137,6 +117,8 @@ procedure TItemsDrawer.DrawComponentSelection(ACanvas: TCanvas;
 var
   TargetRect: TRect;
 begin
+  Orientation := AComponent^.Orientation;
+
   TargetRect := Bounds(
     vDocument.GetComponentTopLeft(AComponent).X,
     vDocument.GetComponentTopLeft(AComponent).Y,
@@ -147,6 +129,8 @@ begin
   TargetRect.Top := TargetRect.Top * INT_SHEET_GRID_SPACING;
   TargetRect.Right := TargetRect.Right * INT_SHEET_GRID_SPACING;
   TargetRect.Bottom := TargetRect.Bottom * INT_SHEET_GRID_SPACING;
+
+  FixCoordinates(TargetRect.BottomRight);
 
   DrawComponentSelection(ACanvas, TargetRect);
 end;
@@ -214,10 +198,63 @@ begin
    ARect.Bottom + INT_SHEET_GRID_HALFSPACING);
 end;
 
+{@@
+  Draws one line of instruction for drawing a component
+
+  The format of such instructions is:
+
+  [Command], [Param1], [Param2], etc ...
+
+  Possible commands are:
+
+  LINE     - Draws a line.
+
+             (Param1, Param2) forms a (x, y) point
+             indicating the inital point of the line.
+
+             (Param3, Param4) forms a (x, y) point
+             indicating the final point of the line.
+
+  TEXT     - Draws a text.
+
+             (Param1, Param2) forms a (left, top) point
+             indicating where the text will be placed
+
+             Param3 is the UTF-8 text to be written
+
+             Param4 is the height of the font
+
+  ARC      - Draws an arc
+
+             (Param1, Param2) forms the (left, top) position of the arc
+
+             (Param3, Param4) forms the (right, bottom) position of the arc
+
+             Param5 is the UTF-8 text to be written
+
+             Param6 is the height of the font
+
+  TRIANGLE - Draws a triangle
+
+
+  IC       - Draws an integrated circuit
+
+
+  IC_TEXT_LEFT_1 - Draws the texts for the pins in an IC
+
+
+  IC_TEXT_LEFT_2 -
+
+
+  IC_TEXT_RIGHT_1 -
+
+
+  IC_TEXT_RIGHT_2 -
+
+}
 procedure TItemsDrawer.DrawFromDrawingCodeLine(ACanvas: TCanvas; Cmds: T10Strings);
 var
-  Points: array of TPoint;
-  PtTo: TPoint;
+  i: Integer;
 
   procedure GetPoint_1;
   begin
@@ -244,11 +281,6 @@ var
   end;
 
 begin
-  SetLength(Points, 3);
-
-  ACanvas.Brush.Color := clWhite;
-  ACanvas.Pen.Color := clBlack;
-
   try
     if Cmds[0] = STR_DRAWINGCODE_LINE then
     begin
@@ -285,12 +317,70 @@ begin
       GetPoint_3;
 
       ACanvas.Polygon(Points);
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_IC then
+    begin
+      { Get Width and number of pins }
+      IC_Width := StrToInt(Cmds[1]);
+      IC_Pins := StrToInt(Cmds[2]);
+      IC_Half_Pins := IC_Pins div 2;
+      Points[0] := GridCoordsToSheet(IC_Width + 1, IC_Half_Pins + 1);
+      Points[1] := GridCoordsToSheet(1, 0);
+
+      { IC Body }
+      ACanvas.Rectangle(Points[1].X, Points[1].Y, Points[0].X + 1, Points[0].Y + 1);
+
+      { Pins on the left }
+      for i := 0 to IC_Half_Pins - 1 do
+        ACanvas.Line(GridCoordsToSheet(0, 1 + i), GridCoordsToSheet(1, 1 + i));
+
+      { Pins on the right }
+      for i := 0 to IC_Half_Pins - 1 do
+        ACanvas.Line(GridCoordsToSheet(IC_Width + 1, 1 + i), GridCoordsToSheet(IC_Width + 2, 1 + i));
+
+      { IC Name on the top}
+      Points[2] := GridCoordsToSheet(1, 0);
+      ACanvas.TextOut(Points[2].X, Points[2].Y - ACanvas.Font.Height, Cmds[3]);
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_IC_TEXT_LEFT_1 then
+    begin
+      for i := 0 to 7 do
+       if Cmds[i + 1] <> '' then
+       begin
+         Points[0] := GridCoordsToSheet(1, i);
+         ACanvas.TextOut(Points[0].X + 1, Points[0].Y, Cmds[i + 1]);
+       end;
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_IC_TEXT_LEFT_2 then
+    begin
+      for i := 0 to 7 do
+       if Cmds[i + 1] <> '' then
+       begin
+         Points[0] := GridCoordsToSheet(1, i + 8);
+         ACanvas.TextOut(Points[0].X, Points[0].Y, Cmds[i + 1]);
+       end;
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_IC_TEXT_RIGHT_1 then
+    begin
+      for i := 0 to 7 do
+       if Cmds[i + 1] <> '' then
+       begin
+         Points[0] := GridCoordsToSheet(1 + IC_Width - 2, i);
+         ACanvas.TextOut(Points[0].X, Points[0].Y, Cmds[i + 1]);
+       end;
+    end
+    else if Cmds[0] = STR_DRAWINGCODE_IC_TEXT_RIGHT_2 then
+    begin
+      for i := 0 to 7 do
+       if Cmds[i + 1] <> '' then
+       begin
+         Points[0] := GridCoordsToSheet(1 + IC_Width - 2, i + 8);
+         ACanvas.TextOut(Points[0].X, Points[0].Y, Cmds[i + 1]);
+       end;
     end;
   except
     // Exit silently in floating-point conversion exceptions
   end;
-
-  SetLength(Points, 0);
 end;
 
 {@@
@@ -403,6 +493,18 @@ begin
       Result.Y := BigDeltaY + (APoint.X - BigDeltaX);
     end;
   end;
+end;
+
+{@@
+  Converts simple grid coordinates to sheet coordinates already
+  taking the rotation into account.
+}
+function TItemsDrawer.GridCoordsToSheet(AX, AY: Single): TPoint;
+begin
+  Result := FixCoordinates(Point(
+    Round((DeltaX + AX) * INT_SHEET_GRID_SPACING),
+    Round((DeltaY + AY) * INT_SHEET_GRID_SPACING)
+  ));
 end;
 
 initialization
