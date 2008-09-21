@@ -44,14 +44,13 @@ type
   public
     { Main menu strings }
     lpFile, lpDocument, lpComponents, lpHelp: string;
-    { Document menu strings }
     lpDocumentOptions: string;
-    { File menu strings }
     lpFileNew, lpFileOpen, lpFileSave, lpFileSaveAs, lpFileExit: string;
-    { Components menu strings }
     lpRecreateComponentsDatabase, lpComponentsEditor: string;
-    { Help menu strings }
     lpHelpAbout: string;
+
+    { Main Form }
+    lpMainFormChooseComponent: string;
 
     { I/O strings }
     lpSaveDiagramFilter, lpSavePngFilter: string;
@@ -82,23 +81,18 @@ begin
   lpDocument := 'Document';
   lpComponents := 'Components';
   lpHelp := 'Help';
-  
-  { Document menu strings }
   lpDocumentOptions := 'Document Options';
-
-  { File menu strings }
   lpFileNew := 'New';
   lpFileOpen := 'Open';
   lpFileSave := 'Save';
   lpFileSaveAs := 'Save As';
   lpFileExit := 'Exit';
-
-  { Components menu strings }
   lpRecreateComponentsDatabase := 'Recreate Components Database';
   lpComponentsEditor := 'Components Editor';
-
-  { Help menu strings }
   lpHelpAbout := 'About';
+
+  { Main Form }
+  lpMainFormChooseComponent := 'Component type:';
 
   { I/O strings }
   lpSaveDiagramFilter := 'Turbo Circuit Diagrams|*.tc|All files|*.*';

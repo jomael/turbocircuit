@@ -43,11 +43,13 @@ type
     actFileOpen: TAction;
     actFileSave: TAction;
     actFileSaveAs: TAction;
+    actFileNew: TAction;
+    actFileExit: TAction;
     FMainFormAction: TActionList;
     btnText: TSpeedButton;
     cmbComponents: TComboBox;
     listActionImages: TImageList;
-    lblChooseComponent: TLabel;
+    lblComponentType: TLabel;
     mnuExportPng: TMenuItem;
     mnuDocument: TMenuItem;
     mnuDocumentOptions: TMenuItem;
@@ -78,26 +80,26 @@ type
     btnWire: TSpeedButton;
     dialogSave: TSaveDialog;
     barFileToolbar: TToolBar;
-    ToolButton1: TToolButton;
-    ToolButton2: TToolButton;
-    ToolButton3: TToolButton;
+    toolSeparator1: TToolButton;
+    toolOpen: TToolButton;
+    toolSave: TToolButton;
     procedure actExportPngExecute(Sender: TObject);
-    procedure barFileToolbarClick(Sender: TObject);
+    procedure actFileExitExecute(Sender: TObject);
+    procedure actFileNewExecute(Sender: TObject);
+    procedure actFileOpenExecute(Sender: TObject);
+    procedure actFileSaveAsExecute(Sender: TObject);
+    procedure actFileSaveExecute(Sender: TObject);
     procedure HandleChangeTool(ASender: TObject);
     procedure HandleChooseNewComponentType(ASender: TObject);
-    procedure HandleClose(ASender: TObject);
-    procedure HandleFileNew(ASender: TObject);
-    procedure HandleFileOpen(ASender: TObject);
-    procedure HandleFileSave(ASender: TObject);
-    procedure HandleFileSaveAs(ASender: TObject);
     procedure HandleRecreateComponentsDatabaseClick(Sender: TObject);
     procedure HandleShowAboutBox(ASender: TObject);
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
-    procedure mnuFileClick(Sender: TObject);
   private
     procedure TranslateMainMenu;
+    procedure TranslateActions;
+    procedure TranslateUserInterface;
     procedure LoadUIItemsFromComponentsTable;
   public
     constructor Create(AOwner: TComponent); override;
@@ -141,27 +143,17 @@ begin
   end;
 end;
 
-procedure TMainForm.barFileToolbarClick(Sender: TObject);
-begin
-
-end;
-
-procedure TMainForm.HandleChooseNewComponentType(ASender: TObject);
-begin
-  vSchematics.NewComponentType := cmbComponents.ItemIndex + 1;
-end;
-
-procedure TMainForm.HandleClose(ASender: TObject);
+procedure TMainForm.actFileExitExecute(Sender: TObject);
 begin
   Close;
 end;
 
-procedure TMainForm.HandleFileNew(ASender: TObject);
+procedure TMainForm.actFileNewExecute(Sender: TObject);
 begin
 
 end;
 
-procedure TMainForm.HandleFileOpen(ASender: TObject);
+procedure TMainForm.actFileOpenExecute(Sender: TObject);
 begin
   dialogOpen.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogOpen.Execute then
@@ -171,15 +163,20 @@ begin
   end;
 end;
 
-procedure TMainForm.HandleFileSave(ASender: TObject);
+procedure TMainForm.actFileSaveAsExecute(Sender: TObject);
+begin
+
+end;
+
+procedure TMainForm.actFileSaveExecute(Sender: TObject);
 begin
   dialogSave.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogSave.Execute then vDocument.SaveToFile(dialogSave.FileName);
 end;
 
-procedure TMainForm.HandleFileSaveAs(ASender: TObject);
+procedure TMainForm.HandleChooseNewComponentType(ASender: TObject);
 begin
-
+  vSchematics.NewComponentType := cmbComponents.ItemIndex + 1;
 end;
 
 procedure TMainForm.HandleShowAboutBox(ASender: TObject);
@@ -206,11 +203,6 @@ begin
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
 end;
 
-procedure TMainForm.mnuFileClick(Sender: TObject);
-begin
-
-end;
-
 procedure TMainForm.HandleRecreateComponentsDatabaseClick(Sender: TObject);
 begin
 
@@ -227,13 +219,6 @@ begin
   mnuComponents.Caption := vTranslations.lpComponents;
   mnuHelp.Caption := vTranslations.lpHelp;
 
-  { File menu strings }
-  mnuFileNew.Caption := vTranslations.lpFileNew;
-  mnuFileOpen.Caption := vTranslations.lpFileOpen;
-  mnuFileSave.Caption := vTranslations.lpFileSave;
-  mnuFileSaveAs.Caption := vTranslations.lpFileSaveAs;
-  mnuFileExit.Caption := vTranslations.lpFileExit;
-
   { Document menu strings }
   mnuDocumentOptions.Caption := vTranslations.lpDocumentOptions;
 
@@ -244,6 +229,32 @@ begin
   { Help Menu strings }
   mnuHelpHelp.Caption := vTranslations.lpHelp;
   mnuHelpAbout.Caption := vTranslations.lpHelpAbout;
+end;
+
+procedure TMainForm.TranslateActions;
+begin
+  { File menu action strings }
+  actFileNew.Caption := vTranslations.lpFileNew;
+  actFileNew.Hint := vTranslations.lpFileNew;
+  actFileOpen.Caption := vTranslations.lpFileOpen;
+  actFileOpen.Hint := vTranslations.lpFileOpen;
+  actFileSave.Caption := vTranslations.lpFileSave;
+  actFileSave.Hint := vTranslations.lpFileSave;
+  actFileSaveAs.Caption := vTranslations.lpFileSaveAs;
+  actFileSaveAs.Hint := vTranslations.lpFileSaveAs;
+  actFileExit.Caption := vTranslations.lpFileExit;
+  actFileExit.Hint := vTranslations.lpFileExit;
+end;
+
+{@@
+  Translates the user interface of TMainForm
+}
+procedure TMainForm.TranslateUserInterface;
+begin
+  TranslateMainMenu;
+  TranslateActions;
+
+  lblComponentType.Caption := vTranslations.lpMainFormChooseComponent;
 end;
 
 {@@
@@ -263,7 +274,7 @@ begin
 
   { Translations }
 
-  TranslateMainMenu;
+  TranslateUserInterface;
 
   { Schematics area }
   vSchematics := TSchematics.Create(Self);
