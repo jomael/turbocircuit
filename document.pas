@@ -14,7 +14,7 @@ type
 
   TDocument = class(TObject)
   private
-    procedure FillFieldsAfterIO();
+    procedure UpdateDocumentInfo(AIsSaved: Boolean);
     function  ReadBOF(AStream: TStream): Boolean;
     procedure WriteBOF(AStream: TStream);
     procedure WriteSCHEMATICS_GUI_DATA(AStream: TStream);
@@ -65,11 +65,20 @@ implementation
 
 { TDocument }
 
-procedure TDocument.FillFieldsAfterIO();
+procedure TDocument.UpdateDocumentInfo(AIsSaved: Boolean);
 begin
-  { Non-Persistent information of the user interface }
-  Modified := False;
-  Saved := True;
+  if AIsSaved then
+  begin
+    { Non-Persistent information of the user interface }
+    Modified := False;
+    Saved := True;
+  end
+  else
+  begin
+    { Non-Persistent information of the user interface }
+    Modified := False;
+    Saved := False;
+  end;
 end;
 
 function TDocument.ReadBOF(AStream: TStream): Boolean;
@@ -158,6 +167,9 @@ begin
 
   SheetWidth := INT_SHEET_DEFAULT_WIDTH;
   SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
+
+  { Update fields after IO }
+  UpdateDocumentInfo(False);
 end;
 
 destructor TDocument.Destroy;
@@ -180,6 +192,9 @@ begin
   finally
     AFileStream.Free;
   end;
+
+  { Update fields }
+  Title := ExtractFileName(AFileName);
 end;
 
 procedure TDocument.LoadFromStream(AStream: TStream);
@@ -194,7 +209,7 @@ begin
   if not ReadBOF(AStream) then raise Exception.Create('Invalid Turbo Circuit BOF');
 
   { Update fields after IO }
-  UpdateFieldsAfterIO();
+  UpdateDocumentInfo(True);
 
   { clears old data }
   Components.Clear;
@@ -269,10 +284,16 @@ begin
   finally
     AFileStream.Free;
   end;
+
+  { Update fields }
+  Title := ExtractFileName(AFileName);
 end;
 
 procedure TDocument.SaveToStream(AStream: TStream);
 begin
+  { Update fields after IO }
+  UpdateDocumentInfo(True);
+
   { First the identifier of any TurboCircuit schematics file }
   WriteBOF(AStream);
 
