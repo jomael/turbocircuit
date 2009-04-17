@@ -14,6 +14,7 @@ type
 
   TDocument = class(TObject)
   private
+    procedure FillFieldsAfterIO();
     function  ReadBOF(AStream: TStream): Boolean;
     procedure WriteBOF(AStream: TStream);
     procedure WriteSCHEMATICS_GUI_DATA(AStream: TStream);
@@ -23,9 +24,13 @@ type
     procedure WriteTEXT(AStream: TStream; AElement: PTCElement);
     procedure WriteEOF(AStream: TStream);
   public
+    { Non-Persistent information of the user interface }
+    Modified: Boolean;
+    Saved: Boolean;
     { Persistent information of the user interface }
     CurrentTool: TCTool;
     NewItemOrientation: TCComponentOrientation;
+    Title: string;
     { Selection fields }
     SelectedComponent: PTCComponent;
     SelectedWire: PTCWire;
@@ -59,6 +64,13 @@ var
 implementation
 
 { TDocument }
+
+procedure TDocument.FillFieldsAfterIO();
+begin
+  { Non-Persistent information of the user interface }
+  Modified := False;
+  Saved := True;
+end;
 
 function TDocument.ReadBOF(AStream: TStream): Boolean;
 var
@@ -180,6 +192,9 @@ var
 begin
   { First try to verify if the file is valid }
   if not ReadBOF(AStream) then raise Exception.Create('Invalid Turbo Circuit BOF');
+
+  { Update fields after IO }
+  UpdateFieldsAfterIO();
 
   { clears old data }
   Components.Clear;

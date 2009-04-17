@@ -101,6 +101,7 @@ type
     procedure TranslateActions;
     procedure TranslateUserInterface;
     procedure LoadUIItemsFromComponentsTable;
+    procedure FillDocumentUIElements;
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -268,13 +269,26 @@ begin
   vSchematics.NewComponentType := 1;
 end;
 
+procedure TMainForm.FillDocumentUIElements;
+begin
+  { Window title }
+  if vDocument.Saved then
+    Caption := szAppTitle + ' - ' + vDocument.Title
+  else
+    Caption := szAppTitle + ' - ' + vTranslations.lpUntitled;
+end;
+
 constructor TMainForm.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
   { Translations }
 
-  TranslateUserInterface;
+  TranslateUserInterface();
+
+  { Fill other user interface elements which depend on the document state }
+
+  FillDocumentUIElements();
 
   { Schematics area }
   vSchematics := TSchematics.Create(Self);

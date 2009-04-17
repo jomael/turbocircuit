@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <PathDelim Value="/"/>
-    <Version Value="6"/>
+    <Version Value="7"/>
     <General>
       <Flags>
         <AlwaysBuild Value="False"/>
+        <LRSInOutputDirectory Value="False"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <IconPath Value="./"/>
       <TargetFileExt Value=""/>
     </General>
     <VersionInfo>
@@ -47,7 +46,6 @@
         <HasResources Value="True"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="app.lrs"/>
         <UnitName Value="app"/>
       </Unit1>
       <Unit2>
@@ -79,7 +77,6 @@
         <Filename Value="dlgabout.pas"/>
         <ComponentName Value="vAbout"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="dlgabout.lrs"/>
         <UnitName Value="dlgabout"/>
       </Unit7>
       <Unit8>
@@ -87,7 +84,6 @@
         <ComponentName Value="vComponentsEditor"/>
         <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <ResourceFilename Value="dlgcomponentseditor.lrs"/>
         <UnitName Value="dlgcomponentseditor"/>
       </Unit8>
       <Unit9>
@@ -114,7 +110,6 @@
         <Filename Value="dlgdocumentopts.pas"/>
         <ComponentName Value="DocumentOptions"/>
         <IsPartOfProject Value="True"/>
-        <ResourceFilename Value="dlgdocumentopts.lrs"/>
         <UnitName Value="dlgdocumentopts"/>
       </Unit13>
       <Unit14>

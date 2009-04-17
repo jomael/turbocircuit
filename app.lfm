@@ -7,8 +7,7 @@ object MainForm: TMainForm
   ClientHeight = 441
   ClientWidth = 556
   Menu = mnuMainMenu
-  ParentFont = False
-  LCLVersion = '0.9.25'
+  LCLVersion = '0.9.27'
   object pnlToolbar: TPanel
     Height = 50
     Width = 556
@@ -649,7 +648,6 @@ object MainForm: TMainForm
           Height = 20
           Top = 51
           Width = 120
-          MaxLength = -1
           OnChange = HandleChooseNewComponentType
           Style = csDropDownList
           TabOrder = 0

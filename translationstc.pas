@@ -55,6 +55,9 @@ type
     { I/O strings }
     lpSaveDiagramFilter, lpSavePngFilter: string;
 
+    { Document state related }
+    lpUntitled: string;
+
     { Methods }
     procedure TranslateToEnglish;
     procedure TranslateToPortuguese;
@@ -97,6 +100,9 @@ begin
   { I/O strings }
   lpSaveDiagramFilter := 'Turbo Circuit Diagrams|*.tc|All files|*.*';
   lpSavePngFilter := 'Portable Network Graphic|*.png|All files|*.*';
+
+  { Document state related }
+  lpUntitled := 'Untitled';
 end;
 
 {@@
@@ -105,6 +111,8 @@ end;
 procedure TTranslations.TranslateToPortuguese;
 begin
 
+  { Document state related }
+  lpUntitled := 'Sem Título';
 end;
 
 {*******************************************************************
