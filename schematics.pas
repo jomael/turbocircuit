@@ -23,7 +23,7 @@ type
   public
     { Fields accessible to external classes }
     bmpOutput: TBitmap;
-    NewComponentType: Integer;
+    NewComponentType: TCDataString;
     OnUpdateMousePos: TMouseMoveEvent;
     { Base methods }
     constructor Create(AOwner: TComponent); override;

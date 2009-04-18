@@ -23,13 +23,15 @@ type
 
   { Data structures for components }
 
+  TCDataString = array[0..50] of Char;
+
   TCComponentOrientation = (coEast = 0, coNorth = 1, coWest = 2, coSouth = 3);
 
   PTCComponent = ^TCComponent;
 
   TCComponent = object(TCElement)
-    Name: string;
-    TypeID: Integer;
+    Name: TCDataString;
+    TypeID: TCDataString;
     Orientation: TCComponentOrientation;
   end;
   

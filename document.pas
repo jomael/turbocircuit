@@ -27,6 +27,7 @@ type
     { Non-Persistent information of the user interface }
     Modified: Boolean;
     Saved: Boolean;
+    FileName: string;
     { Persistent information of the user interface }
     CurrentTool: TCTool;
     NewItemOrientation: TCComponentOrientation;
@@ -195,6 +196,8 @@ begin
 
   { Update fields }
   Title := ExtractFileName(AFileName);
+  FileName := AFileName;
+  UpdateDocumentInfo(True);
 end;
 
 procedure TDocument.LoadFromStream(AStream: TStream);
@@ -207,9 +210,6 @@ var
 begin
   { First try to verify if the file is valid }
   if not ReadBOF(AStream) then raise Exception.Create('Invalid Turbo Circuit BOF');
-
-  { Update fields after IO }
-  UpdateDocumentInfo(True);
 
   { clears old data }
   Components.Clear;
@@ -287,13 +287,12 @@ begin
 
   { Update fields }
   Title := ExtractFileName(AFileName);
+  FileName := AFileName;
+  UpdateDocumentInfo(True);
 end;
 
 procedure TDocument.SaveToStream(AStream: TStream);
 begin
-  { Update fields after IO }
-  UpdateDocumentInfo(True);
-
   { First the identifier of any TurboCircuit schematics file }
   WriteBOF(AStream);
 
@@ -338,8 +337,9 @@ function TDocument.GetComponentTopLeft(AComponent: PTCComponent): TPoint;
 var
   ComponentWidth, ComponentHeight: Integer;
 begin
-  ComponentWidth := vComponentsDatabase.GetWidth(AComponent^.TypeID);
-  ComponentHeight := vComponentsDatabase.GetHeight(AComponent^.TypeID);
+  vComponentsDatabase.GoToRecByID(AComponent^.TypeID);
+  ComponentWidth := vComponentsDatabase.GetWidth();
+  ComponentHeight := vComponentsDatabase.GetHeight();
 
   case AComponent^.Orientation of
 

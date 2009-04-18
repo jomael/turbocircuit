@@ -236,8 +236,9 @@ var
 begin
   Result := ELEMENT_DOES_NOT_MATCH;
 
-  ACompHeight := vComponentsDatabase.GetHeight(AComponent^.TypeID);
-  ACompWidth := vComponentsDatabase.GetWidth(AComponent^.TypeID);
+  vComponentsDatabase.GoToRecByID(AComponent^.TypeID);
+  ACompHeight := vComponentsDatabase.GetHeight();
+  ACompWidth := vComponentsDatabase.GetWidth();
 
   case AComponent.Orientation of
 

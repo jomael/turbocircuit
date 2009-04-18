@@ -21,11 +21,15 @@ type
     destructor  Destroy; override;
     { Database access methods }
     procedure FillStringListWithNames(AStringList: TStrings);
-    function  GetDrawingCode(AID: Integer): string;
-    function  GetHeight(AID: Integer): Integer;
-    function  GetPins(AID: Integer): Integer;
-    function  GetWidth(AID: Integer): Integer;
-    procedure GoToRec(AID: Integer);
+    function  GetDrawingCode(AID: TCDataString): string;
+    function  GetHeight(): Integer;
+    function  GetPins(): Integer;
+    function  GetWidth(): Integer;
+    function  GetID(): TCDataString;
+    function  IDToIndex(AID: TCDataString): Integer;
+    function  IndexToID(AIndex: Integer): TCDataString;
+    procedure GoToRecByID(AID: TCDataString);
+    procedure GoToRec(AIndex: Integer);
     { Data conversion routines }
     class function  DBDrawingCodeToMemoString(AStr: string): string;
     class function  MemoStringToDBDrawingCode(AStr: string): string;
@@ -165,40 +169,72 @@ begin
   CurrentRecNo := 1;
 end;
 
-function TComponentsDatabase.GetDrawingCode(AID: Integer): string;
+function TComponentsDatabase.GetDrawingCode(AID: TCDataString): string;
 begin
-  GoToRec(AID);
+  GoToRec(IDToIndex(AID));
   Result := FDataset.FieldByName(STR_DB_COMPONENTS_DRAWINGCODE).Value;
 end;
 
-function TComponentsDatabase.GetHeight(AID: Integer): Integer;
+function TComponentsDatabase.GetHeight(): Integer;
 begin
-  GoToRec(AID);
   Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_HEIGHT).Value);
 end;
 
-function TComponentsDatabase.GetPins(AID: Integer): Integer;
+function TComponentsDatabase.GetPins(): Integer;
 begin
-  GoToRec(AID);
   Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_PINS).Value);
 end;
 
-function TComponentsDatabase.GetWidth(AID: Integer): Integer;
+function TComponentsDatabase.GetWidth(): Integer;
 begin
-  GoToRec(AID);
   Result := StrToInt(FDataset.FieldByName(STR_DB_COMPONENTS_WIDTH).Value);
+end;
+
+function TComponentsDatabase.GetID(): TCDataString;
+begin
+  Result := string(FDataset.FieldByName(STR_DB_COMPONENTS_ID).Value);
+end;
+
+{
+  Returns the index in the table for a given ID string
+}
+function TComponentsDatabase.IDToIndex(AID: TCDataString): Integer;
+begin
+  FDataset.First;
+  CurrentRecNo := 1;
+
+  while (not (FDataset.FieldByName(STR_DB_COMPONENTS_ID).Value = AID)) and (not FDataset.EOF) do
+  begin
+    FDataset.Next;
+    Inc(CurrentRecNo);
+  end;
+
+  if FDataset.EOF then raise Exception.Create('TComponentsDatabase.IDToIndex: Wrong ID string');
+
+  Result := CurrentRecNo;
+end;
+
+function TComponentsDatabase.IndexToID(AIndex: Integer): TCDataString;
+begin
+  GoToRec(AIndex);
+  Result := GetID();
+end;
+
+procedure TComponentsDatabase.GoToRecByID(AID: TCDataString);
+begin
+  GoToRec(IDToIndex(AID));
 end;
 
 {
   Moves to the desired record using TDataset.Next and TDataset.Prior
   Avoids using TDataset.RecNo which doesn't work in all datasets
 }
-procedure TComponentsDatabase.GoToRec(AID: Integer);
+procedure TComponentsDatabase.GoToRec(AIndex: Integer);
 begin
   // We are before the desired record, move forward
-  if CurrentRecNo < AID then
+  if CurrentRecNo < AIndex then
   begin
-    while (not FDataset.EOF) and (CurrentRecNo < AID) do
+    while (not FDataset.EOF) and (CurrentRecNo < AIndex) do
     begin
       FDataset.Next;
       FDataset.CursorPosChanged;
@@ -206,9 +242,9 @@ begin
     end;
   end
   // We are after the desired record, move back
-  else if CurrentRecNo > AID  then
+  else if CurrentRecNo > AIndex  then
   begin
-    while (CurrentRecNo >= 1) and (CurrentRecNo > AID) do
+    while (CurrentRecNo >= 1) and (CurrentRecNo > AIndex) do
     begin
       FDataset.Prior;
       FDataset.CursorPosChanged;

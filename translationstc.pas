@@ -58,6 +58,10 @@ type
     { Document state related }
     lpUntitled: string;
 
+    { Components editor dialog }
+    lpCEInstructions, lpCEID, lpCENameEN, lpCENamePT, lpCEWidth, lpCEHeight,
+      lpCEPins, lpCEDrawingCode, lpCEClose, lpCEPreview, lpCECaption: string;
+
     { Methods }
     procedure TranslateToEnglish;
     procedure TranslateToPortuguese;
@@ -103,6 +107,20 @@ begin
 
   { Document state related }
   lpUntitled := 'Untitled';
+
+  { Components editor dialog }
+  lpCEInstructions := 'Atention: Changes are saved automatically and '
+   + 'cannot be undone except by reloading the database from the backup.';
+  lpCEID := 'ID:';
+  lpCENameEN := 'English:';
+  lpCENamePT := 'Português:';
+  lpCEWidth := 'Width:';
+  lpCEHeight := 'Height:';
+  lpCEPins := 'Pins';
+  lpCEDrawingCode := 'Drawing Code:';
+  lpCEClose := 'Close';
+  lpCEPreview := 'Preview';
+  lpCECaption := 'Components Editor';
 end;
 
 {@@

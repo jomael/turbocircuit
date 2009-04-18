@@ -31,7 +31,7 @@ interface
 uses
   Classes, SysUtils, LResources, Forms, Controls, Graphics, Dialogs, Buttons,
   DbCtrls, ExtCtrls, StdCtrls, db, SdfData,
-  drawer, constants, tcsettings, dbcomponents;
+  drawer, constants, tcsettings, dbcomponents, translationstc;
 
 type
 
@@ -41,6 +41,7 @@ type
     btnClose: TButton;
     btnPreview: TButton;
     FDatasource: TDatasource;
+    lblInstructions: TLabel;
     txtID: TDBEdit;
     txtNameEn: TDBEdit;
     txtWidth: TDBEdit;
@@ -64,6 +65,7 @@ type
   private
     { private declarations }
     memoDrawingCode: TDBDrawingCodeMemo;
+    procedure TranslateUserInterface();
   public
     { public declarations }
   end; 
@@ -99,14 +101,19 @@ end;
 
 procedure TvComponentsEditor.FormCreate(Sender: TObject);
 begin
+  // Create the special memo for the drawing code
+  // cannot be done in the form designer because it is a custom class
   memoDrawingCode := TDBDrawingCodeMemo.Create(nil);
   memoDrawingCode.Parent := Self;
   memoDrawingCode.Left := 16;
   memoDrawingCode.Top := 232;
-  memoDrawingCode.Height := 112;
+  memoDrawingCode.Height := 162;
   memoDrawingCode.Width := 176;
   memoDrawingCode.DataField := 'DRAWINGCODE';
   memoDrawingCode.DataSource := FDatasource;
+
+  // Translate the UI
+  TranslateUserInterface;
 end;
 
 procedure TvComponentsEditor.FormDestroy(Sender: TObject);
@@ -118,6 +125,21 @@ procedure TvComponentsEditor.FormShow(Sender: TObject);
 begin
   FDatasource.DataSet := vComponentsDatabase.FDataset;
   vComponentsDatabase.FDataset.First;
+end;
+
+procedure TvComponentsEditor.TranslateUserInterface();
+begin
+  lblInstructions.Caption := vTranslations.lpCEInstructions;
+  lblID.Caption := vTranslations.lpCEID;
+  lblNameEN.Caption := vTranslations.lpCENameEN;
+  lblNamePT.Caption := vTranslations.lpCENamePT;
+  lblWidth.Caption := vTranslations.lpCEWidth;
+  lblHeight.Caption := vTranslations.lpCEHeight;
+  lblPins.Caption := vTranslations.lpCEPins;
+  lblDrawingCode.Caption := vTranslations.lpCEDrawingCode;
+  btnPreview.Caption := vTranslations.lpCEPreview;
+  btnClose.Caption := vTranslations.lpCEClose;
+  Caption := vTranslations.lpCECaption;
 end;
 
 initialization

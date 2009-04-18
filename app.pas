@@ -166,18 +166,19 @@ end;
 
 procedure TMainForm.actFileSaveAsExecute(Sender: TObject);
 begin
-
-end;
-
-procedure TMainForm.actFileSaveExecute(Sender: TObject);
-begin
   dialogSave.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogSave.Execute then vDocument.SaveToFile(dialogSave.FileName);
 end;
 
+procedure TMainForm.actFileSaveExecute(Sender: TObject);
+begin
+  if vDocument.Saved then vDocument.SaveToFile(vDocument.FileName)
+  else actFileSaveAsExecute(Sender);
+end;
+
 procedure TMainForm.HandleChooseNewComponentType(ASender: TObject);
 begin
-  vSchematics.NewComponentType := cmbComponents.ItemIndex + 1;
+  vSchematics.NewComponentType := vComponentsDatabase.IndexToID(cmbComponents.ItemIndex + 1);
 end;
 
 procedure TMainForm.HandleShowAboutBox(ASender: TObject);
@@ -266,7 +267,7 @@ begin
   { Component selection combo box }
   vComponentsDatabase.FillStringListWithNames(cmbComponents.Items);
   cmbComponents.ItemIndex := 0;
-  vSchematics.NewComponentType := 1;
+  vSchematics.NewComponentType := vComponentsDatabase.IndexToID(1);
 end;
 
 procedure TMainForm.FillDocumentUIElements;

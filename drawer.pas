@@ -119,11 +119,12 @@ var
 begin
   Orientation := AComponent^.Orientation;
 
+  vComponentsDatabase.GoToRecByID(AComponent^.TypeID);
   TargetRect := Bounds(
     vDocument.GetComponentTopLeft(AComponent).X,
     vDocument.GetComponentTopLeft(AComponent).Y,
-    vComponentsDatabase.GetWidth(AComponent^.TypeID),
-    vComponentsDatabase.GetHeight(AComponent^.TypeID));
+    vComponentsDatabase.GetWidth(),
+    vComponentsDatabase.GetHeight());
 
   TargetRect.Left := TargetRect.Left * INT_SHEET_GRID_SPACING;
   TargetRect.Top := TargetRect.Top * INT_SHEET_GRID_SPACING;

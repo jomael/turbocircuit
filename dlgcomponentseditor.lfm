@@ -1,83 +1,93 @@
 object vComponentsEditor: TvComponentsEditor
   Left = 291
-  Height = 425
+  Height = 475
   Top = 150
   Width = 400
   ActiveControl = btnClose
   Caption = 'vComponentsEditor'
-  ClientHeight = 425
+  ClientHeight = 475
   ClientWidth = 400
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '0.9.25'
+  LCLVersion = '0.9.27'
   object imgPreview: TImage
     Left = 240
     Height = 100
-    Top = 232
+    Top = 279
     Width = 100
   end
   object lblID: TLabel
     Left = 8
-    Height = 14
-    Top = 49
-    Width = 22
+    Height = 18
+    Top = 96
+    Width = 27
     Caption = 'lblID'
     ParentColor = False
   end
   object lblNameEn: TLabel
     Left = 8
-    Height = 14
-    Top = 80
-    Width = 50
+    Height = 18
+    Top = 127
+    Width = 66
     Caption = 'lblNameEn'
     ParentColor = False
   end
   object lblNamePt: TLabel
     Left = 8
-    Height = 14
-    Top = 112
-    Width = 48
+    Height = 18
+    Top = 159
+    Width = 64
     Caption = 'lblNamePt'
     ParentColor = False
   end
   object lblWidth: TLabel
     Left = 232
-    Height = 14
-    Top = 144
-    Width = 39
+    Height = 18
+    Top = 191
+    Width = 52
     Caption = 'lblWidth'
     ParentColor = False
   end
   object lblDrawingCode: TLabel
     Left = 8
-    Height = 14
-    Top = 208
-    Width = 75
+    Height = 18
+    Top = 255
+    Width = 97
     Caption = 'lblDrawingCode'
     ParentColor = False
   end
   object lblPins: TLabel
     Left = 8
-    Height = 14
-    Top = 177
-    Width = 30
+    Height = 18
+    Top = 224
+    Width = 40
     Caption = 'lblPins'
     ParentColor = False
   end
   object lblHeight: TLabel
     Left = 8
-    Height = 14
-    Top = 144
-    Width = 42
+    Height = 18
+    Top = 191
+    Width = 56
     Caption = 'lblHeight'
     ParentColor = False
+  end
+  object lblInstructions: TLabel
+    Left = 8
+    Height = 40
+    Top = 8
+    Width = 379
+    AutoSize = False
+    Caption = 'lblInstructions'
+    ParentColor = False
+    WordWrap = True
   end
   object btnClose: TButton
     Left = 128
     Height = 29
-    Top = 384
+    Top = 431
     Width = 144
     BorderSpacing.InnerBorder = 4
     Caption = 'btnClose'
@@ -87,7 +97,7 @@ object vComponentsEditor: TvComponentsEditor
   object FNavigator: TDBNavigator
     Left = 8
     Height = 23
-    Top = 9
+    Top = 56
     Width = 376
     BevelOuter = bvNone
     ClientHeight = 23
@@ -98,67 +108,61 @@ object vComponentsEditor: TvComponentsEditor
   object txtID: TDBEdit
     Left = 112
     Height = 23
-    Top = 48
-    Width = 80
+    Top = 95
+    Width = 248
     DataField = 'ID'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 0
   end
   object txtNameEn: TDBEdit
     Left = 112
     Height = 23
-    Top = 80
-    Width = 150
+    Top = 127
+    Width = 248
     DataField = 'NAMEEN'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 1
   end
   object txtWidth: TDBEdit
     Left = 304
     Height = 23
-    Top = 144
+    Top = 191
     Width = 80
     DataField = 'WIDTH'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 4
   end
   object txtNamePt: TDBEdit
     Left = 112
     Height = 23
-    Top = 112
-    Width = 150
+    Top = 159
+    Width = 248
     DataField = 'NAMEPT'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 2
   end
   object txtHeight: TDBEdit
     Left = 112
     Height = 23
-    Top = 144
+    Top = 191
     Width = 80
     DataField = 'HEIGHT'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 3
   end
   object txtPins: TDBEdit
     Left = 112
     Height = 23
-    Top = 176
+    Top = 223
     Width = 80
     DataField = 'PINS'
     DataSource = FDatasource
-    ParentColor = False
     TabOrder = 5
   end
   object btnPreview: TButton
     Left = 248
     Height = 25
-    Top = 344
+    Top = 391
     Width = 75
     BorderSpacing.InnerBorder = 4
     Caption = 'btnPreview'
@@ -167,6 +171,6 @@ object vComponentsEditor: TvComponentsEditor
   end
   object FDatasource: TDatasource
     left = 32
-    top = 352
+    top = 399
   end
 end
