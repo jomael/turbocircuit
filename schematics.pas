@@ -44,7 +44,7 @@ type
     procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
     procedure   Paint; override;
-    procedure   UpdateAndRepaint;
+    procedure   UpdateAndRepaint(Sender: TObject);
   end;
 
 var
@@ -59,14 +59,17 @@ constructor TSchematics.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);
 
+  { Set form events }
+
   OnKeyDown := HandleKeyDown;
   OnKeyPress := HandleKeyPress;
   OnUTF8KeyPress := HandleUTF8KeyPress;
-
+  OnResize := UpdateAndRepaint; // Necessary, otherwise when resizing not everything is painted
   OnMouseDown := HandleMouseDown;
   OnMouseMove := HandleMouseMove;
   OnMouseUp := HandleMouseUp;
 
+  { Create the output bitmap }
   bmpOutput := TBitmap.Create;
   bmpOutput.Width := INT_SHEET_MAX_WIDTH;
   bmpOutput.Height := INT_SHEET_MAX_HEIGHT;
@@ -95,7 +98,7 @@ begin
    begin
      if Assigned(vDocument.SelectedComponent) then vDocument.Components.Remove(vDocument.SelectedComponent);
      if Assigned(vDocument.SelectedWire) then vDocument.Wires.Remove(vDocument.SelectedWire);
-     if vDocument.IsSomethingSelected then UpdateAndRepaint;
+     if vDocument.IsSomethingSelected then UpdateAndRepaint(nil);
    end;
   end;
 end;
@@ -112,13 +115,13 @@ begin
      if vDocument.SelectedComponent <> nil then
      begin
        vDocument.RotateOrientation(vDocument.SelectedComponent.Orientation);
-       UpdateAndRepaint;
+       UpdateAndRepaint(nil);
      end
      { Otherwise rotate the new item to be added or moved }
      else
      begin
        vDocument.RotateOrientation(vDocument.NewItemOrientation);
-       UpdateAndRepaint;
+       UpdateAndRepaint(nil);
      end;
    end;
   end; // case
@@ -151,7 +154,7 @@ begin
     begin
       DragDropStarted := True;
       vDocument.NewItemOrientation := vDocument.SelectedComponent^.Orientation;
-      UpdateAndRepaint;
+      UpdateAndRepaint(nil);
       Exit;
     end;
       
@@ -161,7 +164,7 @@ begin
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       DragDropStarted := True;
-      UpdateAndRepaint;
+      UpdateAndRepaint(nil);
       Exit;
     end;
 
@@ -171,7 +174,7 @@ begin
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       DragDropStarted := True;
-      UpdateAndRepaint;
+      UpdateAndRepaint(nil);
       Exit;
     end;
 
@@ -210,11 +213,11 @@ begin
 
   case vDocument.CurrentTool of
     { Help to move items }
-    toolArrow: if DragDropStarted then UpdateAndRepaint;
+    toolArrow: if DragDropStarted then UpdateAndRepaint(nil);
     { Help to place components }
-    toolComponent: UpdateAndRepaint;
+    toolComponent: UpdateAndRepaint(nil);
     { Help to place wires }
-    toolWire: if DragDropStarted then UpdateAndRepaint;
+    toolWire: if DragDropStarted then UpdateAndRepaint(nil);
   end;
 end;
 
@@ -253,7 +256,7 @@ begin
       end;
     end;
 
-    UpdateAndRepaint;
+    UpdateAndRepaint(nil);
   end;
 
   toolComponent:
@@ -267,7 +270,7 @@ begin
 
     vDocument.Components.Insert(NewComponent);
       
-    UpdateAndRepaint;
+    UpdateAndRepaint(nil);
   end;
 
   toolWire:
@@ -276,7 +279,7 @@ begin
 
     vDocument.Wires.Insert(NewWire);
 
-    UpdateAndRepaint;
+    UpdateAndRepaint(nil);
   end;
 
   toolText:
@@ -300,7 +303,7 @@ begin
     if vDocument.SelectedText <> nil then
     begin
       vDocument.SelectedText.Text += UTF8Key;
-      UpdateAndRepaint;
+      UpdateAndRepaint(nil);
     end;
   end;
 
@@ -311,14 +314,49 @@ end;
   Fills the background of the schematics screen
 }
 procedure TSchematics.DrawBackground(ACanvas: TCanvas);
+var
+  J: Integer;
 begin
   { Area outside the document }
-  ACanvas.Brush.Color := clBlack;
+  ACanvas.Brush.Color := clWhite;
   ACanvas.FillRect(0, 0, Width, Height);
 
-  { Document area }
-  ACanvas.Brush.Color := clWhite;
-  ACanvas.FillRect(0, 0, vDocument.SheetWidth, vDocument.SheetHeight);
+  { Document area delimiter, which has the following size:
+   0, 0, vDocument.SheetWidth, vDocument.SheetHeight }
+  ACanvas.Pen.Color := RGBToColor(50, 50, 50);
+  J := 1;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(127, 127, 127);
+  J := 2;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(151, 151, 151);
+  J := 3;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(181, 181, 181);
+  J := 4;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(206, 206, 206);
+  J := 5;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(226, 226, 226);
+  J := 6;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+
+  ACanvas.Pen.Color := RGBToColor(240, 240, 240);
+  J := 7;
+  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
+  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
 end;
 
 {@@
@@ -502,7 +540,7 @@ end;
   Updates the schematics screen with the current data
   and repaints it
 }
-procedure TSchematics.UpdateAndRepaint;
+procedure TSchematics.UpdateAndRepaint(Sender: TObject);
 begin
   { Ask for update of the whole window }
   DrawToCanvas(bmpOutput.Canvas, True);

@@ -121,7 +121,7 @@ begin
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
   else if ASender = btnText then vDocument.CurrentTool := toolText;
 
-  vSchematics.UpdateAndRepaint;
+  vSchematics.UpdateAndRepaint(nil);
 end;
 
 procedure TMainForm.actExportPngExecute(Sender: TObject);
@@ -160,7 +160,7 @@ begin
   if dialogOpen.Execute then
   begin
     vDocument.LoadFromFile(dialogOpen.FileName);
-    vSchematics.UpdateAndRepaint;
+    vSchematics.UpdateAndRepaint(nil);
   end;
 end;
 
@@ -302,7 +302,7 @@ begin
   
   vSchematics.OnUpdateMousePos := @HandleUpdateSchematicsMousePos;
   
-  vSchematics.UpdateAndRepaint;
+  vSchematics.UpdateAndRepaint(nil);
 
   { Necessary to make sure the keyboard events are correctly handled }
   OnKeyPress := @vSchematics.HandleKeyPress;

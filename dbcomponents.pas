@@ -209,7 +209,7 @@ begin
     Inc(CurrentRecNo);
   end;
 
-  if FDataset.EOF then raise Exception.Create('TComponentsDatabase.IDToIndex: Wrong ID string');
+  if FDataset.EOF then raise Exception.Create('TComponentsDatabase.IDToIndex: Wrong ID string: ' + AID);
 
   Result := CurrentRecNo;
 end;
