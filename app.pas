@@ -80,6 +80,7 @@ type
     btnWire: TSpeedButton;
     dialogSave: TSaveDialog;
     barFileToolbar: TToolBar;
+    ToolButton1: TToolButton;
     toolSeparator1: TToolButton;
     toolOpen: TToolButton;
     toolSave: TToolButton;
@@ -97,11 +98,12 @@ type
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
   private
+    function  ShowDialogDiscartChanges: Boolean;
     procedure TranslateMainMenu;
     procedure TranslateActions;
     procedure TranslateUserInterface;
     procedure LoadUIItemsFromComponentsTable;
-    procedure FillDocumentUIElements;
+    procedure FillDocumentUIElements(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -151,11 +153,16 @@ end;
 
 procedure TMainForm.actFileNewExecute(Sender: TObject);
 begin
+  if vDocument.Modified then if not ShowDialogDiscartChanges() then Exit;
 
+  vDocument.Clear;
+  vSchematics.UpdateAndRepaint(nil);
 end;
 
 procedure TMainForm.actFileOpenExecute(Sender: TObject);
 begin
+  if vDocument.Modified then if not ShowDialogDiscartChanges() then Exit;
+
   dialogOpen.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogOpen.Execute then
   begin
@@ -205,6 +212,16 @@ begin
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
 end;
 
+function TMainForm.ShowDialogDiscartChanges: Boolean;
+begin
+  Result := MessageDlg(
+   'There are unsaved changes, would you like '
+   + 'go ahead with this operation and discart them?',
+   mtConfirmation,
+   [mbYes, mbNo],
+   0) = mrYes;
+end;
+
 procedure TMainForm.HandleRecreateComponentsDatabaseClick(Sender: TObject);
 begin
 
@@ -244,6 +261,8 @@ begin
   actFileSave.Hint := vTranslations.lpFileSave;
   actFileSaveAs.Caption := vTranslations.lpFileSaveAs;
   actFileSaveAs.Hint := vTranslations.lpFileSaveAs;
+  actExportPng.Caption := vTranslations.lpFileExportPng;
+  actExportPng.Hint := vTranslations.lpFileExportPng;
   actFileExit.Caption := vTranslations.lpFileExit;
   actFileExit.Hint := vTranslations.lpFileExit;
 end;
@@ -270,8 +289,14 @@ begin
   vSchematics.NewComponentType := vComponentsDatabase.IndexToID(1);
 end;
 
-procedure TMainForm.FillDocumentUIElements;
+{
+  Makes changes in the user interface to reflect the state of the document
+}
+procedure TMainForm.FillDocumentUIElements(Sender: TObject);
 begin
+  { Make sure this routine will be called allays when Saved or Title changes }
+  vDocument.UIChangeCallback := @FillDocumentUIElements;
+
   { Window title }
   if vDocument.Saved then
     Caption := szAppTitle + ' - ' + vDocument.Title
@@ -289,7 +314,7 @@ begin
 
   { Fill other user interface elements which depend on the document state }
 
-  FillDocumentUIElements();
+  FillDocumentUIElements(Self);
 
   { Schematics area }
   vSchematics := TSchematics.Create(Self);

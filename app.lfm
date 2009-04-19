@@ -25,12 +25,12 @@ object MainForm: TMainForm
       TabOrder = 0
       Transparent = True
       object toolOpen: TToolButton
-        Left = 7
+        Left = 30
         Top = 2
         Action = actFileOpen
       end
       object toolSave: TToolButton
-        Left = 30
+        Left = 53
         Top = 2
         Action = actFileSave
       end
@@ -40,6 +40,11 @@ object MainForm: TMainForm
         Width = 6
         Caption = 'toolSeparator1'
         Style = tbsDivider
+      end
+      object ToolButton1: TToolButton
+        Left = 7
+        Top = 2
+        Action = actFileNew
       end
     end
   end

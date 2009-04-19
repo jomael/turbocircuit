@@ -14,6 +14,7 @@ type
 
   TDocument = class(TObject)
   private
+    { Helper routines }
     procedure UpdateDocumentInfo(AIsSaved: Boolean);
     function  ReadBOF(AStream: TStream): Boolean;
     procedure WriteBOF(AStream: TStream);
@@ -24,6 +25,8 @@ type
     procedure WriteTEXT(AStream: TStream; AElement: PTCElement);
     procedure WriteEOF(AStream: TStream);
   public
+    { Callback for changes in the UI info }
+    UIChangeCallback: TNotifyEvent;
     { Non-Persistent information of the user interface }
     Modified: Boolean;
     Saved: Boolean;
@@ -45,6 +48,7 @@ type
     { Base methods }
     constructor Create;
     destructor Destroy; override;
+    procedure Clear;
     procedure LoadFromFile(AFileName: string);
     procedure LoadFromStream(AStream: TStream);
     procedure SaveToFile(AFileName: string);
@@ -80,6 +84,9 @@ begin
     Modified := False;
     Saved := False;
   end;
+
+  { Update the UI with the changes }
+  if Assigned(UIChangeCallback) then UIChangeCallback(Self);
 end;
 
 function TDocument.ReadBOF(AStream: TStream): Boolean;
@@ -163,14 +170,7 @@ begin
   TextList := TCTextList.Create;
 
   { Initialization of various fields }
-  CurrentTool := toolArrow;
-  NewItemOrientation := coEast;
-
-  SheetWidth := INT_SHEET_DEFAULT_WIDTH;
-  SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
-
-  { Update fields after IO }
-  UpdateDocumentInfo(False);
+  Clear;
 end;
 
 destructor TDocument.Destroy;
@@ -181,6 +181,35 @@ begin
   TextList.Free;
 
   inherited Destroy;
+end;
+
+{
+  Creates a new document, by completeling clearing all data in ti
+}
+procedure TDocument.Clear;
+begin
+  { Non-Persistent information of the user interface }
+  Modified := False;
+  Saved := False;
+  FileName := '';
+  { Persistent information of the user interface }
+  CurrentTool := toolArrow;
+  NewItemOrientation := coEast;
+  Title := '';
+  { Selection fields }
+  SelectedComponent := nil;
+  SelectedWire := nil;
+  SelectedText := nil;
+  SelectionInfo := 0;
+  { Document information }
+  SheetWidth := INT_SHEET_DEFAULT_WIDTH;
+  SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
+  Components.Clear;
+  Wires.Clear;
+  TextList.Clear;
+
+  { Update the UI with the changes }
+  if Assigned(UIChangeCallback) then UIChangeCallback(Self);
 end;
 
 procedure TDocument.LoadFromFile(AFileName: string);
@@ -212,8 +241,7 @@ begin
   if not ReadBOF(AStream) then raise Exception.Create('Invalid Turbo Circuit BOF');
 
   { clears old data }
-  Components.Clear;
-  Wires.Clear;
+  Clear();
 
   { Reads all records }
   while AStream.Position < AStream.Size do

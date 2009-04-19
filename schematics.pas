@@ -98,7 +98,15 @@ begin
    begin
      if Assigned(vDocument.SelectedComponent) then vDocument.Components.Remove(vDocument.SelectedComponent);
      if Assigned(vDocument.SelectedWire) then vDocument.Wires.Remove(vDocument.SelectedWire);
-     if vDocument.IsSomethingSelected then UpdateAndRepaint(nil);
+     if vDocument.IsSomethingSelected then
+     begin
+       // It is fundamental to clear the selection,
+       // because otherwise the drawing code will try
+       // to draw the selected component, which no longer exists
+       vDocument.ClearSelection;
+
+       UpdateAndRepaint(nil);
+     end;
    end;
   end;
 end;
@@ -367,10 +375,14 @@ var
   NextComponent: PTCComponent;
   TmpString: string;
 begin
+  if vDocument.Components = nil then Exit;
+
+  {.$ifdef DEBUG}
+  vDocument.Components.WriteDebugInfo();
+  {.$endif}
+
   ACanvas.Brush.Color := clWhite;
   ACanvas.Pen.Color := clBlack;
-
-  if vDocument.Components = nil then Exit;
 
   NextComponent := PTCComponent(vDocument.Components.Elements);
 
@@ -380,7 +392,8 @@ begin
     vItemsDrawer.DeltaY := NextComponent^.Pos.Y;
     vItemsDrawer.Orientation := NextComponent^.Orientation;
 
-    TmpString := vComponentsDatabase.GetDrawingCode(NextComponent^.TypeID);
+    vComponentsDatabase.GoToRecByID(NextComponent^.TypeID);
+    TmpString := vComponentsDatabase.GetDrawingCode();
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
 
     NextComponent := PTCComponent(NextComponent^.Next);
@@ -403,7 +416,8 @@ begin
     vItemsDrawer.DeltaY := MouseMoveDocPos.Y;
     vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
-    TmpString := vComponentsDatabase.GetDrawingCode(NewComponentType);
+    vComponentsDatabase.GoToRecByID(NewComponentType);
+    TmpString := vComponentsDatabase.GetDrawingCode();
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
   end;
 
@@ -414,7 +428,8 @@ begin
     vItemsDrawer.DeltaY := vDocument.SelectedComponent^.Pos.Y + MouseMoveDocPos.Y - DragStartPos.Y;
     vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
-    TmpString := vComponentsDatabase.GetDrawingCode(vDocument.SelectedComponent^.TypeID);
+    vComponentsDatabase.GoToRecByID(vDocument.SelectedComponent^.TypeID);
+    TmpString := vComponentsDatabase.GetDrawingCode();
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
   end;
 end;

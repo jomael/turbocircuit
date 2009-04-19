@@ -45,7 +45,8 @@ type
     { Main menu strings }
     lpFile, lpDocument, lpComponents, lpHelp: string;
     lpDocumentOptions: string;
-    lpFileNew, lpFileOpen, lpFileSave, lpFileSaveAs, lpFileExit: string;
+    lpFileNew, lpFileOpen, lpFileSave, lpFileSaveAs, lpFileExportPng,
+      lpFileExit: string;
     lpRecreateComponentsDatabase, lpComponentsEditor: string;
     lpHelpAbout: string;
 
@@ -93,6 +94,7 @@ begin
   lpFileOpen := 'Open';
   lpFileSave := 'Save';
   lpFileSaveAs := 'Save As';
+  lpFileExportPng := 'Export as PNG';
   lpFileExit := 'Exit';
   lpRecreateComponentsDatabase := 'Recreate Components Database';
   lpComponentsEditor := 'Components Editor';

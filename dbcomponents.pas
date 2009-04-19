@@ -21,7 +21,7 @@ type
     destructor  Destroy; override;
     { Database access methods }
     procedure FillStringListWithNames(AStringList: TStrings);
-    function  GetDrawingCode(AID: TCDataString): string;
+    function  GetDrawingCode(): string;
     function  GetHeight(): Integer;
     function  GetPins(): Integer;
     function  GetWidth(): Integer;
@@ -169,9 +169,8 @@ begin
   CurrentRecNo := 1;
 end;
 
-function TComponentsDatabase.GetDrawingCode(AID: TCDataString): string;
+function TComponentsDatabase.GetDrawingCode(): string;
 begin
-  GoToRec(IDToIndex(AID));
   Result := FDataset.FieldByName(STR_DB_COMPONENTS_DRAWINGCODE).Value;
 end;
 

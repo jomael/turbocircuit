@@ -50,6 +50,8 @@ type
   protected
     { Element-specific utility methods }
     function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+  public
+    procedure WriteDebugInfo();
   end;
 
   { TCWireList }
@@ -191,6 +193,8 @@ end;
 
 procedure TCElementList.Remove(AElement: PTCElement);
 begin
+  if AElement = nil then Exit;
+
   if Assigned(AElement^.Previous) then
    AElement^.Previous^.Next := AElement^.Next;
 
@@ -198,7 +202,11 @@ begin
    AElement^.Next^.Previous := AElement^.Previous;
 
   if (Elements = AElement) then
-   Elements := AElement^.Next;
+  begin
+    Elements := AElement^.Next;
+    if Assigned(AElement^.Next) then
+      AElement^.Next^.Previous := nil;
+  end;
 
   Dispose(AElement);
 end;
@@ -263,6 +271,24 @@ begin
     Result := ELEMENT_MATCHES;
 
   end;
+end;
+
+procedure TCComponentList.WriteDebugInfo();
+var
+  NextComponent: PTCComponent;
+  i: Integer;
+begin
+  NextComponent := PTCComponent(Elements);
+  i := 0;
+
+  while (NextComponent <> nil) do
+  begin
+    WriteLn('#Component #' + IntToStr(i) + ' TypeID: ' + NextComponent^.TypeID);
+
+    NextComponent := PTCComponent(NextComponent^.Next);
+    Inc(i)
+  end;
+  WriteLn('');
 end;
 
 { TCWireList }
