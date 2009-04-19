@@ -122,6 +122,11 @@ const
   INT_SHEET_DEFAULT_WIDTH    = 500;
   INT_SHEET_DEFAULT_HEIGHT   = 500;
 
+  INT_TOOLSNOTEBOOK_ARROW      = 0;
+  INT_TOOLSNOTEBOOK_COMPONENTS = 1;
+  INT_TOOLSNOTEBOOK_WIRE       = 2;
+  INT_TOOLSNOTEBOOK_TEXT       = 3;
+
 {*******************************************************************
 *  Strings not to be translated
 *******************************************************************}

@@ -31,9 +31,9 @@ type
     Modified: Boolean;
     Saved: Boolean;
     FileName: string;
-    { Persistent information of the user interface }
-    CurrentTool: TCTool;
     NewItemOrientation: TCComponentOrientation;
+    CurrentTool: TCTool;
+    { Persistent information of the user interface }
     Title: string;
     { Selection fields }
     SelectedComponent: PTCComponent;

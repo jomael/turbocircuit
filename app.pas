@@ -123,6 +123,14 @@ begin
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
   else if ASender = btnText then vDocument.CurrentTool := toolText;
 
+  { Updates the tool notebook }
+  case vDocument.CurrentTool of
+   toolArrow: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_ARROW];
+   toolComponent: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_COMPONENTS];
+   toolWire: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_WIRE];
+   toolText: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_TEXT];
+  end;
+
   vSchematics.UpdateAndRepaint(nil);
 end;
 
@@ -302,6 +310,8 @@ begin
     Caption := szAppTitle + ' - ' + vDocument.Title
   else
     Caption := szAppTitle + ' - ' + vTranslations.lpUntitled;
+
+  if vDocument.Modified then Caption := Caption + '*';
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);

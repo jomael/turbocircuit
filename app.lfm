@@ -630,7 +630,7 @@ object MainForm: TMainForm
       Height = 208
       Top = 150
       Width = 136
-      PageIndex = 1
+      PageIndex = 3
       ShowTabs = False
       TabOrder = 0
       object Page1: TPage
@@ -657,6 +657,12 @@ object MainForm: TMainForm
           Style = csDropDownList
           TabOrder = 0
         end
+      end
+      object Page3: TPage
+        Caption = 'Page3'
+      end
+      object Page4: TPage
+        Caption = 'Page4'
       end
     end
   end

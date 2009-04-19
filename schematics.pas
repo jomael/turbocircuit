@@ -105,6 +105,9 @@ begin
        // to draw the selected component, which no longer exists
        vDocument.ClearSelection;
 
+       // Also mark the modified flag
+       vDocument.Modified := True;
+
        UpdateAndRepaint(nil);
      end;
    end;
@@ -123,6 +126,7 @@ begin
      if vDocument.SelectedComponent <> nil then
      begin
        vDocument.RotateOrientation(vDocument.SelectedComponent.Orientation);
+       vDocument.Modified := True;
        UpdateAndRepaint(nil);
      end
      { Otherwise rotate the new item to be added or moved }
@@ -252,16 +256,21 @@ begin
       begin
         vDocument.Components.MoveElement(vDocument.SelectedComponent,
          Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
+        vDocument.Modified := True;
       end
       else if vDocument.SelectedWire <> nil then
       begin
         vDocument.Wires.MoveWire(vDocument.SelectedWire, DocPos, vDocument.SelectionInfo);
+        vDocument.Modified := True;
       end
       else if vDocument.SelectedText <> nil then
       begin
         vDocument.TextList.MoveElement(vDocument.SelectedText,
          Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
+        vDocument.Modified := True;
       end;
+
+      vDocument.UIChangeCallback(Self);
     end;
 
     UpdateAndRepaint(nil);
@@ -277,7 +286,9 @@ begin
     NewComponent^.Orientation := vDocument.NewItemOrientation;
 
     vDocument.Components.Insert(NewComponent);
-      
+
+    vDocument.Modified := True;
+    vDocument.UIChangeCallback(Self);
     UpdateAndRepaint(nil);
   end;
 
@@ -287,6 +298,8 @@ begin
 
     vDocument.Wires.Insert(NewWire);
 
+    vDocument.Modified := True;
+    vDocument.UIChangeCallback(Self);
     UpdateAndRepaint(nil);
   end;
 
@@ -294,6 +307,10 @@ begin
   begin
     vDocument.TextList.Insert(NewText);
     vDocument.SelectedText := NewText;
+
+    vDocument.Modified := True;
+    vDocument.UIChangeCallback(Self);
+    UpdateAndRepaint(nil);
   end;
 
   end;
@@ -311,6 +328,8 @@ begin
     if vDocument.SelectedText <> nil then
     begin
       vDocument.SelectedText.Text += UTF8Key;
+      vDocument.Modified := True;
+      vDocument.UIChangeCallback(Self);
       UpdateAndRepaint(nil);
     end;
   end;
