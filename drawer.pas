@@ -55,6 +55,8 @@ type
     { Text element drawing methods }
     procedure DrawText(ACanvas: TCanvas; AElement: PTCElement);
     procedure DrawTextSelection(ACanvas: TCanvas; AText: PTCText);
+    { Polyline drawing methods }
+    procedure DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
     function  FixCoordinates(APoint: TPoint): TPoint;
     function  GridCoordsToSheet(AX, AY: Single): TPoint;
@@ -443,6 +445,25 @@ end;
 procedure TItemsDrawer.DrawTextSelection(ACanvas: TCanvas; AText: PTCText);
 begin
 
+end;
+
+procedure TItemsDrawer.DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
+var
+  APolyline: PTCPolyline absolute AElement;
+  i: Integer;
+begin
+  ACanvas.Pen.Color := clBlack;
+  ACanvas.Brush.Color := clBlack;
+
+  if AElement = nil then Exit;
+
+  for i := 1 to APolyline^.NPoints - 1 do
+    ACanvas.Line(
+      APolyline^.Points[i - 1].X * INT_SHEET_GRID_SPACING,
+      APolyline^.Points[i - 1].Y * INT_SHEET_GRID_SPACING,
+      APolyline^.Points[i].X * INT_SHEET_GRID_SPACING,
+      APolyline^.Points[i].Y * INT_SHEET_GRID_SPACING
+    );
 end;
 
 {@@

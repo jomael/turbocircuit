@@ -1,3 +1,6 @@
+{
+
+}
 unit schematics;
 
 {$mode delphi}
@@ -9,22 +12,35 @@ uses
   document, constants, dbcomponents, drawer;
 
 type
-
-  { TSchematics }
-
-  TSchematics = class(TCustomControl)
-  private
+  TSchematicsDelegate = class
+  public
+    { Fields to be used by both the delegate and the schematics class }
+    NewComponentType: TCDataString;
+    OnUpdateMousePos: TMouseMoveEvent;
     NewComponent: PTCComponent;
     NewWire: PTCWire;
     NewText: PTCText;
+    NewPolyline: PTCPolyline;
     MouseMoveDocPos: TPoint;
+    MulticlickPlacementStarted: Boolean;
     DragDropStarted: Boolean;
     DragStartPos: TPoint;
+    procedure   HandleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); virtual; abstract;
+    procedure   HandleKeyPress(Sender: TObject; var Key: char); virtual; abstract;
+    procedure   HandleMouseDown(Sender: TOBject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); virtual; abstract;
+    procedure   HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer); virtual; abstract;
+    procedure   HandleMouseUp(Sender: TOBject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); virtual; abstract;
+    procedure   HandleUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char); virtual; abstract;
+  end;
+
+{ TSchematics }
+
+  TSchematics = class(TCustomControl)
+  private
   public
     { Fields accessible to external classes }
     bmpOutput: TBitmap;
-    NewComponentType: TCDataString;
-    OnUpdateMousePos: TMouseMoveEvent;
+    Delegate: TSchematicsDelegate;
     { Base methods }
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -40,6 +56,7 @@ type
     procedure   DrawComponents(ACanvas: TCanvas);
     procedure   DrawComponentPreview(ACanvas: TCanvas);
     procedure   DrawGrid(ACanvas: TCanvas);
+    procedure   DrawPolylinePreview(ACanvas: TCanvas);
     procedure   DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
     procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
@@ -93,25 +110,7 @@ end;
 }
 procedure TSchematics.HandleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
-  case Key of
-   VK_DELETE:
-   begin
-     if Assigned(vDocument.SelectedComponent) then vDocument.Components.Remove(vDocument.SelectedComponent);
-     if Assigned(vDocument.SelectedWire) then vDocument.Wires.Remove(vDocument.SelectedWire);
-     if vDocument.IsSomethingSelected then
-     begin
-       // It is fundamental to clear the selection,
-       // because otherwise the drawing code will try
-       // to draw the selected component, which no longer exists
-       vDocument.ClearSelection;
-
-       // Also mark the modified flag
-       vDocument.Modified := True;
-
-       UpdateAndRepaint(nil);
-     end;
-   end;
-  end;
+  if Assigned(Delegate) then Delegate.HandleKeyDown(Sender, Key, Shift);
 end;
 
 {@@
@@ -119,24 +118,7 @@ end;
 }
 procedure TSchematics.HandleKeyPress(Sender: TObject; var Key: char);
 begin
-  case Key of
-   ^R:
-   begin
-     { If a component is selected, rotate it }
-     if vDocument.SelectedComponent <> nil then
-     begin
-       vDocument.RotateOrientation(vDocument.SelectedComponent.Orientation);
-       vDocument.Modified := True;
-       UpdateAndRepaint(nil);
-     end
-     { Otherwise rotate the new item to be added or moved }
-     else
-     begin
-       vDocument.RotateOrientation(vDocument.NewItemOrientation);
-       UpdateAndRepaint(nil);
-     end;
-   end;
-  end; // case
+  if Assigned(Delegate) then Delegate.HandleKeyPress(Sender, Key);
 end;
 
 {@@
@@ -144,74 +126,8 @@ end;
 }
 procedure TSchematics.HandleMouseDown(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var
-  DocPos: TPoint;
 begin
-  Self.SetFocus;
-
-  DocPos := vDocument.GetDocumentPos(X, Y);
-  DragStartPos := DocPos;
-  
-  case vDocument.CurrentTool of
-
-  toolArrow:
-  begin
-    { Clear selection }
-    vDocument.ClearSelection;
-
-    { Attempts to select a component }
-    vDocument.SelectionInfo := vDocument.Components.FindElement(DocPos, vDocument.SelectedComponent);
-    
-    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
-    begin
-      DragDropStarted := True;
-      vDocument.NewItemOrientation := vDocument.SelectedComponent^.Orientation;
-      UpdateAndRepaint(nil);
-      Exit;
-    end;
-      
-    { Attempts to select a wire }
-    vDocument.SelectionInfo := vDocument.Wires.FindElement(DocPos, vDocument.SelectedWire);
-
-    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
-    begin
-      DragDropStarted := True;
-      UpdateAndRepaint(nil);
-      Exit;
-    end;
-
-    { Attempts to select an existing text }
-    vDocument.SelectionInfo := vDocument.TextList.FindElement(DocPos, vDocument.SelectedText);
-
-    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
-    begin
-      DragDropStarted := True;
-      UpdateAndRepaint(nil);
-      Exit;
-    end;
-
-  end;
-
-  toolWire:
-  begin
-    DragDropStarted := True;
-
-    New(NewWire);
-      
-    NewWire^.Pos := DocPos;
-  end;
-
-  { Places a new text element on the document and selects it }
-  toolText:
-  begin
-    vDocument.ClearSelection;
-
-    New(NewText);
-    FillChar(NewText^, SizeOf(TCText), #0);
-    NewText^.Pos := DocPos;
-  end;
-
-  end;
+  if Assigned(Delegate) then Delegate.HandleMouseDown(Sender, Button, Shift, X, Y);
 end;
 
 {@@
@@ -219,18 +135,7 @@ end;
 }
 procedure TSchematics.HandleMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
 begin
-  MouseMoveDocPos := vDocument.GetDocumentPos(X, Y);
-  
-  if Assigned(OnUpdateMousePos) then OnUpdateMousePos(Sender, Shift, X, Y);
-
-  case vDocument.CurrentTool of
-    { Help to move items }
-    toolArrow: if DragDropStarted then UpdateAndRepaint(nil);
-    { Help to place components }
-    toolComponent: UpdateAndRepaint(nil);
-    { Help to place wires }
-    toolWire: if DragDropStarted then UpdateAndRepaint(nil);
-  end;
+  if Assigned(Delegate) then Delegate.HandleMouseMove(Sender, Shift, X, Y);
 end;
 
 {@@
@@ -238,82 +143,8 @@ end;
 }
 procedure TSchematics.HandleMouseUp(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var
-  DocPos: TPoint;
 begin
-  DocPos := vDocument.GetDocumentPos(X, Y);
-
-  DragDropStarted := False;
-
-  case vDocument.CurrentTool of
-
-  toolArrow:
-  begin
-    { Verify if something is being moved }
-    if vDocument.IsSomethingSelected then
-    begin
-      if vDocument.SelectedComponent <> nil then
-      begin
-        vDocument.Components.MoveElement(vDocument.SelectedComponent,
-         Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
-        vDocument.Modified := True;
-      end
-      else if vDocument.SelectedWire <> nil then
-      begin
-        vDocument.Wires.MoveWire(vDocument.SelectedWire, DocPos, vDocument.SelectionInfo);
-        vDocument.Modified := True;
-      end
-      else if vDocument.SelectedText <> nil then
-      begin
-        vDocument.TextList.MoveElement(vDocument.SelectedText,
-         Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
-        vDocument.Modified := True;
-      end;
-
-      vDocument.UIChangeCallback(Self);
-    end;
-
-    UpdateAndRepaint(nil);
-  end;
-
-  toolComponent:
-  begin
-    New(NewComponent);
-      
-    NewComponent^.Pos.X := DocPos.X;
-    NewComponent^.Pos.Y := DocPos.Y;
-    NewComponent^.TypeID := NewComponentType;
-    NewComponent^.Orientation := vDocument.NewItemOrientation;
-
-    vDocument.Components.Insert(NewComponent);
-
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    UpdateAndRepaint(nil);
-  end;
-
-  toolWire:
-  begin
-    NewWire^.PtTo := DocPos;
-
-    vDocument.Wires.Insert(NewWire);
-
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    UpdateAndRepaint(nil);
-  end;
-
-  toolText:
-  begin
-    vDocument.TextList.Insert(NewText);
-    vDocument.SelectedText := NewText;
-
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    UpdateAndRepaint(nil);
-  end;
-
-  end;
+  if Assigned(Delegate) then Delegate.HandleMouseUp(Sender, Button, Shift, X, Y);
 end;
 
 {@@
@@ -321,20 +152,7 @@ end;
 }
 procedure TSchematics.HandleUTF8KeyPress(Sender: TObject; var UTF8Key: TUTF8Char);
 begin
-  case vDocument.CurrentTool of
-
-  toolText:
-  begin
-    if vDocument.SelectedText <> nil then
-    begin
-      vDocument.SelectedText.Text += UTF8Key;
-      vDocument.Modified := True;
-      vDocument.UIChangeCallback(Self);
-      UpdateAndRepaint(nil);
-    end;
-  end;
-
-  end;
+  if Assigned(Delegate) then Delegate.HandleUTF8KeyPress(Sender, UTF8Key);
 end;
 
 {@@
@@ -431,23 +249,23 @@ begin
   { Help to place components }
   if (vDocument.CurrentTool = toolComponent) then
   begin
-    vItemsDrawer.DeltaX := MouseMoveDocPos.X;
-    vItemsDrawer.DeltaY := MouseMoveDocPos.Y;
+    vItemsDrawer.DeltaX := Delegate.MouseMoveDocPos.X;
+    vItemsDrawer.DeltaY := Delegate.MouseMoveDocPos.Y;
     vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
-    vComponentsDatabase.GoToRecByID(NewComponentType);
+    vComponentsDatabase.GoToRecByID(Delegate.NewComponentType);
     TmpString := vComponentsDatabase.GetDrawingCode();
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
   end;
 
   { Help to move components }
-  if (vDocument.CurrentTool = toolArrow) and (vDocument.SelectedComponent <> nil) and DragDropStarted then
+  if (vDocument.CurrentTool = toolArrow) and vDocument.IsSelected(toolComponent) and Delegate.DragDropStarted then
   begin
-    vItemsDrawer.DeltaX := vDocument.SelectedComponent^.Pos.X + MouseMoveDocPos.X - DragStartPos.X;
-    vItemsDrawer.DeltaY := vDocument.SelectedComponent^.Pos.Y + MouseMoveDocPos.Y - DragStartPos.Y;
+    vItemsDrawer.DeltaX := vDocument.GetSelectedComponent^.Pos.X + Delegate.MouseMoveDocPos.X - Delegate.DragStartPos.X;
+    vItemsDrawer.DeltaY := vDocument.GetSelectedComponent^.Pos.Y + Delegate.MouseMoveDocPos.Y - Delegate.DragStartPos.Y;
     vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
-    vComponentsDatabase.GoToRecByID(vDocument.SelectedComponent^.TypeID);
+    vComponentsDatabase.GoToRecByID(vDocument.GetSelectedComponent^.TypeID);
     TmpString := vComponentsDatabase.GetDrawingCode();
     vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
   end;
@@ -466,6 +284,24 @@ begin
    for y := 0 to (vDocument.SheetHeight div INT_SHEET_GRID_SPACING) do
     ACanvas.FillRect(x * INT_SHEET_GRID_SPACING, y * INT_SHEET_GRID_SPACING,
      x * INT_SHEET_GRID_SPACING + 1, y * INT_SHEET_GRID_SPACING + 1);
+end;
+
+procedure TSchematics.DrawPolylinePreview(ACanvas: TCanvas);
+var
+  LocalPolyline: TCPolyline;
+begin
+//  ACanvas.Pen.Color := clRed;
+
+  { Help to place polyline }
+  if ((vDocument.CurrentTool = toolPolyline) and Delegate.MulticlickPlacementStarted) then
+  begin
+    // It's simples to copy the whole polyline and modify it
+    // then to temporarely add the extra point for the
+    // current mouse position and later remove it
+    Move(Delegate.NewPolyline^, LocalPolyline, SizeOf(TCPolyline));
+    vDocument.Polylines.AddPoint(@LocalPolyline, Delegate.MouseMoveDocPos);
+    vItemsDrawer.DrawPolyline(ACanvas, @LocalPolyline);
+  end;
 end;
 
 {@@
@@ -493,21 +329,28 @@ begin
   ACanvas.Brush.Color := clWhite;
   vDocument.TextList.ForEachDoPaint(ACanvas, vItemsDrawer.DrawText);
 
-  { Preview when placing/moving a component }
-  if AEditMode then DrawComponentPreview(ACanvas);
+  { Polylines }
+  vDocument.Polylines.ForEachDoPaint(ACanvas, vItemsDrawer.DrawPolyline);
+
+  if AEditMode then
+  begin
+    { Preview when placing/moving a component }
+    DrawComponentPreview(ACanvas);
   
-  { Preview when placing/moving a wire }
-  if AEditMode then DrawWirePreview(ACanvas);
+    { Preview when placing/moving a wire }
+    DrawWirePreview(ACanvas);
 
-  { Component selection }
-  if AEditMode then
-   if vDocument.SelectedComponent <> nil then
-    vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.SelectedComponent);
+    { Preview when placing/moving polyline }
+    DrawPolylinePreview(ACanvas);
 
-  { Wire selection }
-  if AEditMode then
-   if vDocument.SelectedWire <> nil then
-    vItemsDrawer.DrawWireSelection(ACanvas, vDocument.SelectedWire, vDocument.SelectionInfo);
+    { Component selection }
+    if vDocument.IsSelected(toolComponent) then
+     vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.GetSelectedComponent);
+
+    { Wire selection }
+    if vDocument.IsSelected(toolWire) then
+     vItemsDrawer.DrawWireSelection(ACanvas, vDocument.GetSelectedWire, vDocument.SelectionInfo);
+  end;
 end;
 
 {@@
@@ -520,27 +363,27 @@ begin
   ACanvas.Pen.Color := clRed;
 
   { Help to place wires }
-  if ((vDocument.CurrentTool = toolWire) and DragDropStarted) then
+  if ((vDocument.CurrentTool = toolWire) and Delegate.DragDropStarted) then
   begin
-    NewWire^.PtTo := MouseMoveDocPos;
+    Delegate.NewWire^.PtTo := Delegate.MouseMoveDocPos;
 
-    vItemsDrawer.DrawWire(ACanvas, NewWire);
+    vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
   end;
 
   { Help to move wires }
-  if (vDocument.CurrentTool = toolArrow) and (vDocument.SelectedWire <> nil) and DragDropStarted then
+  if (vDocument.CurrentTool = toolArrow) and vDocument.IsSelected(toolWire) and Delegate.DragDropStarted then
   begin
     case vDocument.SelectionInfo of
      ELEMENT_START_POINT:
      begin
-       TmpWire.Pos := MouseMoveDocPos;
-       TmpWire.PtTo := vDocument.SelectedWire^.PtTo;
+       TmpWire.Pos := Delegate.MouseMoveDocPos;
+       TmpWire.PtTo := vDocument.GetSelectedWire^.PtTo;
      end;
 
      ELEMENT_END_POINT:
      begin
-       TmpWire.Pos := vDocument.SelectedWire^.Pos;
-       TmpWire.PtTo := MouseMoveDocPos;
+       TmpWire.Pos := vDocument.GetSelectedWire^.Pos;
+       TmpWire.PtTo := Delegate.MouseMoveDocPos;
      end;
     end;
 

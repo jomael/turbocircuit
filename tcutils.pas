@@ -33,6 +33,7 @@ uses
   constants;
 
 function SeparateString(AString: string; ASeparator: Char): T10Strings;
+operator = (const A, B: TPoint): Boolean;
 
 implementation
 
@@ -68,6 +69,12 @@ begin
       Result[CurrentPart] := Result[CurrentPart] + Copy(AString, i, 1);
   end;
 end;
+
+operator = (const A, B: TPoint): Boolean;
+begin
+  Result := (A.X = B.X) and (A.Y = B.Y);
+end;
+
 
 end.
 

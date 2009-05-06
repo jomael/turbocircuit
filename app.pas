@@ -29,10 +29,13 @@ unit app;
 interface
 
 uses
+  // RTL, FCL, LCL
   Classes, SysUtils, LResources, Forms, Controls, Menus, ExtCtrls, ComCtrls,
   ActnList, Buttons, StdCtrls, Dialogs, Graphics,
+  // TC units
   schematics, dbcomponents, constants, translationstc, document,
-  dlgcomponentseditor, dlgabout, dlgdocumentopts;
+  dlgcomponentseditor, dlgabout, dlgdocumentopts,
+  toolscode;
 
 type
 
@@ -72,6 +75,8 @@ type
     dialogOpen: TOpenDialog;
     Page1: TPage;
     Page2: TPage;
+    Page3: TPage;
+    Page4: TPage;
     pnlToolbar: TPanel;
     pnlTools: TPanel;
     pnlStatusBar: TStatusBar;
@@ -80,6 +85,7 @@ type
     btnWire: TSpeedButton;
     dialogSave: TSaveDialog;
     barFileToolbar: TToolBar;
+    btnPolyline: TSpeedButton;
     ToolButton1: TToolButton;
     toolSeparator1: TToolButton;
     toolOpen: TToolButton;
@@ -90,6 +96,7 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure HandleChangeTool(ASender: TObject);
     procedure HandleChooseNewComponentType(ASender: TObject);
     procedure HandleRecreateComponentsDatabaseClick(Sender: TObject);
@@ -121,7 +128,8 @@ begin
   if ASender = btnArrow then vDocument.CurrentTool := toolArrow
   else if ASender = btnComponent then vDocument.CurrentTool := toolComponent
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
-  else if ASender = btnText then vDocument.CurrentTool := toolText;
+  else if ASender = btnText then vDocument.CurrentTool := toolText
+  else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline;
 
   { Updates the tool notebook }
   case vDocument.CurrentTool of
@@ -129,6 +137,7 @@ begin
    toolComponent: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_COMPONENTS];
    toolWire: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_WIRE];
    toolText: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_TEXT];
+   toolPolyline: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_POLYLINE];
   end;
 
   vSchematics.UpdateAndRepaint(nil);
@@ -191,9 +200,15 @@ begin
   else actFileSaveAsExecute(Sender);
 end;
 
+procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
+begin
+  if vDocument.Modified then CanClose := ShowDialogDiscartChanges()
+  else CanClose := True;
+end;
+
 procedure TMainForm.HandleChooseNewComponentType(ASender: TObject);
 begin
-  vSchematics.NewComponentType := vComponentsDatabase.IndexToID(cmbComponents.ItemIndex + 1);
+  vToolsDelegate.NewComponentType := vComponentsDatabase.IndexToID(cmbComponents.ItemIndex + 1);
 end;
 
 procedure TMainForm.HandleShowAboutBox(ASender: TObject);
@@ -294,7 +309,7 @@ begin
   { Component selection combo box }
   vComponentsDatabase.FillStringListWithNames(cmbComponents.Items);
   cmbComponents.ItemIndex := 0;
-  vSchematics.NewComponentType := vComponentsDatabase.IndexToID(1);
+  vToolsDelegate.NewComponentType := vComponentsDatabase.IndexToID(1);
 end;
 
 {
@@ -334,9 +349,13 @@ begin
   vSchematics.Height := Height - pnlToolbar.Height - pnlStatusbar.Height;
   vSchematics.Width := Width - pnlTools.Width;
   vSchematics.Anchors := [akTop, akLeft, akBottom, akRight];
-  
-  vSchematics.OnUpdateMousePos := @HandleUpdateSchematicsMousePos;
-  
+
+  // Connect the schematics with it's delegate
+  vSchematics.Delegate := vToolsDelegate;
+  vToolsDelegate.Owner := vSchematics;
+
+  vToolsDelegate.OnUpdateMousePos := @HandleUpdateSchematicsMousePos;
+
   vSchematics.UpdateAndRepaint(nil);
 
   { Necessary to make sure the keyboard events are correctly handled }

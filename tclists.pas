@@ -8,7 +8,7 @@ interface
 
 uses
   Classes, SysUtils, Graphics,
-  constants, dbcomponents;
+  constants, dbcomponents, tcutils;
 
 type
 
@@ -20,6 +20,8 @@ type
   TCElementListWriteCallback = procedure(AStream: TStream; AElement: PTCElement) of object;
 
   { TCElementList }
+
+  PTCElementList = ^TCElementList;
 
   TCElementList = class(TObject)
   protected
@@ -71,6 +73,19 @@ type
   protected
     { Element-specific utility methods }
     function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+  end;
+
+  { TCPolylineList }
+
+  TCPolylineList = class(TCElementList)
+  protected
+    { Element-specific utility methods }
+    function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+  public
+    { Methods specific for polylines }
+    procedure AddPoint(APolyline: PTCPolyline; APoint: TPoint);
+    //procedure RemovePoint(APolyline: PTCPolyline; AIndex: Integer);
+    function  GetLastPoint(APolyline: PTCPolyline): TPoint;
   end;
 
 implementation
@@ -333,6 +348,42 @@ begin
   if (AElement^.Pos.X < Pos.X) and (Pos.X < AElement^.Pos.X + AElementWidth)
    and (AElement^.Pos.Y < Pos.Y) and (Pos.Y < AElement^.Pos.Y + AElementHeight) then
      Result := ELEMENT_MATCHES;
+end;
+
+{ TCPolylineList }
+
+function TCPolylineList.DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord;
+var
+  APolyline: PTCPolyline absolute AElement;
+  i: Integer;
+begin
+  Result := ELEMENT_DOES_NOT_MATCH;
+
+  { Verifies Position }
+  if (APolyline^.Pos.X = Pos.X) and (APolyline^.Pos.Y = Pos.Y) then
+  begin
+    Result := ELEMENT_START_POINT;
+  end
+  { Verifies all other points }
+  else
+  begin
+    for i := 0 to Length(APolyline^.Points) do
+     if APolyline^.Points[i] = Pos then Exit(ELEMENT_END_POINT + i);
+  end;
+end;
+
+procedure TCPolylineList.AddPoint(APolyline: PTCPolyline; APoint: TPoint);
+begin
+  APolyline^.Points[APolyline^.NPoints] := APoint;
+  Inc(APolyline^.NPoints);
+end;
+
+function TCPolylineList.GetLastPoint(APolyline: PTCPolyline): TPoint;
+begin
+  if APolyline^.NPoints > 0 then
+    Result := APolyline^.Points[APolyline^.NPoints - 1]
+  else
+    Result := APolyline^.Pos;
 end;
 
 end.

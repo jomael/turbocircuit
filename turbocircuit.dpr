@@ -21,6 +21,19 @@ Please note that the General Public License version 2 does not permit
 incorporating Turbo Circuit into proprietary programs.
 
 AUTHORS: Felipe Monteiro de Carvalho
+
+
+  Development notes:
+
+  When adding new tools, procede as following:
+
+  * Add the tool to the constants in constants.pas
+  * Add lists for the tool in tclists.pas
+  * Add code to save/load this new item in tcfileformat.pas and document.pas
+  * Add event handling for it in toolscode.pas
+  * Add drawing code for it in schematics.pas
+  * Add description of the new item in document.pas
+
 }
 program turbocircuit;
 
@@ -40,7 +53,11 @@ uses
   tcutils,
   tcdbutils,
   drawer,
-  tcfileformat, dlgdocumentopts, tclists, tcsettings;
+  tcfileformat,
+  dlgdocumentopts,
+  tclists,
+  tcsettings,
+  toolscode;
 
 begin
   Application.Initialize;

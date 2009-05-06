@@ -23,6 +23,7 @@ type
     procedure WriteCOMPONENT(AStream: TStream; AElement: PTCElement);
     procedure WriteWIRE(AStream: TStream; AElement: PTCElement);
     procedure WriteTEXT(AStream: TStream; AElement: PTCElement);
+    procedure WritePOLYLINE(AStream: TStream; AElement: PTCElement);
     procedure WriteEOF(AStream: TStream);
   public
     { Callback for changes in the UI info }
@@ -36,15 +37,15 @@ type
     { Persistent information of the user interface }
     Title: string;
     { Selection fields }
-    SelectedComponent: PTCComponent;
-    SelectedWire: PTCWire;
-    SelectedText: PTCText;
+    SelectedElement: PTCElement;
+    SelectedElementType: TCTool;
     SelectionInfo: DWord;
     { Document information }
     SheetWidth, SheetHeight: Integer;
     Components: TCComponentList;
     Wires: TCWireList;
     TextList: TCTextList;
+    Polylines: TCPolylineList;
     { Base methods }
     constructor Create;
     destructor Destroy; override;
@@ -60,7 +61,13 @@ type
     function  GetComponentTopLeft(AComponent: PTCComponent): TPoint;
     { Selection methods }
     procedure ClearSelection;
+    function  IsSelected(AType: TCTool): Boolean;
     function  IsSomethingSelected: Boolean;
+    function  GetListForElement(AType: TCTool): PTCElementList;
+    function  GetSelectedComponent: PTCComponent;
+    function  GetSelectedWire: PTCWire;
+    function  GetSelectedText: PTCText;
+    function  GetSelectedPolyline: PTCPolyline;
   end;
 
 var
@@ -155,6 +162,16 @@ begin
   AStream.WriteBuffer(AText^, SizeOf(TCText));
 end;
 
+procedure TDocument.WritePOLYLINE(AStream: TStream; AElement: PTCElement);
+var
+  APolyline: PTCPolyline absolute AElement;
+begin
+  AStream.WriteByte(TCRECORD_POLYLINE);
+  AStream.WriteByte(TCRECORD_POLYLINE_VER);
+  AStream.WriteWord(TCRECORD_POLYLINE_SIZE);
+  AStream.WriteBuffer(APolyline^, SizeOf(APolyline));
+end;
+
 procedure TDocument.WriteEOF(AStream: TStream);
 begin
 
@@ -168,6 +185,7 @@ begin
   Components := TCComponentList.Create;
   Wires := TCWireList.Create;
   TextList := TCTextList.Create;
+  Polylines := TCPolylineList.Create;
 
   { Initialization of various fields }
   Clear;
@@ -197,9 +215,8 @@ begin
   NewItemOrientation := coEast;
   Title := '';
   { Selection fields }
-  SelectedComponent := nil;
-  SelectedWire := nil;
-  SelectedText := nil;
+  SelectedElement := nil;
+  SelectedElementType := toolArrow;
   SelectionInfo := 0;
   { Document information }
   SheetWidth := INT_SHEET_DEFAULT_WIDTH;
@@ -343,6 +360,9 @@ begin
 
   { Stores the text elements }
   TextList.ForEachDoWrite(AStream, WriteTEXT);
+
+  { Stores the polylines }
+  Polylines.ForEachDoWrite(AStream, WritePOLYLINE);
 end;
 
 function TDocument.GetDocumentPos(X, Y: Integer): TPoint;
@@ -399,15 +419,50 @@ end;
 
 procedure TDocument.ClearSelection;
 begin
-  SelectedComponent := nil;
-  SelectedWire := nil;
-  SelectedText := nil;
+  SelectedElement := nil;
   SelectionInfo := ELEMENT_DOES_NOT_MATCH;
+end;
+
+function TDocument.IsSelected(AType: TCTool): Boolean;
+begin
+  Result := IsSomethingSelected and (SelectedElementType = AType);
 end;
 
 function TDocument.IsSomethingSelected: Boolean;
 begin
-  Result := (SelectedComponent <> nil) or (SelectedWire <> nil);
+  Result := (SelectedElement <> nil);
+end;
+
+function TDocument.GetListForElement(AType: TCTool): PTCElementList;
+begin
+  case Atype of
+    toolComponent: Result := @Components;
+    toolWire: Result := @Wires;
+    toolText: Result := @TextList;
+    toolPolyline: Result := @Polylines;
+  else
+    Result := nil;
+  end;
+end;
+
+function TDocument.GetSelectedComponent: PTCComponent;
+begin
+  Result := PTCComponent(SelectedElement);
+end;
+
+function TDocument.GetSelectedWire: PTCWire;
+begin
+  Result := PTCWire(SelectedElement);
+end;
+
+function TDocument.GetSelectedText: PTCText;
+begin
+  Result := PTCText(SelectedElement);
+end;
+
+function TDocument.GetSelectedPolyline: PTCPolyline;
+begin
+  Result := PTCPolyline(SelectedElement);
 end;
 
 initialization

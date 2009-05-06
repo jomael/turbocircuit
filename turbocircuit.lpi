@@ -34,7 +34,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="16">
+    <Units Count="17">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -122,6 +122,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="tcsettings"/>
       </Unit15>
+      <Unit16>
+        <Filename Value="toolscode.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="toolscode"/>
+      </Unit16>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

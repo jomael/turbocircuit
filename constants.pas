@@ -52,9 +52,28 @@ type
     Text: shortstring;
   end;
 
+  { Data structures for polyline }
+
+  PTCPolyline = ^TCPolyline;
+
+  TCPolyline = object(TCElement)
+    NPoints: Word;
+    Width: Word;
+    Color: TColor;
+    PenStyle: TPenStyle;
+    PenEndCap: TPenEndCap;
+    PenJoinStyle: TPenJoinStyle;
+    Points: array[0..255] of TPoint;
+  end;
+
   { Data structures for tools }
 
-  TCTool = (toolArrow = 0, toolComponent, toolWire, toolText);
+  TCTool = (
+    // Circuits tools
+    toolArrow = 0, toolComponent, toolWire, toolText,
+    // 2D CAD tools
+    toolPolyline
+    );
   
 {*******************************************************************
 *  Element verification constants
@@ -126,6 +145,8 @@ const
   INT_TOOLSNOTEBOOK_COMPONENTS = 1;
   INT_TOOLSNOTEBOOK_WIRE       = 2;
   INT_TOOLSNOTEBOOK_TEXT       = 3;
+
+  INT_TOOLSNOTEBOOK_POLYLINE   = 4;
 
 {*******************************************************************
 *  Strings not to be translated

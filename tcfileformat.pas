@@ -39,6 +39,7 @@ const
   TCRECORD_COMPONENT           = $04;
   TCRECORD_WIRE                = $05;
   TCRECORD_TEXT                = $06;
+  TCRECORD_POLYLINE            = $81;
   TCRECORD_EOF                 = $0F;
 
 {  BOF record constants }
@@ -64,6 +65,10 @@ const
 {  TEXT record constants }
   TCRECORD_TEXT_SIZE           = SizeOf(TCText);
   TCRECORD_TEXT_VER            = $00;
+
+{  POLYLINE record constants }
+  TCRECORD_POLYLINE_SIZE      = SizeOf(TCPolyline);
+  TCRECORD_POLYLINE_VER       = $00;
 
 {  EOF record constants }
   TCRECORD_EOF_SIZE            = $00;
