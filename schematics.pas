@@ -21,6 +21,7 @@ type
     NewWire: PTCWire;
     NewText: PTCText;
     NewPolyline: PTCPolyline;
+    NewRasterImage: PTCRasterImage;
     MouseMoveDocPos: TPoint;
     MulticlickPlacementStarted: Boolean;
     DragDropStarted: Boolean;
@@ -54,11 +55,9 @@ type
     { Paint methods }
     procedure   DrawBackground(ACanvas: TCanvas);
     procedure   DrawComponents(ACanvas: TCanvas);
-    procedure   DrawComponentPreview(ACanvas: TCanvas);
     procedure   DrawGrid(ACanvas: TCanvas);
     procedure   DrawPolylinePreview(ACanvas: TCanvas);
     procedure   DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
-    procedure   DrawWirePreview(ACanvas: TCanvas);
     procedure   EraseBackground(DC: HDC); override;
     procedure   Paint; override;
     procedure   UpdateAndRepaint(Sender: TObject);
@@ -238,40 +237,6 @@ begin
 end;
 
 {@@
-  Draws the preview to help place and move components
-}
-procedure TSchematics.DrawComponentPreview(ACanvas: TCanvas);
-var
-  TmpString: string;
-begin
-  ACanvas.Pen.Color := clRed;
-
-  { Help to place components }
-  if (vDocument.CurrentTool = toolComponent) then
-  begin
-    vItemsDrawer.DeltaX := Delegate.MouseMoveDocPos.X;
-    vItemsDrawer.DeltaY := Delegate.MouseMoveDocPos.Y;
-    vItemsDrawer.Orientation := vDocument.NewItemOrientation;
-
-    vComponentsDatabase.GoToRecByID(Delegate.NewComponentType);
-    TmpString := vComponentsDatabase.GetDrawingCode();
-    vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
-  end;
-
-  { Help to move components }
-  if (vDocument.CurrentTool = toolArrow) and vDocument.IsSelected(toolComponent) and Delegate.DragDropStarted then
-  begin
-    vItemsDrawer.DeltaX := vDocument.GetSelectedComponent^.Pos.X + Delegate.MouseMoveDocPos.X - Delegate.DragStartPos.X;
-    vItemsDrawer.DeltaY := vDocument.GetSelectedComponent^.Pos.Y + Delegate.MouseMoveDocPos.Y - Delegate.DragStartPos.Y;
-    vItemsDrawer.Orientation := vDocument.NewItemOrientation;
-
-    vComponentsDatabase.GoToRecByID(vDocument.GetSelectedComponent^.TypeID);
-    TmpString := vComponentsDatabase.GetDrawingCode();
-    vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
-  end;
-end;
-
-{@@
   Draws the default grid of the schematics
 }
 procedure TSchematics.DrawGrid(ACanvas: TCanvas);
@@ -308,6 +273,11 @@ end;
   Draws all schmatics elements on the document
 }
 procedure TSchematics.DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
+var
+  TmpString: string;
+  TmpWire: TCWire;
+  TmpText: TCText;
+  TmpPolyline: TCPolyline;
 begin
   ACanvas.Font.Height := 12;
 
@@ -317,6 +287,9 @@ begin
   { Sheet Background dots showing the grid }
   if AEditMode then DrawGrid(ACanvas);
   
+  { RasterImages }
+  vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
+
   { Components }
   DrawComponents(ACanvas);
 
@@ -334,60 +307,95 @@ begin
 
   if AEditMode then
   begin
-    { Preview when placing/moving a component }
-    DrawComponentPreview(ACanvas);
-  
-    { Preview when placing/moving a wire }
-    DrawWirePreview(ACanvas);
+    { Preview when placing an element }
+    ACanvas.Pen.Color := clRed;
 
-    { Preview when placing/moving polyline }
-    DrawPolylinePreview(ACanvas);
+    case vDocument.CurrentTool of
+    toolComponent:
+    begin
+      vItemsDrawer.DeltaX := Delegate.MouseMoveDocPos.X;
+      vItemsDrawer.DeltaY := Delegate.MouseMoveDocPos.Y;
+      vItemsDrawer.Orientation := vDocument.NewItemOrientation;
 
-    { Component selection }
-    if vDocument.IsSelected(toolComponent) then
-     vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.GetSelectedComponent);
+      vComponentsDatabase.GoToRecByID(Delegate.NewComponentType);
+      TmpString := vComponentsDatabase.GetDrawingCode();
+      vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
+    end;
+    toolWire:
+    begin
+      if (Delegate.DragDropStarted) then
+      begin
+        Delegate.NewWire^.PtTo := Delegate.MouseMoveDocPos;
 
-    { Wire selection }
-    if vDocument.IsSelected(toolWire) then
-     vItemsDrawer.DrawWireSelection(ACanvas, vDocument.GetSelectedWire, vDocument.SelectionInfo);
-  end;
-end;
-
-{@@
-  Draws the preview to help place and move wires
-}
-procedure TSchematics.DrawWirePreview(ACanvas: TCanvas);
-var
-  TmpWire: TCWire;
-begin
-  ACanvas.Pen.Color := clRed;
-
-  { Help to place wires }
-  if ((vDocument.CurrentTool = toolWire) and Delegate.DragDropStarted) then
-  begin
-    Delegate.NewWire^.PtTo := Delegate.MouseMoveDocPos;
-
-    vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
-  end;
-
-  { Help to move wires }
-  if (vDocument.CurrentTool = toolArrow) and vDocument.IsSelected(toolWire) and Delegate.DragDropStarted then
-  begin
-    case vDocument.SelectionInfo of
-     ELEMENT_START_POINT:
-     begin
-       TmpWire.Pos := Delegate.MouseMoveDocPos;
-       TmpWire.PtTo := vDocument.GetSelectedWire^.PtTo;
-     end;
-
-     ELEMENT_END_POINT:
-     begin
-       TmpWire.Pos := vDocument.GetSelectedWire^.Pos;
-       TmpWire.PtTo := Delegate.MouseMoveDocPos;
-     end;
+        vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
+      end;
+    end;
+    toolPolyline:
+    begin
+      if Delegate.MulticlickPlacementStarted then
+      begin
+        TmpPolyline := Delegate.NewPolyline^;
+        vDocument.Polylines.AddPoint(@TmpPolyline, Delegate.MouseMoveDocPos);
+        vItemsDrawer.DrawPolyline(ACanvas, @TmpPolyline);
+      end;
+    end;
     end;
 
-    vItemsDrawer.DrawWire(ACanvas, @TmpWire);
+    { Preview when moving an element }
+    if (vDocument.CurrentTool = toolArrow) then
+    begin
+    case vDocument.SelectedElementType of
+    toolComponent:
+    begin
+      if Delegate.DragDropStarted then
+      begin
+        vItemsDrawer.DeltaX := vDocument.GetSelectedComponent^.Pos.X + Delegate.MouseMoveDocPos.X - Delegate.DragStartPos.X;
+        vItemsDrawer.DeltaY := vDocument.GetSelectedComponent^.Pos.Y + Delegate.MouseMoveDocPos.Y - Delegate.DragStartPos.Y;
+        vItemsDrawer.Orientation := vDocument.NewItemOrientation;
+
+        vComponentsDatabase.GoToRecByID(vDocument.GetSelectedComponent^.TypeID);
+        TmpString := vComponentsDatabase.GetDrawingCode();
+        vItemsDrawer.DrawComponentFromString(ACanvas, TmpString);
+      end;
+    end;
+    toolWire:
+    begin
+      if Delegate.DragDropStarted then
+      begin
+        case vDocument.SelectionInfo of
+         ELEMENT_START_POINT:
+         begin
+           TmpWire.Pos := Delegate.MouseMoveDocPos;
+           TmpWire.PtTo := vDocument.GetSelectedWire^.PtTo;
+         end;
+
+         ELEMENT_END_POINT:
+         begin
+           TmpWire.Pos := vDocument.GetSelectedWire^.Pos;
+           TmpWire.PtTo := Delegate.MouseMoveDocPos;
+         end;
+        end;
+
+        vItemsDrawer.DrawWire(ACanvas, @TmpWire);
+      end;
+    end;
+    toolText:
+    begin
+      TmpText := vDocument.GetSelectedText^;
+      TmpText.Pos := Delegate.MouseMoveDocPos;
+      vItemsDrawer.DrawText(ACanvas, @TmpText);
+    end;
+    end;// case
+    end;// if
+
+    { element selection }
+    ACanvas.Brush.Color := clWhite;
+    ACanvas.Brush.Style := bsSolid;
+    case vDocument.SelectedElementType of
+     toolComponent: vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.GetSelectedComponent);
+     toolWire: vItemsDrawer.DrawWireSelection(ACanvas, vDocument.GetSelectedWire, vDocument.SelectionInfo);
+     toolText: vItemsDrawer.DrawTextSelection(ACanvas, vDocument.GetSelectedText);
+    end;
   end;
 end;
 

@@ -35,7 +35,7 @@ uses
   // TC units
   schematics, dbcomponents, constants, translationstc, document,
   dlgcomponentseditor, dlgabout, dlgdocumentopts,
-  toolscode;
+  toolscode, EditBtn, Spin;
 
 type
 
@@ -48,6 +48,13 @@ type
     actFileSaveAs: TAction;
     actFileNew: TAction;
     actFileExit: TAction;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    spinPolylineWidth: TSpinEdit;
+    spinZoom: TSpinEdit;
+    spinImageProportion: TSpinEdit;
+    txtRasterImage: TFileNameEdit;
     FMainFormAction: TActionList;
     btnText: TSpeedButton;
     cmbComponents: TComboBox;
@@ -77,6 +84,8 @@ type
     Page2: TPage;
     Page3: TPage;
     Page4: TPage;
+    pagePolyline: TPage;
+    pageRasterImage: TPage;
     pnlToolbar: TPanel;
     pnlTools: TPanel;
     pnlStatusBar: TStatusBar;
@@ -86,6 +95,7 @@ type
     dialogSave: TSaveDialog;
     barFileToolbar: TToolBar;
     btnPolyline: TSpeedButton;
+    btnRasterImage: TSpeedButton;
     ToolButton1: TToolButton;
     toolSeparator1: TToolButton;
     toolOpen: TToolButton;
@@ -104,6 +114,10 @@ type
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure spinImageProportionChange(Sender: TObject);
+    procedure spinPolylineWidthChange(Sender: TObject);
+    procedure spinZoomChange(Sender: TObject);
+    procedure txtRasterImageAcceptFileName(Sender: TObject; var Value: String);
   private
     function  ShowDialogDiscartChanges: Boolean;
     procedure TranslateMainMenu;
@@ -111,6 +125,7 @@ type
     procedure TranslateUserInterface;
     procedure LoadUIItemsFromComponentsTable;
     procedure FillDocumentUIElements(Sender: TObject);
+    procedure UpdateNotebookPage(ATool: TCTool);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -129,16 +144,11 @@ begin
   else if ASender = btnComponent then vDocument.CurrentTool := toolComponent
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
   else if ASender = btnText then vDocument.CurrentTool := toolText
-  else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline;
+  else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline
+  else if ASender = btnRasterImage then vDocument.CurrentTool := toolRasterImage;
 
   { Updates the tool notebook }
-  case vDocument.CurrentTool of
-   toolArrow: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_ARROW];
-   toolComponent: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_COMPONENTS];
-   toolWire: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_WIRE];
-   toolText: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_TEXT];
-   toolPolyline: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_POLYLINE];
-  end;
+  UpdateNotebookPage(vDocument.CurrentTool);
 
   vSchematics.UpdateAndRepaint(nil);
 end;
@@ -235,6 +245,45 @@ begin
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
 end;
 
+procedure TMainForm.spinImageProportionChange(Sender: TObject);
+begin
+  if not (vDocument.SelectedElementType = toolRasterImage) then Exit;
+
+  vDocument.GetSelectedRasterImage^.Proportion := spinImageProportion.Value / 100;
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
+procedure TMainForm.spinPolylineWidthChange(Sender: TObject);
+begin
+  if not (vDocument.SelectedElementType = toolPolyline) then Exit;
+
+  vDocument.GetSelectedPolyline^.Width := spinPolylineWidth.Value;
+
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
+procedure TMainForm.spinZoomChange(Sender: TObject);
+begin
+  FLOAT_SHEET_GRID_PROPORTION := spinZoom.Value / 100;
+  INT_SHEET_GRID_SPACING := Round(INT_SHEET_DEFAULT_GRID_SPACING / FLOAT_SHEET_GRID_PROPORTION);
+  INT_SHEET_GRID_HALFSPACING := INT_SHEET_GRID_SPACING div 2;
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
+procedure TMainForm.txtRasterImageAcceptFileName(Sender: TObject;
+  var Value: String);
+begin
+  if not (vDocument.SelectedElementType = toolRasterImage) then Exit;
+
+  if vDocument.GetSelectedRasterImage^.ImageData <> nil then
+    FreeAndNil(vDocument.GetSelectedRasterImage^.ImageData);
+
+  vDocument.GetSelectedRasterImage^.ImageData := TPicture.Create;
+  vDocument.GetSelectedRasterImage^.ImageData.LoadFromFile(Value);
+
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
 function TMainForm.ShowDialogDiscartChanges: Boolean;
 begin
   Result := MessageDlg(
@@ -327,6 +376,22 @@ begin
     Caption := szAppTitle + ' - ' + vTranslations.lpUntitled;
 
   if vDocument.Modified then Caption := Caption + '*';
+
+  { If something is selected, show the appropriate page }
+  if vDocument.IsSomethingSelected then
+    UpdateNotebookPage(vDocument.SelectedElementType);
+end;
+
+procedure TMainForm.UpdateNotebookPage(ATool: TCTool);
+begin
+  case ATool of
+   toolArrow: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_ARROW];
+   toolComponent: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_COMPONENTS];
+   toolWire: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_WIRE];
+   toolText: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_TEXT];
+   toolPolyline: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_POLYLINE];
+   toolRasterImage: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_RASTERIMAGE];
+  end;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);

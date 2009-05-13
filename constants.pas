@@ -66,13 +66,23 @@ type
     Points: array[0..255] of TPoint;
   end;
 
+  { Data structures for embedded raster images }
+
+  PTCRasterImage = ^TCRasterImage;
+
+  TCRasterImage = object(TCElement)
+    Proportion: Single; // in percentage, standard=1.0
+    Angle: Single; // In radians
+    ImageData: TPicture;
+  end;
+
   { Data structures for tools }
 
   TCTool = (
     // Circuits tools
     toolArrow = 0, toolComponent, toolWire, toolText,
     // 2D CAD tools
-    toolPolyline
+    toolPolyline, toolRasterImage
     );
   
 {*******************************************************************
@@ -134,8 +144,7 @@ const
 *  General User Interface constants
 *******************************************************************}
 const
-  INT_SHEET_GRID_SPACING     = 10;
-  INT_SHEET_GRID_HALFSPACING = INT_SHEET_GRID_SPACING div 2;
+  INT_SHEET_DEFAULT_GRID_SPACING = 10;
   INT_SHEET_MAX_WIDTH        = 1000;
   INT_SHEET_MAX_HEIGHT       = 1000;
   INT_SHEET_DEFAULT_WIDTH    = 500;
@@ -147,6 +156,12 @@ const
   INT_TOOLSNOTEBOOK_TEXT       = 3;
 
   INT_TOOLSNOTEBOOK_POLYLINE   = 4;
+  INT_TOOLSNOTEBOOK_RASTERIMAGE= 5;
+
+var
+  INT_SHEET_GRID_SPACING: Cardinal = INT_SHEET_DEFAULT_GRID_SPACING;
+  INT_SHEET_GRID_HALFSPACING: Cardinal = INT_SHEET_DEFAULT_GRID_SPACING div 2;
+  FLOAT_SHEET_GRID_PROPORTION: Single = 1.0;
 
 {*******************************************************************
 *  Strings not to be translated

@@ -46,6 +46,7 @@ type
     Wires: TCWireList;
     TextList: TCTextList;
     Polylines: TCPolylineList;
+    RasterImages: TCRasterImageList;
     { Base methods }
     constructor Create;
     destructor Destroy; override;
@@ -68,6 +69,7 @@ type
     function  GetSelectedWire: PTCWire;
     function  GetSelectedText: PTCText;
     function  GetSelectedPolyline: PTCPolyline;
+    function  GetSelectedRasterImage: PTCRasterImage;
   end;
 
 var
@@ -186,6 +188,7 @@ begin
   Wires := TCWireList.Create;
   TextList := TCTextList.Create;
   Polylines := TCPolylineList.Create;
+  RasterImages := TCRasterImageList.Create;
 
   { Initialization of various fields }
   Clear;
@@ -463,6 +466,11 @@ end;
 function TDocument.GetSelectedPolyline: PTCPolyline;
 begin
   Result := PTCPolyline(SelectedElement);
+end;
+
+function TDocument.GetSelectedRasterImage: PTCRasterImage;
+begin
+  Result := PTCRasterImage(SelectedElement);
 end;
 
 initialization

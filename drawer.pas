@@ -39,6 +39,7 @@ type
   TItemsDrawer = class(TObject)
   private
     Points: array[0..2] of TPoint;
+    procedure DrawPosCross(ACanvas: TCanvas; APos: TPoint);
   public
     DeltaX, DeltaY: Integer;
     Orientation: TCComponentOrientation;
@@ -54,9 +55,11 @@ type
     procedure DrawWireSelection(ACanvas: TCanvas; AWire: PTCWire; AWirePart: DWord);
     { Text element drawing methods }
     procedure DrawText(ACanvas: TCanvas; AElement: PTCElement);
-    procedure DrawTextSelection(ACanvas: TCanvas; AText: PTCText);
+    procedure DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
     { Polyline drawing methods }
     procedure DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
+    { Raster Image drawing methods }
+    procedure DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
     function  FixCoordinates(APoint: TPoint): TPoint;
     function  GridCoordsToSheet(AX, AY: Single): TPoint;
@@ -436,15 +439,34 @@ begin
   
   AText := PTCText(AElement);
 
+  DrawPosCross(ACanvas, AText^.Pos);
+
   ACanvas.TextOut(
     AText^.Pos.X * INT_SHEET_GRID_SPACING,
     AText^.Pos.Y * INT_SHEET_GRID_SPACING,
     AText^.Text);
 end;
 
-procedure TItemsDrawer.DrawTextSelection(ACanvas: TCanvas; AText: PTCText);
+procedure TItemsDrawer.DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
+var
+  AText: PTCText;
 begin
+  if AElement = nil then Exit;
 
+  AText := PTCText(AElement);
+
+  ACanvas.Pen.Style := psDash;
+  ACanvas.Brush.Style := bsClear;
+
+  ACanvas.Rectangle(
+    AText^.Pos.X * INT_SHEET_GRID_SPACING,
+    AText^.Pos.Y * INT_SHEET_GRID_SPACING,
+    AText^.Pos.X * INT_SHEET_GRID_SPACING + ACanvas.TextWidth(AText^.Text),
+    AText^.Pos.Y * INT_SHEET_GRID_SPACING + ACanvas.TextHeight(AText^.Text)
+    );
+
+  ACanvas.Pen.Style := psSolid;
+  ACanvas.Brush.Style := bsSolid;
 end;
 
 procedure TItemsDrawer.DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
@@ -453,6 +475,7 @@ var
   i: Integer;
 begin
   ACanvas.Pen.Color := clBlack;
+  ACanvas.Pen.Width := APolyline^.Width;
   ACanvas.Brush.Color := clBlack;
 
   if AElement = nil then Exit;
@@ -464,6 +487,51 @@ begin
       APolyline^.Points[i].X * INT_SHEET_GRID_SPACING,
       APolyline^.Points[i].Y * INT_SHEET_GRID_SPACING
     );
+
+  ACanvas.Pen.Width := 1;
+end;
+
+procedure TItemsDrawer.DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
+var
+  ARasterImage: PTCRasterImage absolute AElement;
+  i: Integer;
+begin
+  if AElement = nil then Exit;
+
+  DrawPosCross(ACanvas, AElement^.Pos);
+
+  if ARasterImage^.ImageData <> nil then
+  begin
+    ACanvas.StretchDraw(
+      Bounds(
+      ARasterImage^.Pos.X * INT_SHEET_GRID_SPACING,
+      ARasterImage^.Pos.Y * INT_SHEET_GRID_SPACING,
+      Round(ARasterImage^.ImageData.Graphic.Width * ARasterImage^.Proportion * FLOAT_SHEET_GRID_PROPORTION),
+      Round(ARasterImage^.ImageData.Graphic.Height * ARasterImage^.Proportion * FLOAT_SHEET_GRID_PROPORTION)
+      ),
+      ARasterImage^.ImageData.Graphic);
+  end;
+end;
+
+procedure TItemsDrawer.DrawPosCross(ACanvas: TCanvas; APos: TPoint);
+begin
+  ACanvas.Pen.Style := psDash;
+
+  ACanvas.Line(
+    (APos.X - 1) * INT_SHEET_GRID_SPACING,
+    (APos.Y) * INT_SHEET_GRID_SPACING,
+    (APos.X + 1) * INT_SHEET_GRID_SPACING,
+    (APos.Y) * INT_SHEET_GRID_SPACING
+    );
+
+  ACanvas.Line(
+    (APos.X) * INT_SHEET_GRID_SPACING,
+    (APos.Y - 1) * INT_SHEET_GRID_SPACING,
+    (APos.X) * INT_SHEET_GRID_SPACING,
+    (APos.Y + 1) * INT_SHEET_GRID_SPACING
+    );
+
+  ACanvas.Pen.Style := psSolid;
 end;
 
 {@@

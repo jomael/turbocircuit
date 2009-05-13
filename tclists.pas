@@ -29,7 +29,7 @@ type
     {@@
      @see #FindElement
     }
-    function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; virtual; abstract;
+    function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; virtual;
   public
     Elements: PTCElement;
   public
@@ -72,7 +72,7 @@ type
   TCTextList = class(TCElementList)
   protected
     { Element-specific utility methods }
-    function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+    //function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
   end;
 
   { TCPolylineList }
@@ -88,9 +88,25 @@ type
     function  GetLastPoint(APolyline: PTCPolyline): TPoint;
   end;
 
+  { TCRasterImageList }
+
+  TCRasterImageList = class(TCElementList)
+  protected
+    { Element-specific utility methods }
+    //function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+  end;
+
 implementation
 
 { TCElementList }
+
+function TCElementList.DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord;
+begin
+  if Pos = AElement^.Pos then
+    Result := ELEMENT_MATCHES
+  else
+    Result := ELEMENT_DOES_NOT_MATCH;
+end;
 
 constructor TCElementList.Create;
 begin
@@ -336,7 +352,7 @@ end;
 
 { TCTextList }
 
-function TCTextList.DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord;
+{function TCTextList.DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord;
 var
   AElementHeight, AElementWidth: Integer;
 begin
@@ -348,7 +364,7 @@ begin
   if (AElement^.Pos.X < Pos.X) and (Pos.X < AElement^.Pos.X + AElementWidth)
    and (AElement^.Pos.Y < Pos.Y) and (Pos.Y < AElement^.Pos.Y + AElementHeight) then
      Result := ELEMENT_MATCHES;
-end;
+end;}
 
 { TCPolylineList }
 
@@ -362,13 +378,13 @@ begin
   { Verifies Position }
   if (APolyline^.Pos.X = Pos.X) and (APolyline^.Pos.Y = Pos.Y) then
   begin
-    Result := ELEMENT_START_POINT;
+    Result := ELEMENT_MATCHES;
   end
   { Verifies all other points }
   else
   begin
     for i := 0 to Length(APolyline^.Points) do
-     if APolyline^.Points[i] = Pos then Exit(ELEMENT_END_POINT + i);
+     if APolyline^.Points[i] = Pos then Exit(ELEMENT_MATCHES + i);
   end;
 end;
 
