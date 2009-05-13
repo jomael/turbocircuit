@@ -58,6 +58,7 @@ type
     procedure DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
     { Polyline drawing methods }
     procedure DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
+    procedure DrawPolylineSelection(ACanvas: TCanvas; AElement: PTCElement: APointNr: Integer);
     { Raster Image drawing methods }
     procedure DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
@@ -518,17 +519,17 @@ begin
   ACanvas.Pen.Style := psDash;
 
   ACanvas.Line(
-    (APos.X - 1) * INT_SHEET_GRID_SPACING,
-    (APos.Y) * INT_SHEET_GRID_SPACING,
-    (APos.X + 1) * INT_SHEET_GRID_SPACING,
-    (APos.Y) * INT_SHEET_GRID_SPACING
+    APos.X * INT_SHEET_GRID_SPACING - INT_SHEET_DEFAULT_GRID_SPACING,
+    APos.Y * INT_SHEET_GRID_SPACING,
+    APos.X * INT_SHEET_GRID_SPACING + INT_SHEET_DEFAULT_GRID_SPACING,
+    APos.Y * INT_SHEET_GRID_SPACING
     );
 
   ACanvas.Line(
-    (APos.X) * INT_SHEET_GRID_SPACING,
-    (APos.Y - 1) * INT_SHEET_GRID_SPACING,
-    (APos.X) * INT_SHEET_GRID_SPACING,
-    (APos.Y + 1) * INT_SHEET_GRID_SPACING
+    APos.X * INT_SHEET_GRID_SPACING,
+    APos.Y * INT_SHEET_GRID_SPACING - INT_SHEET_DEFAULT_GRID_SPACING,
+    APos.X * INT_SHEET_GRID_SPACING,
+    APos.Y * INT_SHEET_GRID_SPACING + INT_SHEET_DEFAULT_GRID_SPACING
     );
 
   ACanvas.Pen.Style := psSolid;
