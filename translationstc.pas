@@ -51,6 +51,8 @@ type
     lpHelpAbout: string;
 
     { Main Form }
+    lpMainFormArrow, lpMainFormComponent, lpMainFormWire,
+      lpMainFormText, lpMainFormPolyline, lpMainFormRasterImage: string;
     lpMainFormChooseComponent: string;
 
     { I/O strings }
@@ -101,6 +103,13 @@ begin
   lpHelpAbout := 'About';
 
   { Main Form }
+  lpMainFormArrow := 'Arrow';
+  lpMainFormComponent := 'Component';
+  lpMainFormWire := 'Wire';
+  lpMainFormText := 'Text';
+  lpMainFormPolyline := 'Polyline';
+  lpMainFormRasterImage := 'Raster Image';
+
   lpMainFormChooseComponent := 'Component type:';
 
   { I/O strings }

@@ -58,7 +58,7 @@ type
     procedure DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
     { Polyline drawing methods }
     procedure DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
-    procedure DrawPolylineSelection(ACanvas: TCanvas; AElement: PTCElement: APointNr: Integer);
+    procedure DrawPolylineSelection(ACanvas: TCanvas; AElement: PTCElement; APointNr: Integer);
     { Raster Image drawing methods }
     procedure DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
@@ -490,6 +490,12 @@ begin
     );
 
   ACanvas.Pen.Width := 1;
+end;
+
+procedure TItemsDrawer.DrawPolylineSelection(ACanvas: TCanvas;
+  AElement: PTCElement; APointNr: Integer);
+begin
+
 end;
 
 procedure TItemsDrawer.DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);

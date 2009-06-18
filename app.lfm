@@ -3,17 +3,17 @@ object MainForm: TMainForm
   Height = 441
   Top = 192
   Width = 556
-  Caption = 'MainForm'
+  Caption = 'Turbo Circuit'
   ClientHeight = 441
   ClientWidth = 556
   Menu = mnuMainMenu
   OnCloseQuery = FormCloseQuery
   LCLVersion = '0.9.27'
   object pnlToolbar: TPanel
-    Height = 50
+    Height = 48
     Width = 556
     Align = alTop
-    ClientHeight = 50
+    ClientHeight = 48
     ClientWidth = 556
     TabOrder = 0
     object barFileToolbar: TToolBar
@@ -48,24 +48,40 @@ object MainForm: TMainForm
         Action = actFileNew
       end
     end
-    object spinZoom: TSpinEdit
-      Left = 200
-      Height = 17
-      Top = 32
-      Width = 60
-      MaxValue = 1000
-      MinValue = 25
-      OnChange = spinZoomChange
+    object ToolBar1: TToolBar
+      Left = 1
+      Height = 26
+      Top = 27
+      Width = 554
+      Caption = 'ToolBar1'
       TabOrder = 1
-      Value = 100
+      object Label4: TLabel
+        Left = 1
+        Height = 18
+        Top = 2
+        Width = 48
+        Caption = ' Zoom: '
+        ParentColor = False
+      end
+      object spinZoom: TSpinEdit
+        Left = 49
+        Height = 16
+        Top = 2
+        Width = 60
+        MaxValue = 1000
+        MinValue = 25
+        OnChange = spinZoomChange
+        TabOrder = 0
+        Value = 100
+      end
     end
   end
   object pnlTools: TPanel
-    Height = 368
-    Top = 50
+    Height = 370
+    Top = 48
     Width = 150
     Align = alLeft
-    ClientHeight = 368
+    ClientHeight = 370
     ClientWidth = 150
     TabOrder = 1
     object btnArrow: TSpeedButton
@@ -894,13 +910,13 @@ object MainForm: TMainForm
       Height = 208
       Top = 150
       Width = 136
-      PageIndex = 4
+      PageIndex = 3
       TabOrder = 0
-      object Page1: TPage
-        Caption = 'Page1'
+      object pageArrow: TPage
+        Caption = 'pageArrow'
       end
-      object Page2: TPage
-        Caption = 'Page2'
+      object pageComponent: TPage
+        Caption = 'pageComponent'
         ClientWidth = 130
         ClientHeight = 169
         object lblComponentType: TLabel
@@ -921,14 +937,14 @@ object MainForm: TMainForm
           TabOrder = 0
         end
       end
-      object Page3: TPage
-        Caption = 'Page3'
+      object pageWire: TPage
+        Caption = 'pageWire'
       end
-      object Page4: TPage
-        Caption = 'Page4'
+      object pageText: TPage
+        Caption = 'pageText'
       end
       object pagePolyline: TPage
-        Caption = 'pagePolyline'
+        Caption = 'Polyline'
         ClientWidth = 130
         ClientHeight = 169
         object Label3: TLabel
@@ -941,8 +957,8 @@ object MainForm: TMainForm
         end
         object spinPolylineWidth: TSpinEdit
           Left = 6
-          Height = 23
-          Top = 28
+          Height = 16
+          Top = 31
           Width = 79
           MinValue = 1
           OnChange = spinPolylineWidthChange
@@ -981,7 +997,7 @@ object MainForm: TMainForm
         end
         object spinImageProportion: TSpinEdit
           Left = 5
-          Height = 23
+          Height = 17
           Top = 84
           Width = 80
           MaxValue = 1000

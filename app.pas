@@ -51,9 +51,11 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
+    Label4: TLabel;
     spinPolylineWidth: TSpinEdit;
     spinZoom: TSpinEdit;
     spinImageProportion: TSpinEdit;
+    ToolBar1: TToolBar;
     txtRasterImage: TFileNameEdit;
     FMainFormAction: TActionList;
     btnText: TSpeedButton;
@@ -80,10 +82,10 @@ type
     mnuFileSeparator: TMenuItem;
     FToolsNotebook: TNotebook;
     dialogOpen: TOpenDialog;
-    Page1: TPage;
-    Page2: TPage;
-    Page3: TPage;
-    Page4: TPage;
+    pageArrow: TPage;
+    pageComponent: TPage;
+    pageWire: TPage;
+    pageText: TPage;
     pagePolyline: TPage;
     pageRasterImage: TPage;
     pnlToolbar: TPanel;
@@ -122,6 +124,7 @@ type
     function  ShowDialogDiscartChanges: Boolean;
     procedure TranslateMainMenu;
     procedure TranslateActions;
+    procedure TranslatePanels;
     procedure TranslateUserInterface;
     procedure LoadUIItemsFromComponentsTable;
     procedure FillDocumentUIElements(Sender: TObject);
@@ -339,6 +342,28 @@ begin
   actFileExit.Hint := vTranslations.lpFileExit;
 end;
 
+procedure TMainForm.TranslatePanels;
+begin
+  { Arrow page }
+  pageArrow.Caption := vTranslations.lpMainFormArrow;
+
+  { Component page }
+  pageComponent.Caption := vTranslations.lpMainFormComponent;
+  lblComponentType.Caption := vTranslations.lpMainFormChooseComponent;
+
+  { Wire page }
+  pageWire.Caption := vTranslations.lpMainFormWire;
+
+  { Text page }
+  pageText.Caption := vTranslations.lpMainFormText;
+
+  { Polyline page }
+  pagePolyline.Caption := vTranslations.lpMainFormPolyline;
+
+  { Raster Image page }
+  pageRasterImage.Caption := vTranslations.lpMainFormRasterImage;
+end;
+
 {@@
   Translates the user interface of TMainForm
 }
@@ -346,8 +371,7 @@ procedure TMainForm.TranslateUserInterface;
 begin
   TranslateMainMenu;
   TranslateActions;
-
-  lblComponentType.Caption := vTranslations.lpMainFormChooseComponent;
+  TranslatePanels;
 end;
 
 {@@
@@ -430,6 +454,13 @@ begin
 
   { Load user interface items which depend in the components table }
   LoadUIItemsFromComponentsTable();
+
+  // PageControl tabs only visible in Mac OS X - bug workaround
+  {$ifdef Darwin}
+    FToolsNotebook.ShowTabs := True;
+  {$else}
+    FToolsNotebook.ShowTabs := False;
+  {$endif}
 end;
 
 destructor TMainForm.Destroy;
