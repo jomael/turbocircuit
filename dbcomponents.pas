@@ -53,7 +53,6 @@ type
   protected
     function GetReadOnly: Boolean; override;
     procedure SetReadOnly(AValue: Boolean); override;
-    function WordWrapIsStored: boolean; override;
     procedure DataChange(Sender: TObject); virtual;
     procedure ActiveChange(Sender: TObject); virtual;
     procedure Notification(AComponent: TComponent;
@@ -100,7 +99,6 @@ type
     property TabOrder;
     property Tabstop;
     property Visible;
-    property WordWrap stored WordWrapIsStored;
   end;
 
 var
@@ -311,11 +309,6 @@ procedure TDBDrawingCodeMemo.SetReadOnly(AValue: Boolean);
 begin
   inherited;
   FDataLink.ReadOnly:=AValue;
-end;
-
-function TDBDrawingCodeMemo.WordWrapIsStored: boolean;
-begin
-  Result:=not WordWrap;
 end;
 
 procedure TDBDrawingCodeMemo.DataChange(Sender: TObject);
