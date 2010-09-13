@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="7"/>
+    <Version Value="9"/>
     <General>
       <Flags>
         <AlwaysBuild Value="False"/>
@@ -9,10 +9,9 @@
       </Flags>
       <SessionStorage Value="InProjectDir"/>
       <MainUnit Value="0"/>
-      <TargetFileExt Value=""/>
     </General>
     <VersionInfo>
-      <ProjectVersion Value=""/>
+      <StringTable ProductVersion=""/>
     </VersionInfo>
     <PublishOptions>
       <Version Value="2"/>
@@ -42,9 +41,9 @@
       </Unit0>
       <Unit1>
         <Filename Value="app.pas"/>
+        <IsPartOfProject Value="True"/>
         <ComponentName Value="MainForm"/>
         <HasResources Value="True"/>
-        <IsPartOfProject Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="app"/>
       </Unit1>
@@ -75,14 +74,14 @@
       </Unit6>
       <Unit7>
         <Filename Value="dlgabout.pas"/>
-        <ComponentName Value="vAbout"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="vAbout"/>
         <UnitName Value="dlgabout"/>
       </Unit7>
       <Unit8>
         <Filename Value="dlgcomponentseditor.pas"/>
-        <ComponentName Value="vComponentsEditor"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="vComponentsEditor"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="dlgcomponentseditor"/>
       </Unit8>
@@ -108,8 +107,8 @@
       </Unit12>
       <Unit13>
         <Filename Value="dlgdocumentopts.pas"/>
-        <ComponentName Value="DocumentOptions"/>
         <IsPartOfProject Value="True"/>
+        <ComponentName Value="DocumentOptions"/>
         <UnitName Value="dlgdocumentopts"/>
       </Unit13>
       <Unit14>
@@ -130,10 +129,11 @@
     </Units>
   </ProjectOptions>
   <CompilerOptions>
-    <Version Value="8"/>
+    <Version Value="9"/>
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
+        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>
