@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType,
   // TurboCircuit
-  constants, schematics, document;
+  constants, schematics, document, tclists;
 
 type
 
@@ -35,14 +35,17 @@ implementation
 
 procedure TToolsDelegate.HandleKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
+var
+  lList: PTCElementList;
 begin
   case Key of
    VK_DELETE:
    begin
-     if (vDocument.SelectedElementType = toolComponent) then vDocument.Components.Remove(vDocument.SelectedElement);
-     if (vDocument.SelectedElementType = toolWire) then vDocument.Wires.Remove(vDocument.SelectedElement);
      if vDocument.IsSomethingSelected then
      begin
+       lList := vDocument.GetListForElement(vDocument.SelectedElementType);
+       lList^.Remove(vDocument.SelectedElement);
+
        // It is fundamental to clear the selection,
        // because otherwise the drawing code will try
        // to draw the selected component, which no longer exists
@@ -59,22 +62,24 @@ end;
 
 procedure TToolsDelegate.HandleKeyPress(Sender: TObject; var Key: char);
 begin
-
   case Key of
    ^R:
    begin
      { If a component is selected, rotate it }
      if (vDocument.SelectedElementType = toolComponent) then
      begin
-       vDocument.RotateOrientation(PTCComponent(vDocument.SelectedElement)^.Orientation);
+       vDocument.RotateOrientation(vDocument.GetSelectedComponent()^.Orientation);
        vDocument.Modified := True;
        Owner.UpdateAndRepaint(nil);
      end
-     { Otherwise rotate the new item to be added or moved }
+     { If a component is selected to be added, then rotate it }
      else
      begin
-       vDocument.RotateOrientation(vDocument.NewItemOrientation);
-       Owner.UpdateAndRepaint(nil);
+       if (vDocument.CurrentTool in [toolComponent, toolRasterImage]) then
+       begin
+         vDocument.RotateOrientation(vDocument.NewItemOrientation);
+         Owner.UpdateAndRepaint(nil);
+       end;
      end;
    end;
   end; // case
@@ -102,6 +107,7 @@ begin
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
+      vDocument.SelectedElementType := toolComponent;
       DragDropStarted := True;
       vDocument.NewItemOrientation := PTCComponent(vDocument.SelectedElement)^.Orientation;
       Owner.UpdateAndRepaint(nil);
@@ -113,6 +119,7 @@ begin
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
+      vDocument.SelectedElementType := toolWire;
       DragDropStarted := True;
       Owner.UpdateAndRepaint(nil);
       Exit;
@@ -123,12 +130,34 @@ begin
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
+      vDocument.SelectedElementType := toolText;
       DragDropStarted := True;
       Owner.UpdateAndRepaint(nil);
       Exit;
     end;
 
-  end;
+    { Attempts to select a polyline }
+    vDocument.SelectionInfo := vDocument.Polylines.FindElement(DocPos, vDocument.SelectedElement);
+
+    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
+    begin
+      vDocument.SelectedElementType := toolPolyline;
+      DragDropStarted := True;
+      Owner.UpdateAndRepaint(nil);
+      Exit;
+    end;
+
+     { Attempts to select a raster image }
+    vDocument.SelectionInfo := vDocument.RasterImages.FindElement(DocPos, vDocument.SelectedElement);
+
+    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
+    begin
+      vDocument.SelectedElementType := toolRasterImage;
+      DragDropStarted := True;
+      Owner.UpdateAndRepaint(nil);
+      Exit;
+    end;
+ end;
 
   toolWire:
   begin
@@ -149,6 +178,21 @@ begin
     NewText^.Pos := DocPos;
   end;
 
+  toolPolyline:
+  begin
+    DragDropStarted := True;
+
+    New(NewPolyline);
+
+    NewPolyline^.NPoints := 1;
+    NewPolyline^.Width := 1;
+//    NewPolyline^.Color := clBlack;
+//    PenStyle: TPenStyle;
+//    PenEndCap: TPenEndCap;
+//    PenJoinStyle: TPenJoinStyle;
+    NewPolyline^.Points[0] := DocPos;
+  end;
+
   end;
 end;
 
@@ -164,8 +208,8 @@ begin
     toolArrow: if DragDropStarted then Owner.UpdateAndRepaint(nil);
     { Help to place components }
     toolComponent: Owner.UpdateAndRepaint(nil);
-    { Help to place wires }
-    toolWire: if DragDropStarted then Owner.UpdateAndRepaint(nil);
+    { Help to place line elements }
+    toolWire, toolPolyline: if DragDropStarted then Owner.UpdateAndRepaint(nil);
   end;
 end;
 
@@ -173,10 +217,14 @@ procedure TToolsDelegate.HandleMouseUp(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
   DocPos: TPoint;
+  lList: PTCElementList;
+  lPolyline: PTCPolyline;
+  lChanged: Boolean;
 begin
   DocPos := vDocument.GetDocumentPos(X, Y);
 
   DragDropStarted := False;
+  lChanged := False;
 
   case vDocument.CurrentTool of
 
@@ -185,20 +233,10 @@ begin
     { Verify if something is being moved }
     if vDocument.IsSomethingSelected then
     begin
-      if (vDocument.SelectedElementType = toolComponent) then
+      lList := vDocument.GetListForElement(vDocument.SelectedElementType);
+      if lList <> nil then
       begin
-        vDocument.Components.MoveElement(vDocument.SelectedElement,
-         Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
-        vDocument.Modified := True;
-      end
-      else if (vDocument.SelectedElementType = toolWire) then
-      begin
-        vDocument.Wires.MoveWire(PTCWire(vDocument.SelectedElement), DocPos, vDocument.SelectionInfo);
-        vDocument.Modified := True;
-      end
-      else if (vDocument.SelectedElementType = toolText) then
-      begin
-        vDocument.TextList.MoveElement(vDocument.SelectedElement,
+        lList^.MoveElement(vDocument.SelectedElement,
          Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
         vDocument.Modified := True;
       end;
@@ -247,11 +285,47 @@ begin
     Owner.UpdateAndRepaint(nil);
   end;
 
+  toolPolyline:
+  begin
+    // Placing the start of a polyline
+    if DragDropStarted and (NewPolyline^.NPoints = 1) then
+    begin
+      // Add the new point
+      NewPolyline^.Points[NewPolyline^.NPoints] := DocPos;
+      NewPolyline^.NPoints += 1;
+      vDocument.Polylines.Insert(NewPolyline);
+
+      // Select the polyline
+      vDocument.SelectedElementType := toolPolyline;
+      vDocument.SelectedElement := NewPolyline;
+
+      lChanged := True;
+    end
+    // Placing more lines to a polyline
+    else if (vDocument.SelectedElementType = toolPolyline) then
+    begin
+      lPolyline := vDocument.GetSelectedPolyline();
+      lPolyline^.Points[lPolyline^.NPoints] := DocPos;
+      lPolyline^.NPoints := lPolyline^.NPoints + 1;
+
+      lChanged := True;
+    end;
+
+    if lChanged then
+    begin
+      vDocument.Modified := True;
+      vDocument.UIChangeCallback(Self);
+      Owner.UpdateAndRepaint(nil);
+    end;
+  end;
+
   end;
 end;
 
 procedure TToolsDelegate.HandleUTF8KeyPress(Sender: TObject;
   var UTF8Key: TUTF8Char);
+var
+  lText: PTCText;
 begin
   case vDocument.CurrentTool of
 
@@ -259,7 +333,8 @@ begin
   begin
     if (vDocument.SelectedElementType = toolText) then
     begin
-      PTCText(vDocument.SelectedElement)^.Text += UTF8Key;
+      lText := vDocument.GetSelectedText();
+      lText^.Text += UTF8Key;
       vDocument.Modified := True;
       vDocument.UIChangeCallback(Self);
       Owner.UpdateAndRepaint(nil);
@@ -278,4 +353,4 @@ finalization
 vToolsDelegate.Free;
 
 end.
-
+
