@@ -48,6 +48,7 @@ type
     actFileSaveAs: TAction;
     actFileNew: TAction;
     actFileExit: TAction;
+    btnEllipse: TSpeedButton;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -148,7 +149,8 @@ begin
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
   else if ASender = btnText then vDocument.CurrentTool := toolText
   else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline
-  else if ASender = btnRasterImage then vDocument.CurrentTool := toolRasterImage;
+  else if ASender = btnRasterImage then vDocument.CurrentTool := toolRasterImage
+  else if ASender = btnEllipse then vDocument.CurrentTool := toolEllipse;
 
   { Updates the tool notebook }
   UpdateNotebookPage(vDocument.CurrentTool);

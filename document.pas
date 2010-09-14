@@ -47,6 +47,7 @@ type
     TextList: TCTextList;
     Polylines: TCPolylineList;
     RasterImages: TCRasterImageList;
+    Ellipses: TCEllipseList;
     { Base methods }
     constructor Create;
     destructor Destroy; override;
@@ -189,6 +190,7 @@ begin
   TextList := TCTextList.Create;
   Polylines := TCPolylineList.Create;
   RasterImages := TCRasterImageList.Create;
+  Ellipses := TCEllipseList.Create;
 
   { Initialization of various fields }
   Clear;
@@ -200,6 +202,9 @@ begin
   Components.Free;
   Wires.Free;
   TextList.Free;
+  Polylines.Free;
+  RasterImages.Free;
+  Ellipses.Free;
 
   inherited Destroy;
 end;

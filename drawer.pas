@@ -61,6 +61,8 @@ type
     procedure DrawPolylineSelection(ACanvas: TCanvas; AElement: PTCElement; APointNr: Integer);
     { Raster Image drawing methods }
     procedure DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
+    { Ellipse drawing methods }
+    procedure DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
     function  FixCoordinates(APoint: TPoint): TPoint;
     function  GridCoordsToSheet(AX, AY: Single): TPoint;
@@ -518,6 +520,16 @@ begin
       ),
       ARasterImage^.ImageData.Graphic);
   end;
+end;
+
+procedure TItemsDrawer.DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
+var
+  AEllipse: PTCEllipse absolute AElement;
+begin
+  if AElement = nil then Exit;
+
+  ACanvas.Ellipse(AEllipse^.Pos.X * INT_SHEET_GRID_SPACING, AEllipse^.Pos.Y * INT_SHEET_GRID_SPACING,
+    AEllipse^.BottomRight.X * INT_SHEET_GRID_SPACING, AEllipse^.BottomRight.Y * INT_SHEET_GRID_SPACING);
 end;
 
 procedure TItemsDrawer.DrawPosCross(ACanvas: TCanvas; APos: TPoint);

@@ -22,6 +22,8 @@ type
     NewText: PTCText;
     NewPolyline: PTCPolyline;
     NewRasterImage: PTCRasterImage;
+    NewEllipse: PTCEllipse;
+    //
     MouseMoveDocPos: TPoint;
     MulticlickPlacementStarted: Boolean;
     DragDropStarted: Boolean;
@@ -305,6 +307,13 @@ begin
   { Polylines }
   vDocument.Polylines.ForEachDoPaint(ACanvas, vItemsDrawer.DrawPolyline);
 
+  { Raster Images }
+  vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
+
+  { Ellipses }
+  vDocument.Ellipses.ForEachDoPaint(ACanvas, vItemsDrawer.DrawEllipse);
+
+  // Extra visual effects in edit mode
   if AEditMode then
   begin
     { Preview when placing an element }

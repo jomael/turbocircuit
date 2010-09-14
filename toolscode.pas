@@ -193,6 +193,13 @@ begin
     NewPolyline^.Points[0] := DocPos;
   end;
 
+  toolEllipse:
+  begin
+    DragDropStarted := True;
+    New(NewEllipse);
+    NewEllipse^.Pos := DocPos;
+  end;
+
   end;
 end;
 
@@ -258,9 +265,7 @@ begin
 
     vDocument.Components.Insert(NewComponent);
 
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    Owner.UpdateAndRepaint(nil);
+    lChanged := True;
   end;
 
   toolWire:
@@ -269,9 +274,7 @@ begin
 
     vDocument.Wires.Insert(NewWire);
 
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    Owner.UpdateAndRepaint(nil);
+    lChanged := True;
   end;
 
   toolText:
@@ -280,9 +283,7 @@ begin
     vDocument.SelectedElement := NewText;
     vDocument.SelectedElementType := toolText;
 
-    vDocument.Modified := True;
-    vDocument.UIChangeCallback(Self);
-    Owner.UpdateAndRepaint(nil);
+    lChanged := True;
   end;
 
   toolPolyline:
@@ -310,15 +311,22 @@ begin
 
       lChanged := True;
     end;
-
-    if lChanged then
-    begin
-      vDocument.Modified := True;
-      vDocument.UIChangeCallback(Self);
-      Owner.UpdateAndRepaint(nil);
-    end;
   end;
 
+  toolEllipse:
+  begin
+    NewEllipse^.BottomRight := DocPos;
+    vDocument.Ellipses.Insert(NewEllipse);
+    lChanged := True;
+  end;
+
+  end;
+
+  if lChanged then
+  begin
+    vDocument.Modified := True;
+    vDocument.UIChangeCallback(Self);
+    Owner.UpdateAndRepaint(nil);
   end;
 end;
 

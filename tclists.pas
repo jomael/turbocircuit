@@ -96,6 +96,14 @@ type
     //function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
   end;
 
+  { TCEllipseList }
+
+  TCEllipseList = class(TCElementList)
+  protected
+    { Element-specific utility methods }
+    //function  DoVerifyElementPos(Pos: TPoint; AElement: PTCElement): DWord; override;
+  end;
+
 implementation
 
 { TCElementList }

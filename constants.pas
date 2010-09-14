@@ -76,13 +76,21 @@ type
     ImageData: TPicture;
   end;
 
+  { Data structures for ellipses }
+
+  PTCEllipse = ^TCEllipse;
+
+  TCEllipse = object(TCElement)
+    BottomRight: TPoint;
+  end;
+
   { Data structures for tools }
 
   TCTool = (
     // Circuits tools
     toolArrow = 0, toolComponent, toolWire, toolText,
     // 2D CAD tools
-    toolPolyline, toolRasterImage
+    toolPolyline, toolRasterImage, toolEllipse
     );
   
 {*******************************************************************
