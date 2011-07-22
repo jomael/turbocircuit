@@ -192,6 +192,9 @@ const
 {$endif}
   BundleResourcesDirectory = '/Contents/Resources/';
 
+  SectionUnix = 'Unix';
+  IdentMyDirectory = 'MyDirectory';
+
 implementation
 
 end.

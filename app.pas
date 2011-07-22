@@ -411,12 +411,12 @@ end;
 procedure TMainForm.UpdateNotebookPage(ATool: TCTool);
 begin
   case ATool of
-   toolArrow: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_ARROW];
-   toolComponent: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_COMPONENTS];
-   toolWire: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_WIRE];
-   toolText: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_TEXT];
-   toolPolyline: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_POLYLINE];
-   toolRasterImage: FToolsNotebook.ActivePageComponent := FToolsNotebook.Page[INT_TOOLSNOTEBOOK_RASTERIMAGE];
+   toolArrow: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_ARROW;
+   toolComponent: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_COMPONENTS;
+   toolWire: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_WIRE;
+   toolText: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_TEXT;
+   toolPolyline: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_POLYLINE;
+   toolRasterImage: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_RASTERIMAGE;
   end;
 end;
 
@@ -456,13 +456,6 @@ begin
 
   { Load user interface items which depend in the components table }
   LoadUIItemsFromComponentsTable();
-
-  // PageControl tabs only visible in Mac OS X - bug workaround
-  {$ifdef Darwin}
-    FToolsNotebook.ShowTabs := True;
-  {$else}
-    FToolsNotebook.ShowTabs := False;
-  {$endif}
 end;
 
 destructor TMainForm.Destroy;
