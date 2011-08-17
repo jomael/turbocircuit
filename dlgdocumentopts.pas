@@ -19,8 +19,8 @@ type
     GroupBox1: TGroupBox;
     Label1: TLabel;
     Label2: TLabel;
-    spinSheetWidth: TSpinEdit;
-    spinSheetHeight: TSpinEdit;
+    spinSheetHeight: TFloatSpinEdit;
+    spinSheetWidth: TFloatSpinEdit;
     procedure LoadData(Sender: TObject);
     procedure SaveDataAndClose(Sender: TObject);
   private
@@ -41,8 +41,8 @@ implementation
 }
 procedure TDocumentOptions.LoadData(Sender: TObject);
 begin
-  spinSheetHeight.Value := vDocument.SheetHeight;
-  spinSheetWidth.Value := vDocument.SheetWidth;
+  spinSheetHeight.Value := vDocument.Height;
+  spinSheetWidth.Value := vDocument.Width;
 end;
 
 {@@
@@ -50,8 +50,8 @@ end;
 }
 procedure TDocumentOptions.SaveDataAndClose(Sender: TObject);
 begin
-  vDocument.SheetHeight := spinSheetHeight.Value;
-  vDocument.SheetWidth := spinSheetWidth.Value;
+  vDocument.Height := spinSheetHeight.Value;
+  vDocument.Width := spinSheetWidth.Value;
   
   ModalResult := mrOk;
 end;

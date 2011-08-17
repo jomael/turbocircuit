@@ -12,6 +12,7 @@ object DocumentOptions: TDocumentOptions
   ClientHeight = 300
   ClientWidth = 400
   OnShow = LoadData
+  LCLVersion = '0.9.31'
   object btnCancel: TButton
     Left = 225
     Height = 29
@@ -28,37 +29,46 @@ object DocumentOptions: TDocumentOptions
     Top = 64
     Width = 185
     Caption = 'Sheet Size'
-    ClientHeight = 63
+    ClientHeight = 62
     ClientWidth = 181
     TabOrder = 1
     object Label1: TLabel
       Left = 14
-      Height = 14
+      Height = 18
       Top = 5
-      Width = 29
+      Width = 36
       Caption = 'Width'
       ParentColor = False
     end
     object Label2: TLabel
       Left = 14
-      Height = 14
+      Height = 18
       Top = 37
-      Width = 32
+      Width = 43
       Caption = 'Height'
       ParentColor = False
     end
-    object spinSheetWidth: TSpinEdit
+    object spinSheetWidth: TFloatSpinEdit
       Left = 94
-      Height = 24
+      Height = 25
+      Top = 0
       Width = 75
+      Increment = 1
+      MaxValue = 100
+      MinValue = 0
       TabOrder = 0
+      Value = 0
     end
-    object spinSheetHeight: TSpinEdit
+    object spinSheetHeight: TFloatSpinEdit
       Left = 94
-      Height = 24
+      Height = 25
       Top = 32
       Width = 75
+      Increment = 1
+      MaxValue = 100
+      MinValue = 0
       TabOrder = 1
+      Value = 0
     end
   end
   object btnSave: TButton
@@ -70,4 +80,4 @@ object DocumentOptions: TDocumentOptions
     OnClick = SaveDataAndClose
     TabOrder = 2
   end
-end
+end

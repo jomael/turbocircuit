@@ -113,7 +113,7 @@ begin
   lpMainFormChooseComponent := 'Component type:';
 
   { I/O strings }
-  lpSaveDiagramFilter := 'Turbo Circuit Diagrams|*.tc|All files|*.*';
+  lpSaveDiagramFilter := 'All supported formats|*.tc;*.eps|Turbo Circuit Diagrams|*.tc|All files|*.*';
   lpSavePngFilter := 'Portable Network Graphic|*.png|All files|*.*';
 
   { Document state related }

@@ -48,18 +48,35 @@ type
     actFileSaveAs: TAction;
     actFileNew: TAction;
     actFileExit: TAction;
+    btnArrow: TSpeedButton;
+    btnArrow3: TSpeedButton;
+    btnArrow2: TSpeedButton;
+    btnComponent: TSpeedButton;
     btnEllipse: TSpeedButton;
+    btnPolyline: TSpeedButton;
+    btnRasterImage: TSpeedButton;
+    btnRectangleWithText: TSpeedButton;
+    btnText: TSpeedButton;
+    btnWire: TSpeedButton;
+    checkShowGrid: TCheckBox;
+    checkSnapToGrid: TCheckBox;
+    comboMode: TComboBox;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
+    Label5: TLabel;
+    notebookTools: TNotebook;
+    Page1: TPage;
+    Page2: TPage;
+    Page3: TPage;
+    Panel1: TPanel;
     spinPolylineWidth: TSpinEdit;
-    spinZoom: TSpinEdit;
     spinImageProportion: TSpinEdit;
+    spinZoom: TSpinEdit;
     ToolBar1: TToolBar;
     txtRasterImage: TFileNameEdit;
     FMainFormAction: TActionList;
-    btnText: TSpeedButton;
     cmbComponents: TComboBox;
     listActionImages: TImageList;
     lblComponentType: TLabel;
@@ -92,13 +109,8 @@ type
     pnlToolbar: TPanel;
     pnlTools: TPanel;
     pnlStatusBar: TStatusBar;
-    btnArrow: TSpeedButton;
-    btnComponent: TSpeedButton;
-    btnWire: TSpeedButton;
     dialogSave: TSaveDialog;
     barFileToolbar: TToolBar;
-    btnPolyline: TSpeedButton;
-    btnRasterImage: TSpeedButton;
     ToolButton1: TToolButton;
     toolSeparator1: TToolButton;
     toolOpen: TToolButton;
@@ -109,6 +121,9 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure checkShowGridChange(Sender: TObject);
+    procedure checkSnapToGridChange(Sender: TObject);
+    procedure comboModeSelect(Sender: TObject);
     procedure FormCloseQuery(Sender: TObject; var CanClose: boolean);
     procedure HandleChangeTool(ASender: TObject);
     procedure HandleChooseNewComponentType(ASender: TObject);
@@ -144,13 +159,14 @@ implementation
 
 procedure TMainForm.HandleChangeTool(ASender: TObject);
 begin
-  if ASender = btnArrow then vDocument.CurrentTool := toolArrow
+  if (ASender = btnArrow) or (ASender = btnArrow2) or (ASender = btnArrow3) then vDocument.CurrentTool := toolArrow
   else if ASender = btnComponent then vDocument.CurrentTool := toolComponent
   else if ASender = btnWire then vDocument.CurrentTool := toolWire
   else if ASender = btnText then vDocument.CurrentTool := toolText
   else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline
   else if ASender = btnRasterImage then vDocument.CurrentTool := toolRasterImage
-  else if ASender = btnEllipse then vDocument.CurrentTool := toolEllipse;
+  else if ASender = btnEllipse then vDocument.CurrentTool := toolEllipse
+  else if ASender = btnRectangleWithText then vDocument.CurrentTool := toolRectangleWithText;
 
   { Updates the tool notebook }
   UpdateNotebookPage(vDocument.CurrentTool);
@@ -167,8 +183,8 @@ begin
   begin
     PngImage := TPortableNetworkGraphic.Create;
     try
-      PngImage.Height := vDocument.SheetHeight;
-      PngImage.Width := vDocument.SheetWidth;
+      PngImage.Height := Round(vDocument.Height);
+      PngImage.Width := Round(vDocument.Width);
 
       vSchematics.DrawToCanvas(PngImage.Canvas, False);
       PngImage.SaveToFile(dialogSave.FileName);
@@ -198,7 +214,7 @@ begin
   dialogOpen.Filter := vTranslations.lpSaveDiagramFilter;
   if dialogOpen.Execute then
   begin
-    vDocument.LoadFromFile(dialogOpen.FileName);
+    vDocument.ReadFromFile(dialogOpen.FileName);
     vSchematics.UpdateAndRepaint(nil);
   end;
 end;
@@ -206,13 +222,29 @@ end;
 procedure TMainForm.actFileSaveAsExecute(Sender: TObject);
 begin
   dialogSave.Filter := vTranslations.lpSaveDiagramFilter;
-  if dialogSave.Execute then vDocument.SaveToFile(dialogSave.FileName);
+  if dialogSave.Execute then vDocument.WriteToFile(dialogSave.FileName);
 end;
 
 procedure TMainForm.actFileSaveExecute(Sender: TObject);
 begin
-  if vDocument.Saved then vDocument.SaveToFile(vDocument.FileName)
+  if vDocument.Saved then vDocument.WriteToFile(vDocument.FileName)
   else actFileSaveAsExecute(Sender);
+end;
+
+procedure TMainForm.checkShowGridChange(Sender: TObject);
+begin
+  vDocument.ShowGrid := checkShowGrid.Checked;
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
+procedure TMainForm.checkSnapToGridChange(Sender: TObject);
+begin
+  vDocument.SnapToGrid := checkSnapToGrid.Checked;
+end;
+
+procedure TMainForm.comboModeSelect(Sender: TObject);
+begin
+  notebookTools.PageIndex := comboMode.ItemIndex;
 end;
 
 procedure TMainForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
@@ -269,9 +301,14 @@ end;
 
 procedure TMainForm.spinZoomChange(Sender: TObject);
 begin
-  FLOAT_SHEET_GRID_PROPORTION := spinZoom.Value / 100;
-  INT_SHEET_GRID_SPACING := Round(INT_SHEET_DEFAULT_GRID_SPACING * FLOAT_SHEET_GRID_PROPORTION);
-  INT_SHEET_GRID_HALFSPACING := INT_SHEET_GRID_SPACING div 2;
+  if spinZoom.Value <= 10 then spinZoom.Increment := 1
+  else if spinZoom.Value <= 50 then spinZoom.Increment := 10
+  else spinZoom.Increment := 50;
+
+  vDocument.ZoomLevel := spinZoom.Value / 100;
+  //INT_SHEET_GRID_SPACING := Round(INT_SHEET_DEFAULT_GRID_SPACING * FLOAT_SHEET_GRID_PROPORTION);
+  //INT_SHEET_GRID_HALFSPACING := INT_SHEET_GRID_SPACING div 2;
+
   vSchematics.UpdateAndRepaint(nil);
 end;
 

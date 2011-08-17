@@ -57,7 +57,7 @@ uses
   dlgdocumentopts,
   tclists,
   tcsettings,
-  toolscode;
+  toolscode, fpvectorialpkg;
 
 begin
   Application.Initialize;

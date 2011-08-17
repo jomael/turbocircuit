@@ -6,15 +6,18 @@ interface
 
 uses
   Classes, SysUtils, LCLIntf,
-  constants, dbcomponents, tcfileformat, tclists;
+  constants, dbcomponents, tcfileformat, tclists,
+  // fpvectorial
+  fpvectorial;
 
 type
 
   { TDocument }
 
-  TDocument = class(TObject)
+  TDocument = class(TvVectorialDocument)
   private
     { Helper routines }
+    FDestroying: Boolean;
     procedure UpdateDocumentInfo(AIsSaved: Boolean);
     function  ReadBOF(AStream: TStream): Boolean;
     procedure WriteBOF(AStream: TStream);
@@ -34,14 +37,17 @@ type
     FileName: string;
     NewItemOrientation: TCComponentOrientation;
     CurrentTool: TCTool;
+    ZoomLevel: Double; // 1 = 100%
+    PosX, PosY: Double; // in milimeters
     { Persistent information of the user interface }
     Title: string;
+    SnapToGrid: Boolean;
+    ShowGrid: Boolean;
     { Selection fields }
     SelectedElement: PTCElement;
     SelectedElementType: TCTool;
     SelectionInfo: DWord;
     { Document information }
-    SheetWidth, SheetHeight: Integer;
     Components: TCComponentList;
     Wires: TCWireList;
     TextList: TCTextList;
@@ -49,13 +55,13 @@ type
     RasterImages: TCRasterImageList;
     Ellipses: TCEllipseList;
     { Base methods }
-    constructor Create;
+    constructor Create; override;
     destructor Destroy; override;
-    procedure Clear;
-    procedure LoadFromFile(AFileName: string);
-    procedure LoadFromStream(AStream: TStream);
-    procedure SaveToFile(AFileName: string);
-    procedure SaveToStream(AStream: TStream);
+    procedure Clear; override;
+    //procedure LoadFromFile(AFileName: string);
+    //procedure LoadFromStream(AStream: TStream);
+    //procedure SaveToFile(AFileName: string);
+    //procedure SaveToStream(AStream: TStream);
     { General document methods }
     function  GetDocumentPos(X, Y: Integer): TPoint;
     { Components methods }
@@ -199,12 +205,14 @@ end;
 destructor TDocument.Destroy;
 begin
   { Cleans the memory of the lists of items }
-  Components.Free;
-  Wires.Free;
-  TextList.Free;
+  FreeAndNil(Components);
+  FreeAndNil(Wires);
+  FreeAndNil(TextList);
   Polylines.Free;
   RasterImages.Free;
   Ellipses.Free;
+
+  FDestroying := True;
 
   inherited Destroy;
 end;
@@ -214,30 +222,39 @@ end;
 }
 procedure TDocument.Clear;
 begin
+  inherited Clear;
+
+  if FDestroying then Exit; // important, otherwise crashes
+
   { Non-Persistent information of the user interface }
   Modified := False;
   Saved := False;
   FileName := '';
+  ZoomLevel := 1.0;
+  PosX := 0.0;
+  PosY := 0.0;
   { Persistent information of the user interface }
   CurrentTool := toolArrow;
   NewItemOrientation := coEast;
   Title := '';
+  SnapToGrid := True;
+  ShowGrid := True;
   { Selection fields }
   SelectedElement := nil;
   SelectedElementType := toolArrow;
   SelectionInfo := 0;
   { Document information }
-  SheetWidth := INT_SHEET_DEFAULT_WIDTH;
-  SheetHeight := INT_SHEET_DEFAULT_HEIGHT;
-  Components.Clear;
-  Wires.Clear;
-  TextList.Clear;
+  Width := INT_SHEET_DEFAULT_WIDTH;
+  Height := INT_SHEET_DEFAULT_HEIGHT;
+  if Components <> nil then Components.Clear;
+  if Wires <> nil then Wires.Clear;
+  if TextList <> nil then TextList.Clear;
 
   { Update the UI with the changes }
   if Assigned(UIChangeCallback) then UIChangeCallback(Self);
 end;
 
-procedure TDocument.LoadFromFile(AFileName: string);
+(*procedure TDocument.LoadFromFile(AFileName: string);
 var
   AFileStream: TFileStream;
 begin
@@ -371,7 +388,7 @@ begin
 
   { Stores the polylines }
   Polylines.ForEachDoWrite(AStream, WritePOLYLINE);
-end;
+end;*)
 
 function TDocument.GetDocumentPos(X, Y: Integer): TPoint;
 begin

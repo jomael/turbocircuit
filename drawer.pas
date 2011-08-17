@@ -515,8 +515,8 @@ begin
       Bounds(
       ARasterImage^.Pos.X * INT_SHEET_GRID_SPACING,
       ARasterImage^.Pos.Y * INT_SHEET_GRID_SPACING,
-      Round(ARasterImage^.ImageData.Graphic.Width * ARasterImage^.Proportion * FLOAT_SHEET_GRID_PROPORTION),
-      Round(ARasterImage^.ImageData.Graphic.Height * ARasterImage^.Proportion * FLOAT_SHEET_GRID_PROPORTION)
+      Round(ARasterImage^.ImageData.Graphic.Width * ARasterImage^.Proportion * vDocument.ZoomLevel),
+      Round(ARasterImage^.ImageData.Graphic.Height * ARasterImage^.Proportion * vDocument.ZoomLevel)
       ),
       ARasterImage^.ImageData.Graphic);
   end;

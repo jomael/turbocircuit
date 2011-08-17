@@ -9,7 +9,10 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, LCLType,
-  document, constants, dbcomponents, drawer;
+  document, constants, dbcomponents, drawer,
+  // fpvectorial
+  fpvtocanvas, fpvutils
+  ;
 
 type
   TSchematicsDelegate = class
@@ -40,6 +43,9 @@ type
 
   TSchematics = class(TCustomControl)
   private
+    // Temporary data while drawing
+    ADestX, ADestY: Integer;
+    AMulX, AMulY: Double;
   public
     { Fields accessible to external classes }
     bmpOutput: TBitmap;
@@ -161,7 +167,19 @@ end;
 }
 procedure TSchematics.DrawBackground(ACanvas: TCanvas);
 var
-  J: Integer;
+  J, X1, Y1, X2, Y2: Integer;
+
+  // Special version for the background
+  function CoordToCanvasX(ACoord: Double): Integer;
+  begin
+    Result := Round(ACoord * vDocument.ZoomLevel);
+  end;
+
+  function CoordToCanvasY(ACoord: Double): Integer;
+  begin
+    Result := Round(ACoord * vDocument.ZoomLevel);
+  end;
+
 begin
   { Area outside the document }
   ACanvas.Brush.Color := clWhite;
@@ -171,38 +189,38 @@ begin
    0, 0, vDocument.SheetWidth, vDocument.SheetHeight }
   ACanvas.Pen.Color := RGBToColor(50, 50, 50);
   J := 1;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(127, 127, 127);
   J := 2;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(151, 151, 151);
   J := 3;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(181, 181, 181);
   J := 4;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(206, 206, 206);
   J := 5;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(226, 226, 226);
   J := 6;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 
   ACanvas.Pen.Color := RGBToColor(240, 240, 240);
   J := 7;
-  ACanvas.Line(vDocument.SheetWidth + J, 0, vDocument.SheetWidth + J, vDocument.SheetHeight + J + 1);
-  ACanvas.Line(0, vDocument.SheetHeight + J, vDocument.SheetWidth + J, vDocument.SheetHeight + J);
+  ACanvas.Line(CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(0), CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J + 1);
+  ACanvas.Line(CoordToCanvasX(0), CoordToCanvasY(vDocument.Height) + J, CoordToCanvasX(vDocument.Width) + J, CoordToCanvasY(vDocument.Height) + J);
 end;
 
 {@@
@@ -246,11 +264,17 @@ var
   x, y: Integer;
   OldColor: TColor;
 begin
+  // Don't draw the grid if it is too small
+  if INT_SHEET_GRID_SPACING <= 1 then Exit;
+
   ACanvas.Brush.Color := clBlack;
-  for x := 0 to (vDocument.SheetWidth div INT_SHEET_GRID_SPACING) do
-   for y := 0 to (vDocument.SheetHeight div INT_SHEET_GRID_SPACING) do
-    ACanvas.FillRect(x * INT_SHEET_GRID_SPACING, y * INT_SHEET_GRID_SPACING,
-     x * INT_SHEET_GRID_SPACING + 1, y * INT_SHEET_GRID_SPACING + 1);
+  for x := 0 to Round(vDocument.Width / INT_SHEET_GRID_SPACING / vDocument.ZoomLevel) do
+   for y := 0 to Round(vDocument.Height / INT_SHEET_GRID_SPACING / vDocument.ZoomLevel) do
+    ACanvas.FillRect(
+      Round(x * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel),
+      Round(y * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel),
+      Round(x * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel + 1),
+      Round(y * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel + 1));
 end;
 
 procedure TSchematics.DrawPolylinePreview(ACanvas: TCanvas);
@@ -281,14 +305,22 @@ var
   TmpText: TCText;
   TmpPolyline: TCPolyline;
 begin
+  ADestX := Round(vDocument.PosX * vDocument.ZoomLevel);
+  ADestY := Round(ACanvas.Height + vDocument.PosY * vDocument.ZoomLevel);
+  AMulX := vDocument.ZoomLevel;
+  AMulY := -1 * vDocument.ZoomLevel;
+
   ACanvas.Font.Height := 12;
 
   { Background }
   DrawBackground(ACanvas);
 
   { Sheet Background dots showing the grid }
-  if AEditMode then DrawGrid(ACanvas);
-  
+  if AEditMode and vDocument.ShowGrid then DrawGrid(ACanvas);
+
+  { FPVectorial }
+  DrawFPVectorialToCanvas(vDocument, ACanvas, 0, ACanvas.Height, 1, -1);
+
   { RasterImages }
   vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
 

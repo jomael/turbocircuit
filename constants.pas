@@ -90,7 +90,9 @@ type
     // Circuits tools
     toolArrow = 0, toolComponent, toolWire, toolText,
     // 2D CAD tools
-    toolPolyline, toolRasterImage, toolEllipse
+    toolPolyline, toolRasterImage, toolEllipse,
+    // UML tools
+    toolRectangleWithText
     );
   
 {*******************************************************************
@@ -169,14 +171,13 @@ const
 var
   INT_SHEET_GRID_SPACING: Cardinal = INT_SHEET_DEFAULT_GRID_SPACING;
   INT_SHEET_GRID_HALFSPACING: Cardinal = INT_SHEET_DEFAULT_GRID_SPACING div 2;
-  FLOAT_SHEET_GRID_PROPORTION: Single = 1.0;
 
 {*******************************************************************
 *  Strings not to be translated
 *******************************************************************}
 const
 
-  szAppTitle  = 'Turbo Circuit';
+  szAppTitle  = 'Turbo Circuits and Vectors';
 
   lpSeparator = '-';
   lpComma     = ',';
@@ -186,9 +187,9 @@ const
   lpPortugues = 'Português';
 
 {$ifdef GoboLinux}
-  DefaultDirectory = '/Programs/TurboCircuit/0.1/';
+  DefaultDirectory = '/Programs/TurboVectors/0.1/';
 {$else}
-  DefaultDirectory = '/usr/share/magnifier/';
+  DefaultDirectory = '/usr/share/turbovectors/';
 {$endif}
   BundleResourcesDirectory = '/Contents/Resources/';
 
