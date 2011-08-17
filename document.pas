@@ -37,7 +37,6 @@ type
     FileName: string;
     NewItemOrientation: TCComponentOrientation;
     CurrentTool: TCTool;
-    ZoomLevel: Double; // 1 = 100%
     PosX, PosY: Double; // in milimeters
     { Persistent information of the user interface }
     Title: string;
@@ -246,6 +245,7 @@ begin
   { Document information }
   Width := INT_SHEET_DEFAULT_WIDTH;
   Height := INT_SHEET_DEFAULT_HEIGHT;
+
   if Components <> nil then Components.Clear;
   if Wires <> nil then Wires.Clear;
   if TextList <> nil then TextList.Clear;

@@ -183,7 +183,7 @@ var
 begin
   { Area outside the document }
   ACanvas.Brush.Color := clWhite;
-  ACanvas.FillRect(0, 0, Width, Height);
+  ACanvas.FillRect(0, 0, ACanvas.Width, ACanvas.Height);
 
   { Document area delimiter, which has the following size:
    0, 0, vDocument.SheetWidth, vDocument.SheetHeight }
@@ -265,16 +265,13 @@ var
   OldColor: TColor;
 begin
   // Don't draw the grid if it is too small
-  if INT_SHEET_GRID_SPACING <= 1 then Exit;
+  if Round(INT_SHEET_GRID_SPACING * vDocument.ZoomLevel) <= 2 then Exit;
 
-  ACanvas.Brush.Color := clBlack;
-  for x := 0 to Round(vDocument.Width / INT_SHEET_GRID_SPACING / vDocument.ZoomLevel) do
-   for y := 0 to Round(vDocument.Height / INT_SHEET_GRID_SPACING / vDocument.ZoomLevel) do
-    ACanvas.FillRect(
+  for x := 0 to Round(vDocument.Width / INT_SHEET_GRID_SPACING) do
+   for y := 0 to Round(vDocument.Height / INT_SHEET_GRID_SPACING) do
+    ACanvas.Pixels[
       Round(x * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel),
-      Round(y * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel),
-      Round(x * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel + 1),
-      Round(y * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel + 1));
+      Round(y * INT_SHEET_GRID_SPACING * vDocument.ZoomLevel)] := clBlack;
 end;
 
 procedure TSchematics.DrawPolylinePreview(ACanvas: TCanvas);
@@ -305,8 +302,8 @@ var
   TmpText: TCText;
   TmpPolyline: TCPolyline;
 begin
-  ADestX := Round(vDocument.PosX * vDocument.ZoomLevel);
-  ADestY := Round(ACanvas.Height + vDocument.PosY * vDocument.ZoomLevel);
+  ADestX := 0;//Round(vDocument.PosX * vDocument.ZoomLevel);
+  ADestY := Round(vDocument.Height * vDocument.ZoomLevel);//Round((vDocument.Height + vDocument.PosY) * vDocument.ZoomLevel);
   AMulX := vDocument.ZoomLevel;
   AMulY := -1 * vDocument.ZoomLevel;
 
@@ -319,7 +316,7 @@ begin
   if AEditMode and vDocument.ShowGrid then DrawGrid(ACanvas);
 
   { FPVectorial }
-  DrawFPVectorialToCanvas(vDocument, ACanvas, 0, ACanvas.Height, 1, -1);
+  DrawFPVectorialToCanvas(vDocument, ACanvas, ADestX, ADestY, AMulX, AMulY);
 
   { RasterImages }
   vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
@@ -459,7 +456,7 @@ begin
   { Copies the buffer bitmap to the canvas }
   Canvas.Draw(0, 0, bmpOutput);
 
-  inherited Paint;
+  //inherited Paint;
 end;
 
 {@@

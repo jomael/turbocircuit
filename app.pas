@@ -31,11 +31,13 @@ interface
 uses
   // RTL, FCL, LCL
   Classes, SysUtils, LResources, Forms, Controls, Menus, ExtCtrls, ComCtrls,
-  ActnList, Buttons, StdCtrls, Dialogs, Graphics,
+  ActnList, Buttons, StdCtrls, Dialogs, Graphics, EditBtn, Spin,
   // TC units
   schematics, dbcomponents, constants, translationstc, document,
   dlgcomponentseditor, dlgabout, dlgdocumentopts,
-  toolscode, EditBtn, Spin;
+  toolscode,
+  // fpvectorial
+  fpvectorial;
 
 type
 
@@ -58,6 +60,7 @@ type
     btnRectangleWithText: TSpeedButton;
     btnText: TSpeedButton;
     btnWire: TSpeedButton;
+    btnRenderPostScript: TButton;
     checkShowGrid: TCheckBox;
     checkSnapToGrid: TCheckBox;
     comboMode: TComboBox;
@@ -66,14 +69,18 @@ type
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
+    Label6: TLabel;
+    memoEPS: TMemo;
     notebookTools: TNotebook;
     Page1: TPage;
     Page2: TPage;
     Page3: TPage;
+    Page4: TPage;
+    Page5: TPage;
     Panel1: TPanel;
     spinPolylineWidth: TSpinEdit;
     spinImageProportion: TSpinEdit;
-    spinZoom: TSpinEdit;
+    spinZoom: TFloatSpinEdit;
     ToolBar1: TToolBar;
     txtRasterImage: TFileNameEdit;
     FMainFormAction: TActionList;
@@ -98,7 +105,7 @@ type
     mnuComponentsEditor: TMenuItem;
     mnuFileNew: TMenuItem;
     mnuFileSeparator: TMenuItem;
-    FToolsNotebook: TNotebook;
+    NotebookSubTools: TNotebook;
     dialogOpen: TOpenDialog;
     pageArrow: TPage;
     pageComponent: TPage;
@@ -121,6 +128,7 @@ type
     procedure actFileOpenExecute(Sender: TObject);
     procedure actFileSaveAsExecute(Sender: TObject);
     procedure actFileSaveExecute(Sender: TObject);
+    procedure btnRenderPostScriptClick(Sender: TObject);
     procedure checkShowGridChange(Sender: TObject);
     procedure checkSnapToGridChange(Sender: TObject);
     procedure comboModeSelect(Sender: TObject);
@@ -145,6 +153,8 @@ type
     procedure LoadUIItemsFromComponentsTable;
     procedure FillDocumentUIElements(Sender: TObject);
     procedure UpdateNotebookPage(ATool: TCTool);
+    procedure AppToDocumentUpdate();
+    procedure DocumentToAppUpdate();
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -231,15 +241,23 @@ begin
   else actFileSaveAsExecute(Sender);
 end;
 
+procedure TMainForm.btnRenderPostScriptClick(Sender: TObject);
+begin
+  vDocument.ReadFromStrings(memoEPS.Lines, vfEncapsulatedPostScript);
+//  AppToDocumentUpdate();
+  DocumentToAppUpdate();
+  vSchematics.UpdateAndRepaint(nil);
+end;
+
 procedure TMainForm.checkShowGridChange(Sender: TObject);
 begin
-  vDocument.ShowGrid := checkShowGrid.Checked;
+  AppToDocumentUpdate();
   vSchematics.UpdateAndRepaint(nil);
 end;
 
 procedure TMainForm.checkSnapToGridChange(Sender: TObject);
 begin
-  vDocument.SnapToGrid := checkSnapToGrid.Checked;
+  AppToDocumentUpdate();
 end;
 
 procedure TMainForm.comboModeSelect(Sender: TObject);
@@ -301,13 +319,12 @@ end;
 
 procedure TMainForm.spinZoomChange(Sender: TObject);
 begin
-  if spinZoom.Value <= 10 then spinZoom.Increment := 1
+  if spinZoom.Value <= 2 then spinZoom.Increment := 0.1
+  else if spinZoom.Value <= 10 then spinZoom.Increment := 1
   else if spinZoom.Value <= 50 then spinZoom.Increment := 10
   else spinZoom.Increment := 50;
 
-  vDocument.ZoomLevel := spinZoom.Value / 100;
-  //INT_SHEET_GRID_SPACING := Round(INT_SHEET_DEFAULT_GRID_SPACING * FLOAT_SHEET_GRID_PROPORTION);
-  //INT_SHEET_GRID_HALFSPACING := INT_SHEET_GRID_SPACING div 2;
+  AppToDocumentUpdate();
 
   vSchematics.UpdateAndRepaint(nil);
 end;
@@ -448,13 +465,30 @@ end;
 procedure TMainForm.UpdateNotebookPage(ATool: TCTool);
 begin
   case ATool of
-   toolArrow: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_ARROW;
-   toolComponent: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_COMPONENTS;
-   toolWire: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_WIRE;
-   toolText: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_TEXT;
-   toolPolyline: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_POLYLINE;
-   toolRasterImage: FToolsNotebook.PageIndex := INT_TOOLSNOTEBOOK_RASTERIMAGE;
+   toolArrow: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_ARROW;
+   toolComponent: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_COMPONENTS;
+   toolWire: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_WIRE;
+   toolText: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_TEXT;
+   toolPolyline: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_POLYLINE;
+   toolRasterImage: NotebookSubTools.PageIndex := INT_TOOLSNOTEBOOK_RASTERIMAGE;
   end;
+end;
+
+procedure TMainForm.AppToDocumentUpdate();
+begin
+  // Zoom
+  vDocument.ZoomLevel := spinZoom.Value / 100;
+  //INT_SHEET_GRID_SPACING := Round(INT_SHEET_DEFAULT_GRID_SPACING * FLOAT_SHEET_GRID_PROPORTION);
+  //INT_SHEET_GRID_HALFSPACING := INT_SHEET_GRID_SPACING div 2;
+
+  // Grid
+  vDocument.SnapToGrid := checkSnapToGrid.Checked;
+  vDocument.ShowGrid := checkShowGrid.Checked;
+end;
+
+procedure TMainForm.DocumentToAppUpdate();
+begin
+  spinZoom.Value := vDocument.ZoomLevel * 100;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
