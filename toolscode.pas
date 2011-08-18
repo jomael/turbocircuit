@@ -7,7 +7,9 @@ interface
 uses
   Classes, SysUtils, Controls, LCLType,
   // TurboCircuit
-  constants, schematics, document, tclists;
+  constants, schematics, document, tclists,
+  // fpvectorial
+  fpvectorial;
 
 type
 
@@ -16,6 +18,8 @@ type
   TToolsDelegate = class(TSchematicsDelegate)
   public
     Owner: TSchematics;
+    constructor Create;
+    destructor Destroy; override;
     procedure HandleKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); override;
     procedure HandleKeyPress(Sender: TObject; var Key: char); override;
     procedure HandleMouseDown(Sender: TOBject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer); override;
@@ -29,9 +33,17 @@ var
 
 implementation
 
-
-
 { TToolsDelegate }
+
+constructor TToolsDelegate.Create;
+begin
+  inherited Create;
+end;
+
+destructor TToolsDelegate.Destroy;
+begin
+  inherited Destroy;
+end;
 
 procedure TToolsDelegate.HandleKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
@@ -88,11 +100,13 @@ end;
 procedure TToolsDelegate.HandleMouseDown(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  DocPos: TPoint;
+  DocPos, FPVDocPos: TPoint;
+  segment: T2DSegment;
 begin
   Owner.SetFocus;
 
   DocPos := vDocument.GetDocumentPos(X, Y);
+  FPVDocPos := vDocument.GetVectorialDocumentPos(X, Y);
   DragStartPos := DocPos;
 
   case vDocument.CurrentTool of
@@ -125,12 +139,12 @@ begin
       Exit;
     end;
 
-    { Attempts to select an existing text }
-    vDocument.SelectionInfo := vDocument.TextList.FindElement(DocPos, vDocument.SelectedElement);
+    { Attempts to select a fpvectorial element }
+    vDocument.SelectionvInfo := vDocument.FindAndSelectEntity(DocPos);
 
-    if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
+    if vDocument.SelectionvInfo <> vfrNotFound then
     begin
-      vDocument.SelectedElementType := toolText;
+      //vDocument.SelectedElementType := toolText;
       DragDropStarted := True;
       Owner.UpdateAndRepaint(nil);
       Exit;
@@ -157,7 +171,7 @@ begin
       Owner.UpdateAndRepaint(nil);
       Exit;
     end;
- end;
+  end;
 
   toolWire:
   begin
@@ -169,14 +183,14 @@ begin
   end;
 
   { Places a new text element on the document and selects it }
-  toolText:
+{  toolText:
   begin
     vDocument.ClearSelection;
 
     New(NewText);
     FillChar(NewText^, SizeOf(TCText), #0);
     NewText^.Pos := DocPos;
-  end;
+  end;    }
 
   toolPolyline:
   begin
@@ -198,6 +212,18 @@ begin
     DragDropStarted := True;
     New(NewEllipse);
     NewEllipse^.Pos := DocPos;
+  end;
+
+  toolRectangle:
+  begin
+    DragDropStarted := True;
+
+    NewRectangle := TPath.Create;
+    segment := T2DSegment.Create;
+    segment.SegmentType := stMoveTo;
+    segment.X := FPVDocPos.X;
+    segment.Y := FPVDocPos.Y;
+    NewRectangle.AppendSegment(segment);
   end;
 
   end;
@@ -223,12 +249,17 @@ end;
 procedure TToolsDelegate.HandleMouseUp(Sender: TOBject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 var
-  DocPos: TPoint;
+  DocPos, FPVDocPos: TPoint;
   lList: PTCElementList;
   lPolyline: PTCPolyline;
   lChanged: Boolean;
+  segment: T2DSegment;
+  StartX: Double;
+  StartY: Double;
+  lEntityIndex: Integer;
 begin
   DocPos := vDocument.GetDocumentPos(X, Y);
+  FPVDocPos := vDocument.GetVectorialDocumentPos(X, Y);
 
   DragDropStarted := False;
   lChanged := False;
@@ -238,7 +269,12 @@ begin
   toolArrow:
   begin
     { Verify if something is being moved }
-    if vDocument.IsSomethingSelected then
+    if vDocument.SelectedvElement <> nil then
+    begin
+      vDocument.SelectedvElement.X := FPVDocPos.X - DragStartPos.X;
+      vDocument.SelectedvElement.Y := FPVDocPos.Y - DragStartPos.Y;
+    end
+    else if vDocument.IsSomethingSelected then
     begin
       lList := vDocument.GetListForElement(vDocument.SelectedElementType);
       if lList <> nil then
@@ -279,9 +315,12 @@ begin
 
   toolText:
   begin
-    vDocument.TextList.Insert(NewText);
-    vDocument.SelectedElement := NewText;
-    vDocument.SelectedElementType := toolText;
+    NewText := TvText.Create;
+    NewText.X := FPVDocPos.X;
+    NewText.Y := FPVDocPos.Y;
+    lEntityIndex := vDocument.AddEntity(NewText);
+    vDocument.SelectedvElement := NewText;
+    if Assigned(OnUpdateAppInterface) then OnUpdateAppInterface(Self);
 
     lChanged := True;
   end;
@@ -317,6 +356,40 @@ begin
   begin
     NewEllipse^.BottomRight := DocPos;
     vDocument.Ellipses.Insert(NewEllipse);
+    lChanged := True;
+  end;
+
+  toolRectangle:
+  begin
+    StartX := T2DSegment(NewRectangle.Points).X;
+    StartY := T2DSegment(NewRectangle.Points).Y;
+    //
+    segment := T2DSegment.Create;
+    segment.SegmentType := st2DLine;
+    segment.X := StartX;
+    segment.Y := FPVDocPos.Y;
+    NewRectangle.AppendSegment(segment);
+    //
+    segment := T2DSegment.Create;
+    segment.SegmentType := st2DLine;
+    segment.X := FPVDocPos.X;
+    segment.Y := FPVDocPos.Y;
+    NewRectangle.AppendSegment(segment);
+    //
+    segment := T2DSegment.Create;
+    segment.SegmentType := st2DLine;
+    segment.X := FPVDocPos.X;
+    segment.Y := StartY;
+    NewRectangle.AppendSegment(segment);
+    //
+    segment := T2DSegment.Create;
+    segment.SegmentType := st2DLine;
+    segment.X := StartX;
+    segment.Y := StartY;
+    NewRectangle.AppendSegment(segment);
+
+    vDocument.AddEntity(NewRectangle);
+
     lChanged := True;
   end;
 

@@ -131,7 +131,7 @@ object MainForm: TMainForm
       end
       object comboMode: TComboBox
         Left = 51
-        Height = 25
+        Height = 29
         Top = 2
         Width = 109
         ItemHeight = 0
@@ -152,7 +152,7 @@ object MainForm: TMainForm
       Height = 308
       Top = 28
       Width = 166
-      PageIndex = 4
+      PageIndex = 0
       Align = alClient
       TabOrder = 1
       TabStop = True
@@ -960,15 +960,15 @@ object MainForm: TMainForm
           Height = 160
           Top = 148
           Width = 166
-          PageIndex = 0
+          PageIndex = 3
           Align = alBottom
           TabOrder = 0
           TabStop = True
           object pageArrow: TPage
           end
           object pageComponent: TPage
-            ClientWidth = 4160
-            ClientHeight = 5408
+            ClientWidth = 8320
+            ClientHeight = 10816
             object lblComponentType: TLabel
               Left = 4
               Height = 18
@@ -991,10 +991,31 @@ object MainForm: TMainForm
           object pageWire: TPage
           end
           object pageText: TPage
+            ClientWidth = 166
+            ClientHeight = 160
+            object Label7: TLabel
+              Left = 7
+              Height = 18
+              Top = 8
+              Width = 30
+              Caption = 'Text:'
+              ParentColor = False
+            end
+            object memoTextTool: TMemo
+              Left = 7
+              Height = 80
+              Top = 24
+              Width = 152
+              Lines.Strings = (
+                'memoTextTool'
+              )
+              OnChange = memoTextToolChange
+              TabOrder = 0
+            end
           end
           object pagePolyline: TPage
-            ClientWidth = 4160
-            ClientHeight = 5408
+            ClientWidth = 8320
+            ClientHeight = 10816
             object Label3: TLabel
               Left = 6
               Height = 18
@@ -1015,8 +1036,8 @@ object MainForm: TMainForm
             end
           end
           object pageRasterImage: TPage
-            ClientWidth = 4160
-            ClientHeight = 5408
+            ClientWidth = 8320
+            ClientHeight = 10816
             object Label1: TLabel
               Left = 8
               Height = 17
@@ -1061,8 +1082,8 @@ object MainForm: TMainForm
         end
       end
       object Page2: TPage
-        ClientWidth = 1184
-        ClientHeight = 1184
+        ClientWidth = 166
+        ClientHeight = 308
         object btnArrow2: TSpeedButton
           Left = 15
           Height = 34
@@ -1205,11 +1226,7 @@ object MainForm: TMainForm
           NumGlyphs = 0
           OnClick = HandleChangeTool
         end
-      end
-      object Page3: TPage
-        ClientWidth = 1184
-        ClientHeight = 1184
-        object btnRectangleWithText: TSpeedButton
+        object btnRectangle: TSpeedButton
           Left = 15
           Height = 34
           Top = 44
@@ -1350,6 +1367,10 @@ object MainForm: TMainForm
           NumGlyphs = 0
           OnClick = HandleChangeTool
         end
+      end
+      object Page3: TPage
+        ClientWidth = 166
+        ClientHeight = 308
         object btnArrow3: TSpeedButton
           Left = 15
           Height = 34

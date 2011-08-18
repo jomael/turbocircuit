@@ -91,8 +91,7 @@ type
     toolArrow = 0, toolComponent, toolWire, toolText,
     // 2D CAD tools
     toolPolyline, toolRasterImage, toolEllipse,
-    // UML tools
-    toolRectangleWithText
+    toolRectangle
     );
   
 {*******************************************************************

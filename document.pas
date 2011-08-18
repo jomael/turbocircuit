@@ -46,6 +46,7 @@ type
     SelectedElement: PTCElement;
     SelectedElementType: TCTool;
     SelectionInfo: DWord;
+    SelectionvInfo: TvFindEntityResult;
     { Document information }
     Components: TCComponentList;
     Wires: TCWireList;
@@ -63,6 +64,7 @@ type
     //procedure SaveToStream(AStream: TStream);
     { General document methods }
     function  GetDocumentPos(X, Y: Integer): TPoint;
+    function  GetVectorialDocumentPos(X, Y: Integer): TPoint;
     { Components methods }
     procedure RotateOrientation(var AOrientation: TCComponentOrientation);
     function  GetComponentTopLeft(AComponent: PTCComponent): TPoint;
@@ -396,6 +398,14 @@ begin
   Result.Y := Round(Y / INT_SHEET_GRID_SPACING);
 end;
 
+// Receives control mouse coordinates
+// Returns coordenates for FPVectorial
+function TDocument.GetVectorialDocumentPos(X, Y: Integer): TPoint;
+begin
+  Result.X := Round(X / ZoomLevel);
+  Result.Y := Round((Height - Y) / ZoomLevel);
+end;
+
 procedure TDocument.RotateOrientation(var AOrientation: TCComponentOrientation);
 begin
   case AOrientation of
@@ -445,6 +455,7 @@ end;
 procedure TDocument.ClearSelection;
 begin
   SelectedElement := nil;
+  SelectedvElement := nil;
   SelectionInfo := ELEMENT_DOES_NOT_MATCH;
 end;
 
@@ -455,7 +466,7 @@ end;
 
 function TDocument.IsSomethingSelected: Boolean;
 begin
-  Result := (SelectedElement <> nil);
+  Result := (SelectedElement <> nil) or (SelectedvElement <> nil);
 end;
 
 function TDocument.GetListForElement(AType: TCTool): PTCElementList;

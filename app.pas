@@ -57,7 +57,7 @@ type
     btnEllipse: TSpeedButton;
     btnPolyline: TSpeedButton;
     btnRasterImage: TSpeedButton;
-    btnRectangleWithText: TSpeedButton;
+    btnRectangle: TSpeedButton;
     btnText: TSpeedButton;
     btnWire: TSpeedButton;
     btnRenderPostScript: TButton;
@@ -70,6 +70,8 @@ type
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
+    memoTextTool: TMemo;
     memoEPS: TMemo;
     notebookTools: TNotebook;
     Page1: TPage;
@@ -140,6 +142,7 @@ type
     procedure HandleShowComponentsEditor(ASender: TObject);
     procedure HandleShowDocumentOptions(ASender: TObject);
     procedure HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure memoTextToolChange(Sender: TObject);
     procedure spinImageProportionChange(Sender: TObject);
     procedure spinPolylineWidthChange(Sender: TObject);
     procedure spinZoomChange(Sender: TObject);
@@ -154,7 +157,7 @@ type
     procedure FillDocumentUIElements(Sender: TObject);
     procedure UpdateNotebookPage(ATool: TCTool);
     procedure AppToDocumentUpdate();
-    procedure DocumentToAppUpdate();
+    procedure DocumentToAppUpdate(Sender: TObject);
   public
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
@@ -176,7 +179,7 @@ begin
   else if ASender = btnPolyline then vDocument.CurrentTool := toolPolyline
   else if ASender = btnRasterImage then vDocument.CurrentTool := toolRasterImage
   else if ASender = btnEllipse then vDocument.CurrentTool := toolEllipse
-  else if ASender = btnRectangleWithText then vDocument.CurrentTool := toolRectangleWithText;
+  else if ASender = btnRectangle then vDocument.CurrentTool := toolRectangle;
 
   { Updates the tool notebook }
   UpdateNotebookPage(vDocument.CurrentTool);
@@ -245,7 +248,7 @@ procedure TMainForm.btnRenderPostScriptClick(Sender: TObject);
 begin
   vDocument.ReadFromStrings(memoEPS.Lines, vfEncapsulatedPostScript);
 //  AppToDocumentUpdate();
-  DocumentToAppUpdate();
+  DocumentToAppUpdate(nil);
   vSchematics.UpdateAndRepaint(nil);
 end;
 
@@ -298,6 +301,18 @@ procedure TMainForm.HandleUpdateSchematicsMousePos(Sender: TObject; Shift: TShif
 begin
   pnlStatusBar.Panels.Items[ID_STATUS_MOUSEPOS].Text :=
    'X: ' + IntToStr(X) + ' Y: ' + IntToStr(Y);
+end;
+
+procedure TMainForm.memoTextToolChange(Sender: TObject);
+var
+  lText: TvText;
+begin
+  if vDocument.SelectedvElement is TvText then
+  begin
+    lText := vDocument.SelectedvElement as TvText;
+    lText.Value := memoTextTool.Text;
+    vSchematics.UpdateAndRepaint(nil);
+  end;
 end;
 
 procedure TMainForm.spinImageProportionChange(Sender: TObject);
@@ -486,9 +501,17 @@ begin
   vDocument.ShowGrid := checkShowGrid.Checked;
 end;
 
-procedure TMainForm.DocumentToAppUpdate();
+procedure TMainForm.DocumentToAppUpdate(Sender: TObject);
+var
+  lText: TvText;
 begin
   spinZoom.Value := vDocument.ZoomLevel * 100;
+
+  if vDocument.SelectedvElement is TvText then
+  begin
+    lText := vDocument.SelectedvElement as TvText;
+    memoTextTool.Text := lText.Value;
+  end;
 end;
 
 constructor TMainForm.Create(AOwner: TComponent);
@@ -517,6 +540,7 @@ begin
   vToolsDelegate.Owner := vSchematics;
 
   vToolsDelegate.OnUpdateMousePos := @HandleUpdateSchematicsMousePos;
+  vToolsDelegate.OnUpdateAppInterface := @DocumentToAppUpdate;
 
   vSchematics.UpdateAndRepaint(nil);
 
