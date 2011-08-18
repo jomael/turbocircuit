@@ -68,6 +68,7 @@ type
     procedure   DrawGrid(ACanvas: TCanvas);
     procedure   DrawPolylinePreview(ACanvas: TCanvas);
     procedure   DrawEditModeVisualClues(ACanvas: TCanvas);
+    procedure   DrawExtraElements(ACanvas: TCanvas);
     procedure   DrawToCanvas(ACanvas: TCanvas; AEditMode: Boolean);
     procedure   EraseBackground(DC: HDC); override;
     procedure   Paint; override;
@@ -381,6 +382,14 @@ begin
     vItemsDrawer.DrawText(ACanvas, @TmpText);
   end;
   end;// case
+
+  if vDocument.SelectedvElement is TvText then
+  begin
+{    TmpText := vDocument.GetSelectedText^;
+    TmpText.Pos := Delegate.MouseMoveDocPos;
+    vItemsDrawer.DrawText(ACanvas, @TmpText);}
+  end;
+
   end;// if
 
   { element selection }
@@ -389,7 +398,27 @@ begin
   case vDocument.SelectedElementType of
    toolComponent: vItemsDrawer.DrawComponentSelection(ACanvas, vDocument.GetSelectedComponent);
    toolWire: vItemsDrawer.DrawWireSelection(ACanvas, vDocument.GetSelectedWire, vDocument.SelectionInfo);
-   toolText: vItemsDrawer.DrawTextSelection(ACanvas, vDocument.GetSelectedText);
+   //toolText: vItemsDrawer.DrawTextSelection(ACanvas, vDocument.GetSelectedText);
+  end;
+  if vDocument.SelectedvElement is TvText then
+  begin
+    vItemsDrawer.DrawTextSelection(ACanvas, vDocument.SelectedvElement as TvText);
+  end;
+end;
+
+procedure TSchematics.DrawExtraElements(ACanvas: TCanvas);
+var
+  i: Integer;
+  CurEntity: TvEntity;
+begin
+  for i := 0 to vDocument.GetEntitiesCount - 1 do
+  begin
+    CurEntity := vDocument.GetEntity(i);
+
+    //if CurEntity is TPath then DrawFPVPathToCanvas(ASource, TPath(CurEntity), ADest, ADestX, ADestY, AMulX, AMulY)
+    {else}
+    if CurEntity is TvText then vItemsDrawer.DrawTextExtra(ACanvas, TvText(CurEntity));
+    //else DrawFPVEntityToCanvas(ASource, CurEntity, ADest, ADestX, ADestY, AMulX, AMulY);
   end;
 end;
 
@@ -440,6 +469,9 @@ begin
 
   // Extra visual effects in edit mode
   if AEditMode then DrawEditModeVisualClues(ACanvas);
+
+  { Extra elements which fpvtocanvas doesn't draw }
+  DrawExtraElements(ACanvas);
 end;
 
 {@@

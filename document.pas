@@ -65,6 +65,7 @@ type
     { General document methods }
     function  GetDocumentPos(X, Y: Integer): TPoint;
     function  GetVectorialDocumentPos(X, Y: Integer): TPoint;
+    function  VectorialPosToCanvasPos(X, Y: Double): TPoint;
     { Components methods }
     procedure RotateOrientation(var AOrientation: TCComponentOrientation);
     function  GetComponentTopLeft(AComponent: PTCComponent): TPoint;
@@ -404,6 +405,12 @@ function TDocument.GetVectorialDocumentPos(X, Y: Integer): TPoint;
 begin
   Result.X := Round(X / ZoomLevel);
   Result.Y := Round((Height - Y) / ZoomLevel);
+end;
+
+function TDocument.VectorialPosToCanvasPos(X, Y: Double): TPoint;
+begin
+  Result.X := Round(X * ZoomLevel);
+  Result.Y := Round((Height - Y) * ZoomLevel);
 end;
 
 procedure TDocument.RotateOrientation(var AOrientation: TCComponentOrientation);

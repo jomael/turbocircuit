@@ -30,7 +30,8 @@ interface
 
 uses
   Classes, SysUtils, Graphics,
-  constants, tcutils, dbcomponents, document;
+  constants, tcutils, dbcomponents, document,
+  fpvectorial;
 
 type
 
@@ -55,7 +56,8 @@ type
     procedure DrawWireSelection(ACanvas: TCanvas; AWire: PTCWire; AWirePart: DWord);
     { Text element drawing methods }
     procedure DrawText(ACanvas: TCanvas; AElement: PTCElement);
-    procedure DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
+    procedure DrawTextSelection(ACanvas: TCanvas; AElement: TvText);
+    procedure DrawTextExtra(ACanvas: TCanvas; AElement: TvText);
     { Polyline drawing methods }
     procedure DrawPolyline(ACanvas: TCanvas; AElement: PTCElement);
     procedure DrawPolylineSelection(ACanvas: TCanvas; AElement: PTCElement; APointNr: Integer);
@@ -450,23 +452,45 @@ begin
     AText^.Text);
 end;
 
-procedure TItemsDrawer.DrawTextSelection(ACanvas: TCanvas; AElement: PTCElement);
+procedure TItemsDrawer.DrawTextSelection(ACanvas: TCanvas; AElement: TvText);
 var
-  AText: PTCText;
+  CanvasPos: TPoint;
+  lFirstLine: String;
 begin
   if AElement = nil then Exit;
 
-  AText := PTCText(AElement);
+  CanvasPos := vDocument.VectorialPosToCanvasPos(AElement.X, AElement.Y);
 
   ACanvas.Pen.Style := psDash;
   ACanvas.Brush.Style := bsClear;
 
+  if AElement.Value.Count = 0 then lFirstLine := 'M'
+  else lFirstLine := AElement.Value.Strings[0];
+
   ACanvas.Rectangle(
-    AText^.Pos.X * INT_SHEET_GRID_SPACING,
-    AText^.Pos.Y * INT_SHEET_GRID_SPACING,
-    AText^.Pos.X * INT_SHEET_GRID_SPACING + ACanvas.TextWidth(AText^.Text),
-    AText^.Pos.Y * INT_SHEET_GRID_SPACING + ACanvas.TextHeight(AText^.Text)
+    CanvasPos.X,
+    CanvasPos.Y,
+    CanvasPos.X + ACanvas.TextWidth(lFirstLine),
+    CanvasPos.Y + (ACanvas.TextHeight(lFirstLine) + 2) * AElement.Value.Count
     );
+
+  ACanvas.Pen.Style := psSolid;
+  ACanvas.Brush.Style := bsSolid;
+end;
+
+procedure TItemsDrawer.DrawTextExtra(ACanvas: TCanvas; AElement: TvText);
+var
+  CanvasPos: TPoint;
+begin
+  if AElement = nil then Exit;
+
+  CanvasPos := vDocument.VectorialPosToCanvasPos(AElement.X, AElement.Y);
+
+  ACanvas.Pen.Style := psDash;
+  ACanvas.Brush.Style := bsClear;
+
+  ACanvas.Line(CanvasPos.X - 10, CanvasPos.Y, CanvasPos.X + 10, CanvasPos.Y);
+  ACanvas.Line(CanvasPos.X, CanvasPos.Y - 10, CanvasPos.X, CanvasPos.Y + 10);
 
   ACanvas.Pen.Style := psSolid;
   ACanvas.Brush.Style := bsSolid;

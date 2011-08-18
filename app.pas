@@ -310,7 +310,7 @@ begin
   if vDocument.SelectedvElement is TvText then
   begin
     lText := vDocument.SelectedvElement as TvText;
-    lText.Value := memoTextTool.Text;
+    lText.Value.Assign(memoTextTool.Lines);
     vSchematics.UpdateAndRepaint(nil);
   end;
 end;
@@ -510,7 +510,7 @@ begin
   if vDocument.SelectedvElement is TvText then
   begin
     lText := vDocument.SelectedvElement as TvText;
-    memoTextTool.Text := lText.Value;
+    memoTextTool.Lines.Assign(lText.Value);
   end;
 end;
 

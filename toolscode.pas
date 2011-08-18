@@ -140,12 +140,13 @@ begin
     end;
 
     { Attempts to select a fpvectorial element }
-    vDocument.SelectionvInfo := vDocument.FindAndSelectEntity(DocPos);
+    vDocument.SelectionvInfo := vDocument.FindAndSelectEntity(FPVDocPos);
 
     if vDocument.SelectionvInfo <> vfrNotFound then
     begin
       //vDocument.SelectedElementType := toolText;
       DragDropStarted := True;
+      DragStartPos := FPVDocPos;// remove when all elements are based on fpvectorial
       Owner.UpdateAndRepaint(nil);
       Exit;
     end;
@@ -271,8 +272,7 @@ begin
     { Verify if something is being moved }
     if vDocument.SelectedvElement <> nil then
     begin
-      vDocument.SelectedvElement.X := FPVDocPos.X - DragStartPos.X;
-      vDocument.SelectedvElement.Y := FPVDocPos.Y - DragStartPos.Y;
+      vDocument.SelectedvElement.Translate(FPVDocPos.X - DragStartPos.X, FPVDocPos.Y - DragStartPos.Y);
     end
     else if vDocument.IsSomethingSelected then
     begin
@@ -408,7 +408,7 @@ procedure TToolsDelegate.HandleUTF8KeyPress(Sender: TObject;
 var
   lText: PTCText;
 begin
-  case vDocument.CurrentTool of
+{  case vDocument.CurrentTool of
 
   toolText:
   begin
@@ -422,7 +422,7 @@ begin
     end;
   end;
 
-  end;
+  end;    }
 end;
 
 initialization
