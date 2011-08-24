@@ -145,12 +145,12 @@
     <Linking>
       <Options>
         <LinkerOptions Value="-framework Qt4Intf -lobjc -lsqlite3"/>
-        <Win32>
-          <GraphicApplication Value="True"/>
-        </Win32>
       </Options>
     </Linking>
     <Other>
+      <CompilerMessages>
+        <UseMsgFile Value="True"/>
+      </CompilerMessages>
       <CompilerPath Value="$(CompPath)"/>
     </Other>
   </CompilerOptions>
