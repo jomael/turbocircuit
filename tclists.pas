@@ -327,7 +327,7 @@ begin
     NextComponent := PTCComponent(NextComponent^.Next);
     Inc(i)
   end;
-  WriteLn('');
+  //WriteLn('');
 end;
 
 { TCWireList }
