@@ -279,16 +279,16 @@ var
 
   procedure GetPoint_2;
   begin
-    Points[1].X := Round((DeltaX + StrToFloat(Cmds[3])) * INT_SHEET_GRID_SPACING);
-    Points[1].Y := Round((DeltaY + StrToFloat(Cmds[4])) * INT_SHEET_GRID_SPACING);
+    Points[1].X := Round((DeltaX + StrToFloat(Cmds[3], FPointSeparator)) * INT_SHEET_GRID_SPACING);
+    Points[1].Y := Round((DeltaY + StrToFloat(Cmds[4], FPointSeparator)) * INT_SHEET_GRID_SPACING);
 
     Points[1] := FixCoordinates(Points[1]);
   end;
 
   procedure GetPoint_3;
   begin
-    Points[2].X := Round((DeltaX + StrToFloat(Cmds[5])) * INT_SHEET_GRID_SPACING);
-    Points[2].Y := Round((DeltaY + StrToFloat(Cmds[6])) * INT_SHEET_GRID_SPACING);
+    Points[2].X := Round((DeltaX + StrToFloat(Cmds[5], FPointSeparator)) * INT_SHEET_GRID_SPACING);
+    Points[2].Y := Round((DeltaY + StrToFloat(Cmds[6], FPointSeparator)) * INT_SHEET_GRID_SPACING);
 
     Points[2] := FixCoordinates(Points[2]);
   end;
