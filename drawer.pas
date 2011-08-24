@@ -45,6 +45,8 @@ type
     DeltaX, DeltaY: Integer;
     Orientation: TCComponentOrientation;
     IC_Width, IC_Pins, IC_Half_Pins: Cardinal;
+    FPointSeparator: TFormatSettings;
+    constructor Create;
     { Component drawing methods  }
     procedure DrawComponentFromString(ACanvas: TCanvas; AString: string);
     procedure DrawComponentFromStringList(ACanvas: TCanvas; AStringList: TStrings);
@@ -269,8 +271,8 @@ var
 
   procedure GetPoint_1;
   begin
-    Points[0].X := Round((DeltaX + StrToFloat(Cmds[1])) * INT_SHEET_GRID_SPACING);
-    Points[0].Y := Round((DeltaY + StrToFloat(Cmds[2])) * INT_SHEET_GRID_SPACING);
+    Points[0].X := Round((DeltaX + StrToFloat(Cmds[1], FPointSeparator)) * INT_SHEET_GRID_SPACING);
+    Points[0].Y := Round((DeltaY + StrToFloat(Cmds[2], FPointSeparator)) * INT_SHEET_GRID_SPACING);
 
     Points[0] := FixCoordinates(Points[0]);
   end;
@@ -575,6 +577,13 @@ begin
     );
 
   ACanvas.Pen.Style := psSolid;
+end;
+
+constructor TItemsDrawer.Create;
+begin
+  FPointSeparator := DefaultFormatSettings;
+  FPointSeparator.DecimalSeparator := '.';
+  //FPointSeparator.ThousandSeparator := '#';// disable the thousand separator
 end;
 
 {@@
