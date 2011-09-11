@@ -140,7 +140,7 @@ begin
     end;
 
     { Attempts to select a fpvectorial element }
-    vDocument.SelectionvInfo := vDocument.FindAndSelectEntity(FPVDocPos);
+    vDocument.SelectionvInfo := vDocument.GetPage(0).FindAndSelectEntity(FPVDocPos);
 
     if vDocument.SelectionvInfo <> vfrNotFound then
     begin
@@ -318,7 +318,7 @@ begin
     NewText := TvText.Create;
     NewText.X := FPVDocPos.X;
     NewText.Y := FPVDocPos.Y;
-    lEntityIndex := vDocument.AddEntity(NewText);
+    lEntityIndex := vDocument.GetPage(0).AddEntity(NewText);
     vDocument.SelectedvElement := NewText;
     if Assigned(OnUpdateAppInterface) then OnUpdateAppInterface(Self);
 
@@ -388,7 +388,7 @@ begin
     segment.Y := StartY;
     NewRectangle.AppendSegment(segment);
 
-    vDocument.AddEntity(NewRectangle);
+    vDocument.GetPage(0).AddEntity(NewRectangle);
 
     lChanged := True;
   end;

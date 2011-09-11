@@ -411,9 +411,9 @@ var
   i: Integer;
   CurEntity: TvEntity;
 begin
-  for i := 0 to vDocument.GetEntitiesCount - 1 do
+  for i := 0 to vDocument.GetPage(0).GetEntitiesCount - 1 do
   begin
-    CurEntity := vDocument.GetEntity(i);
+    CurEntity := vDocument.GetPage(0).GetEntity(i);
 
     //if CurEntity is TPath then DrawFPVPathToCanvas(ASource, TPath(CurEntity), ADest, ADestX, ADestY, AMulX, AMulY)
     {else}
@@ -441,7 +441,7 @@ begin
   if AEditMode and vDocument.ShowGrid then DrawGrid(ACanvas);
 
   { FPVectorial }
-  DrawFPVectorialToCanvas(vDocument, ACanvas, ADestX, ADestY, AMulX, AMulY);
+  DrawFPVectorialToCanvas(vDocument.GetPage(0), ACanvas, ADestX, ADestY, AMulX, AMulY);
 
   { RasterImages }
   vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
