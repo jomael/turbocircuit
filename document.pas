@@ -516,6 +516,7 @@ end;
 initialization
 
   vDocument := TDocument.Create;
+  vDocument.AddPage();
 
 finalization
 
