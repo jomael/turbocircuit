@@ -42,21 +42,16 @@ implementation
 
 { TConfigurations }
 
-{*******************************************************************
-*  TConfigurations.Create ()
-*
-*  DESCRIPTION:    Creates an object,
-*                  populates the class with the default configurations and
-*                  then tryes to load the configurations from the XML file
-*
-*                  Under Mac OS X there is also the need to find the location
-*                  of the Application Bundle
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        A pointer to the newly created object
-*
-*******************************************************************}
+{
+  TConfigurations.Create ()
+
+  Creates an object,
+  populates the class with the default configurations and
+  then tryes to load the configurations from the XML file
+
+  Under Mac OS X there is also the need to find the location
+  of the Application Bundle
+}
 constructor TConfigurations.Create;
 {$ifdef Darwin}
 var
@@ -108,16 +103,10 @@ begin
   ComponentsDBFile := MyDirectory + STR_DB_COMPONENTS_FILE;
 end;
 
-{*******************************************************************
-*  TConfigurations.Destroy ()
-*
-*  DESCRIPTION:    Dont call this method directly. Use Free instead.
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
+{  TConfigurations.Destroy ()
+
+   Dont call this method directly. Use Free instead.
+}
 destructor TConfigurations.Destroy;
 begin
 //  Save(nil);
@@ -125,16 +114,6 @@ begin
   inherited Destroy;
 end;
 
-{*******************************************************************
-*  TConfigurations.ReadFromFile ()
-*
-*  DESCRIPTION:
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
 procedure TConfigurations.ReadFromFile(Sender: TObject);
 var
   MyFile: TIniFile;
@@ -151,16 +130,6 @@ begin
   end;
 end;
 
-{*******************************************************************
-*  TConfigurations.Save ()
-*
-*  DESCRIPTION:
-*
-*  PARAMETERS:     None
-*
-*  RETURNS:        Nothing
-*
-*******************************************************************}
 procedure TConfigurations.Save(Sender: TObject);
 var
   MyFile: TIniFile;
@@ -173,24 +142,10 @@ begin
   end;
 end;
 
-{*******************************************************************
-*  Initialization section
-*
-*  DESCRIPTION:    Upon startup an instance of the TConfigurations object
-*                  is created to make the configuration info available for
-*                  TGlass.
-*
-*******************************************************************}
 initialization
 
   vConfigurations := TConfigurations.Create;
 
-{*******************************************************************
-*  Finalization section
-*
-*  DESCRIPTION:    Free memory allocated on the initialization section
-*
-*******************************************************************}
 finalization
 
   FreeAndNil(vConfigurations);
