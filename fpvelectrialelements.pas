@@ -6,6 +6,7 @@ interface
 
 uses
   Classes, SysUtils,
+  fpimage, fpcanvas,
   //
   fpvectorial;
 
