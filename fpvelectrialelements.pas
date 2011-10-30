@@ -17,7 +17,7 @@ type
 
   { TWire }
 
-  TWire = class(TvEntity)
+  TvWire = class(TvEntity)
   public
     DestPos: T3DPoint;
 //    procedure Assign(ASource: TPath);
@@ -29,9 +29,9 @@ type
 
 implementation
 
-{ TWire }
+{ TvWire }
 
-function TWire.TryToSelect(APos: TPoint; var ASubpart: Cardinal): TvFindEntityResult;
+function TvWire.TryToSelect(APos: TPoint; var ASubpart: Cardinal): TvFindEntityResult;
 begin
   if (APos.X = X) and (APos.Y = Y) then Result := vfrFound
   else if (Apos.X = DestPos.X) and (APos.Y = DestPos.Y) then
@@ -42,7 +42,7 @@ begin
   else Result := vfrNotFound;
 end;
 
-procedure TWire.TransladeSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal);
+procedure TvWire.TransladeSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal);
 begin
   if ASubpart = WIRE_SUBPART_DEST then
   begin
@@ -51,7 +51,7 @@ begin
   end;
 end;
 
-procedure TWire.Render(ADest: TFPCustomCanvas; ADestX: Integer;
+procedure TvWire.Render(ADest: TFPCustomCanvas; ADestX: Integer;
   ADestY: Integer; AMulX: Double; AMulY: Double);
 
   function CoordToCanvasX(ACoord: Double): Integer;
