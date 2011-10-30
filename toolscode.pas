@@ -211,8 +211,9 @@ begin
   toolEllipse:
   begin
     DragDropStarted := True;
-    New(NewEllipse);
-    NewEllipse^.Pos := DocPos;
+    NewEllipse := TvEllipse.Create;
+    NewEllipse.X := FPVDocPos.X;
+    NewEllipse.Y := FPVDocPos.Y;
   end;
 
   toolRectangle:
@@ -355,8 +356,9 @@ begin
 
   toolEllipse:
   begin
-    NewEllipse^.BottomRight := DocPos;
-    vDocument.Ellipses.Insert(NewEllipse);
+    NewEllipse.DestPos.X := FPVDocPos.X;
+    NewEllipse.DestPos.Y := FPVDocPos.Y;
+    vDocument.GetPage(0).AddEntity(NewEllipse);
     lChanged := True;
   end;
 
