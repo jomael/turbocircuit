@@ -53,8 +53,20 @@ end;
 
 procedure TWire.Render(ADest: TFPCustomCanvas; ADestX: Integer;
   ADestY: Integer; AMulX: Double; AMulY: Double);
-begin
 
+  function CoordToCanvasX(ACoord: Double): Integer;
+  begin
+    Result := Round(ADestX + AmulX * ACoord);
+  end;
+
+  function CoordToCanvasY(ACoord: Double): Integer;
+  begin
+    Result := Round(ADestY + AmulY * ACoord);
+  end;
+begin
+  ADest.Line(
+    CoordToCanvasX(X), CoordToCanvasY(Y),
+    CoordToCanvasX(DestPos.X), CoordToCanvasY(DestPos.Y));
 end;
 
 end.
