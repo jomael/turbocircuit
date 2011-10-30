@@ -38,7 +38,7 @@
         <MinVersion Major="1" Valid="True"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="17">
+    <Units Count="18">
       <Unit0>
         <Filename Value="turbocircuit.dpr"/>
         <IsPartOfProject Value="True"/>
@@ -132,6 +132,11 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="toolscode"/>
       </Unit16>
+      <Unit17>
+        <Filename Value="fpvelectrialelements.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="fpvelectrialelements"/>
+      </Unit17>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -139,10 +144,13 @@
     <Parsing>
       <SyntaxOptions>
         <CStyleOperator Value="False"/>
-        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
     <Linking>
+      <Debugging>
+        <GenerateDebugInfo Value="True"/>
+        <DebugInfoType Value="dsAuto"/>
+      </Debugging>
       <Options>
         <LinkerOptions Value="-framework Qt4Intf -lobjc -lsqlite3"/>
       </Options>
