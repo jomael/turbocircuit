@@ -11,7 +11,7 @@ uses
   Classes, SysUtils, Forms, Controls, Graphics, LCLType,
   document, constants, dbcomponents, drawer,
   // fpvectorial
-  fpvectorial, fpvtocanvas, fpvutils
+  fpvectorial, fpvtocanvas, fpvutils, fpvelectricalelements
   ;
 
 type
@@ -22,7 +22,7 @@ type
     OnUpdateMousePos: TMouseMoveEvent;
     OnUpdateAppInterface: TNotifyEvent;
     NewComponent: PTCComponent;
-    NewWire: PTCWire;
+    NewWire: TvWire;
     NewText: TvText;
     NewPolyline: PTCPolyline;
     NewRasterImage: PTCRasterImage;
@@ -321,9 +321,11 @@ begin
   begin
     if (Delegate.DragDropStarted) then
     begin
-      Delegate.NewWire^.PtTo := Delegate.MouseMoveDocPos;
+      Delegate.NewWire.DestPos.X := Delegate.MouseMoveDocPos.X;
+      Delegate.NewWire.DestPos.Y := Delegate.MouseMoveDocPos.Y;
 
-      vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
+      Delegate.NewWire.Render(ACanvas);
+//      vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
     end;
   end;
   toolPolyline:

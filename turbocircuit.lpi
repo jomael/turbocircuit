@@ -133,9 +133,9 @@
         <UnitName Value="toolscode"/>
       </Unit16>
       <Unit17>
-        <Filename Value="fpvelectrialelements.pas"/>
+        <Filename Value="fpvelectricalelements.pas"/>
         <IsPartOfProject Value="True"/>
-        <UnitName Value="fpvelectrialelements"/>
+        <UnitName Value="fpvelectricalelements"/>
       </Unit17>
     </Units>
   </ProjectOptions>

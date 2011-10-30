@@ -9,7 +9,7 @@ uses
   // TurboCircuit
   constants, schematics, document, tclists,
   // fpvectorial
-  fpvectorial;
+  fpvectorial, fpvelectricalelements;
 
 type
 
@@ -178,9 +178,9 @@ begin
   begin
     DragDropStarted := True;
 
-    New(NewWire);
-
-    NewWire^.Pos := DocPos;
+    NewWire := TvWire.Create;
+    NewWire.X := FPVDocPos.X;
+    NewWire.Y := FPVDocPos.Y;
   end;
 
   { Places a new text element on the document and selects it }
@@ -306,9 +306,10 @@ begin
 
   toolWire:
   begin
-    NewWire^.PtTo := DocPos;
+    NewWire.DestPos.X := FPVDocPos.X;
+    NewWire.DestPos.Y := FPVDocPos.Y;
 
-    vDocument.Wires.Insert(NewWire);
+    vDocument.GetPage(0).AddEntity(NewWire);
 
     lChanged := True;
   end;

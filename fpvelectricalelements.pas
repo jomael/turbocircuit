@@ -1,4 +1,4 @@
-unit fpvelectrialelements;
+unit fpvelectricalelements;
 
 {$mode objfpc}{$H+}
 

@@ -57,7 +57,7 @@ uses
   dlgdocumentopts,
   tclists,
   tcsettings,
-  toolscode, fpvectorialpkg, fpvelectrialelements;
+  toolscode, fpvectorialpkg, fpvelectricalelements;
 
 begin
   Application.Initialize;
