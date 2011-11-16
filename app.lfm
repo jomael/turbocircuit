@@ -157,8 +157,6 @@ object MainForm: TMainForm
       TabOrder = 1
       TabStop = True
       object Page1: TPage
-        ClientWidth = 166
-        ClientHeight = 308
         object btnArrow: TSpeedButton
           Left = 7
           Height = 34
@@ -599,6 +597,7 @@ object MainForm: TMainForm
         object btnEllipse: TSpeedButton
           Left = 47
           Height = 34
+          Hint = 'Ellipse'
           Top = 84
           Width = 34
           Glyph.Data = {
@@ -960,15 +959,13 @@ object MainForm: TMainForm
           Height = 160
           Top = 148
           Width = 166
-          PageIndex = 3
+          PageIndex = 0
           Align = alBottom
           TabOrder = 0
           TabStop = True
           object pageArrow: TPage
           end
           object pageComponent: TPage
-            ClientWidth = 8320
-            ClientHeight = 10816
             object lblComponentType: TLabel
               Left = 4
               Height = 18
@@ -991,8 +988,6 @@ object MainForm: TMainForm
           object pageWire: TPage
           end
           object pageText: TPage
-            ClientWidth = 166
-            ClientHeight = 160
             object Label7: TLabel
               Left = 7
               Height = 18
@@ -1014,8 +1009,6 @@ object MainForm: TMainForm
             end
           end
           object pagePolyline: TPage
-            ClientWidth = 8320
-            ClientHeight = 10816
             object Label3: TLabel
               Left = 6
               Height = 18
@@ -1036,8 +1029,6 @@ object MainForm: TMainForm
             end
           end
           object pageRasterImage: TPage
-            ClientWidth = 8320
-            ClientHeight = 10816
             object Label1: TLabel
               Left = 8
               Height = 17
@@ -1082,8 +1073,6 @@ object MainForm: TMainForm
         end
       end
       object Page2: TPage
-        ClientWidth = 166
-        ClientHeight = 308
         object btnArrow2: TSpeedButton
           Left = 15
           Height = 34
@@ -1369,8 +1358,6 @@ object MainForm: TMainForm
         end
       end
       object Page3: TPage
-        ClientWidth = 166
-        ClientHeight = 308
         object btnArrow3: TSpeedButton
           Left = 15
           Height = 34
@@ -1517,8 +1504,6 @@ object MainForm: TMainForm
       object Page4: TPage
       end
       object Page5: TPage
-        ClientWidth = 166
-        ClientHeight = 308
         object memoEPS: TMemo
           AnchorSideBottom.Control = Page5
           AnchorSideBottom.Side = asrBottom

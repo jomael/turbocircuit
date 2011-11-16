@@ -26,7 +26,7 @@ type
     NewText: TvText;
     NewPolyline: PTCPolyline;
     NewRasterImage: PTCRasterImage;
-    NewEllipse: PTCEllipse;
+    NewEllipse: TvEllipse;
     NewRectangle: TPath;
     //
     MouseMoveDocPos: TPoint;

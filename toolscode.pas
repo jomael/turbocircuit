@@ -356,8 +356,15 @@ begin
 
   toolEllipse:
   begin
-    NewEllipse.DestPos.X := FPVDocPos.X;
-    NewEllipse.DestPos.Y := FPVDocPos.Y;
+    // NewEllipse here comes with the starting X,Y positions stored,
+    // with that we need to build its real informations
+    NewEllipse.MajorHalfAxis := Abs(NewEllipse.X - FPVDocPos.X) / 2;
+    NewEllipse.MinorHalfAxis := Abs(NewEllipse.Y - FPVDocPos.Y) / 2;
+    if NewEllipse.X > FPVDocPos.X then NewEllipse.X := NewEllipse.X - NewEllipse.MajorHalfAxis
+    else NewEllipse.X := NewEllipse.X + NewEllipse.MajorHalfAxis;
+    if NewEllipse.Y > FPVDocPos.Y then NewEllipse.Y := NewEllipse.Y - NewEllipse.MinorHalfAxis
+    else NewEllipse.Y := NewEllipse.Y + NewEllipse.MinorHalfAxis;
+
     vDocument.GetPage(0).AddEntity(NewEllipse);
     lChanged := True;
   end;
