@@ -273,7 +273,7 @@ begin
     { Verify if something is being moved }
     if vDocument.SelectedvElement <> nil then
     begin
-      vDocument.SelectedvElement.Translate(FPVDocPos.X - DragStartPos.X, FPVDocPos.Y - DragStartPos.Y);
+      vDocument.SelectedvElement.Move(FPVDocPos.X - DragStartPos.X, FPVDocPos.Y - DragStartPos.Y);
     end
     else if vDocument.IsSomethingSelected then
     begin
@@ -358,12 +358,12 @@ begin
   begin
     // NewEllipse here comes with the starting X,Y positions stored,
     // with that we need to build its real informations
-    NewEllipse.MajorHalfAxis := Abs(NewEllipse.X - FPVDocPos.X) / 2;
-    NewEllipse.MinorHalfAxis := Abs(NewEllipse.Y - FPVDocPos.Y) / 2;
-    if NewEllipse.X > FPVDocPos.X then NewEllipse.X := NewEllipse.X - NewEllipse.MajorHalfAxis
-    else NewEllipse.X := NewEllipse.X + NewEllipse.MajorHalfAxis;
-    if NewEllipse.Y > FPVDocPos.Y then NewEllipse.Y := NewEllipse.Y - NewEllipse.MinorHalfAxis
-    else NewEllipse.Y := NewEllipse.Y + NewEllipse.MinorHalfAxis;
+    NewEllipse.HorzHalfAxis := Abs(NewEllipse.X - FPVDocPos.X) / 2;
+    NewEllipse.VertHalfAxis := Abs(NewEllipse.Y - FPVDocPos.Y) / 2;
+    if NewEllipse.X > FPVDocPos.X then NewEllipse.X := NewEllipse.X - NewEllipse.HorzHalfAxis
+    else NewEllipse.X := NewEllipse.X + NewEllipse.HorzHalfAxis;
+    if NewEllipse.Y > FPVDocPos.Y then NewEllipse.Y := NewEllipse.Y - NewEllipse.VertHalfAxis
+    else NewEllipse.Y := NewEllipse.Y + NewEllipse.VertHalfAxis;
 
     vDocument.GetPage(0).AddEntity(NewEllipse);
     lChanged := True;

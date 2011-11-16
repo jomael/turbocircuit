@@ -22,7 +22,7 @@ type
     DestPos: T3DPoint;
 //    procedure Assign(ASource: TPath);
     function TryToSelect(APos: TPoint; var ASubpart: Cardinal): TvFindEntityResult; override;
-    procedure TransladeSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal); override;
+    procedure MoveSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal); override;
     procedure Render(ADest: TFPCustomCanvas; ADestX: Integer = 0;
       ADestY: Integer = 0; AMulX: Double = 1.0; AMulY: Double = 1.0); override;
   end;
@@ -42,7 +42,7 @@ begin
   else Result := vfrNotFound;
 end;
 
-procedure TvWire.TransladeSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal);
+procedure TvWire.MoveSubpart(ADeltaX, ADeltaY: Integer; ASubpart: Cardinal);
 begin
   if ASubpart = WIRE_SUBPART_DEST then
   begin
