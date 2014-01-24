@@ -76,14 +76,6 @@ type
     ImageData: TPicture;
   end;
 
-  { Data structures for ellipses }
-
-  PTCEllipse = ^TCEllipse;
-
-  TCEllipse = object(TCElement)
-    BottomRight: TPoint;
-  end;
-
   { Data structures for tools }
 
   TCTool = (

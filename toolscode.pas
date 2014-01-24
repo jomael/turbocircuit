@@ -56,7 +56,7 @@ begin
      if vDocument.IsSomethingSelected then
      begin
        lList := vDocument.GetListForElement(vDocument.SelectedElementType);
-       lList^.Remove(vDocument.SelectedElement);
+       lList^.Remove(vDocument.SelectedTCElement);
 
        // It is fundamental to clear the selection,
        // because otherwise the drawing code will try
@@ -117,19 +117,19 @@ begin
     vDocument.ClearSelection;
 
     { Attempts to select a component }
-    vDocument.SelectionInfo := vDocument.Components.FindElement(DocPos, vDocument.SelectedElement);
+    vDocument.SelectionInfo := vDocument.Components.FindElement(DocPos, vDocument.SelectedTCElement);
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
       vDocument.SelectedElementType := toolComponent;
       DragDropStarted := True;
-      vDocument.NewItemOrientation := PTCComponent(vDocument.SelectedElement)^.Orientation;
+      vDocument.NewItemOrientation := PTCComponent(vDocument.SelectedTCElement)^.Orientation;
       Owner.UpdateAndRepaint(nil);
       Exit;
     end;
 
     { Attempts to select a wire }
-    vDocument.SelectionInfo := vDocument.Wires.FindElement(DocPos, vDocument.SelectedElement);
+    vDocument.SelectionInfo := vDocument.Wires.FindElement(DocPos, vDocument.SelectedTCElement);
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
@@ -152,7 +152,7 @@ begin
     end;
 
     { Attempts to select a polyline }
-    vDocument.SelectionInfo := vDocument.Polylines.FindElement(DocPos, vDocument.SelectedElement);
+    vDocument.SelectionInfo := vDocument.Polylines.FindElement(DocPos, vDocument.SelectedTCElement);
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
@@ -163,7 +163,7 @@ begin
     end;
 
      { Attempts to select a raster image }
-    vDocument.SelectionInfo := vDocument.RasterImages.FindElement(DocPos, vDocument.SelectedElement);
+    vDocument.SelectionInfo := vDocument.RasterImages.FindElement(DocPos, vDocument.SelectedTCElement);
 
     if vDocument.SelectionInfo <> ELEMENT_DOES_NOT_MATCH then
     begin
@@ -211,7 +211,7 @@ begin
   toolEllipse:
   begin
     DragDropStarted := True;
-    NewEllipse := TvEllipse.Create;
+    NewEllipse := TvEllipse.Create(nil);
     NewEllipse.X := FPVDocPos.X;
     NewEllipse.Y := FPVDocPos.Y;
   end;
@@ -220,7 +220,7 @@ begin
   begin
     DragDropStarted := True;
 
-    NewRectangle := TPath.Create;
+    NewRectangle := TPath.Create(nil);
     segment := T2DSegment.Create;
     segment.SegmentType := stMoveTo;
     segment.X := FPVDocPos.X;
@@ -271,16 +271,16 @@ begin
   toolArrow:
   begin
     { Verify if something is being moved }
-    if vDocument.SelectedvElement <> nil then
+    if vDocument.SelectedElement <> nil then
     begin
-      vDocument.SelectedvElement.Move(FPVDocPos.X - DragStartPos.X, FPVDocPos.Y - DragStartPos.Y);
+      vDocument.SelectedElement.Move(FPVDocPos.X - DragStartPos.X, FPVDocPos.Y - DragStartPos.Y);
     end
     else if vDocument.IsSomethingSelected then
     begin
       lList := vDocument.GetListForElement(vDocument.SelectedElementType);
       if lList <> nil then
       begin
-        lList^.MoveElement(vDocument.SelectedElement,
+        lList^.MoveElement(vDocument.SelectedTCElement,
          Point(DocPos.X - DragStartPos.X, DocPos.Y - DragStartPos.Y));
         vDocument.Modified := True;
       end;
@@ -317,11 +317,11 @@ begin
 
   toolText:
   begin
-    NewText := TvText.Create;
+    NewText := TvText.Create(nil);
     NewText.X := FPVDocPos.X;
     NewText.Y := FPVDocPos.Y;
     lEntityIndex := vDocument.GetPage(0).AddEntity(NewText);
-    vDocument.SelectedvElement := NewText;
+    vDocument.SelectedElement := NewText;
     if Assigned(OnUpdateAppInterface) then OnUpdateAppInterface(Self);
 
     lChanged := True;
@@ -339,7 +339,7 @@ begin
 
       // Select the polyline
       vDocument.SelectedElementType := toolPolyline;
-      vDocument.SelectedElement := NewPolyline;
+      vDocument.SelectedTCElement := NewPolyline;
 
       lChanged := True;
     end
@@ -356,15 +356,8 @@ begin
 
   toolEllipse:
   begin
-    // NewEllipse here comes with the starting X,Y positions stored,
-    // with that we need to build its real informations
-    NewEllipse.HorzHalfAxis := Abs(NewEllipse.X - FPVDocPos.X) / 2;
-    NewEllipse.VertHalfAxis := Abs(NewEllipse.Y - FPVDocPos.Y) / 2;
-    if NewEllipse.X > FPVDocPos.X then NewEllipse.X := NewEllipse.X - NewEllipse.HorzHalfAxis
-    else NewEllipse.X := NewEllipse.X + NewEllipse.HorzHalfAxis;
-    if NewEllipse.Y > FPVDocPos.Y then NewEllipse.Y := NewEllipse.Y - NewEllipse.VertHalfAxis
-    else NewEllipse.Y := NewEllipse.Y + NewEllipse.VertHalfAxis;
-
+    NewEllipse.X := FPVDocPos.X;
+    NewEllipse.Y := FPVDocPos.Y;
     vDocument.GetPage(0).AddEntity(NewEllipse);
     lChanged := True;
   end;

@@ -307,9 +307,9 @@ procedure TMainForm.memoTextToolChange(Sender: TObject);
 var
   lText: TvText;
 begin
-  if vDocument.SelectedvElement is TvText then
+  if vDocument.SelectedElement is TvText then
   begin
-    lText := vDocument.SelectedvElement as TvText;
+    lText := vDocument.SelectedElement as TvText;
     lText.Value.Assign(memoTextTool.Lines);
     vSchematics.UpdateAndRepaint(nil);
   end;
@@ -507,9 +507,9 @@ var
 begin
   spinZoom.Value := vDocument.ZoomLevel * 100;
 
-  if vDocument.SelectedvElement is TvText then
+  if vDocument.SelectedElement is TvText then
   begin
-    lText := vDocument.SelectedvElement as TvText;
+    lText := vDocument.SelectedElement as TvText;
     memoTextTool.Lines.Assign(lText.Value);
   end;
 end;

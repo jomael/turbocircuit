@@ -66,7 +66,7 @@ type
     { Raster Image drawing methods }
     procedure DrawRasterImage(ACanvas: TCanvas; AElement: PTCElement);
     { Ellipse drawing methods }
-    procedure DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
+    //procedure DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
     { General methods }
     function  FixCoordinates(APoint: TPoint): TPoint;
     function  GridCoordsToSheet(AX, AY: Single): TPoint;
@@ -548,7 +548,7 @@ begin
   end;
 end;
 
-procedure TItemsDrawer.DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
+{procedure TItemsDrawer.DrawEllipse(ACanvas: TCanvas; AElement: PTCElement);
 var
   AEllipse: PTCEllipse absolute AElement;
 begin
@@ -556,7 +556,7 @@ begin
 
   ACanvas.Ellipse(AEllipse^.Pos.X * INT_SHEET_GRID_SPACING, AEllipse^.Pos.Y * INT_SHEET_GRID_SPACING,
     AEllipse^.BottomRight.X * INT_SHEET_GRID_SPACING, AEllipse^.BottomRight.Y * INT_SHEET_GRID_SPACING);
-end;
+end;}
 
 procedure TItemsDrawer.DrawPosCross(ACanvas: TCanvas; APos: TPoint);
 begin

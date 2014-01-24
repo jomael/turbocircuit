@@ -43,7 +43,7 @@ type
     SnapToGrid: Boolean;
     ShowGrid: Boolean;
     { Selection fields }
-    SelectedElement: PTCElement;
+    SelectedTCElement: PTCElement;
     SelectedElementType: TCTool;
     SelectionInfo: DWord;
     SelectionvInfo: TvFindEntityResult;
@@ -242,7 +242,7 @@ begin
   SnapToGrid := True;
   ShowGrid := True;
   { Selection fields }
-  SelectedElement := nil;
+  SelectedTCElement := nil;
   SelectedElementType := toolArrow;
   SelectionInfo := 0;
   { Document information }
@@ -461,8 +461,8 @@ end;
 
 procedure TDocument.ClearSelection;
 begin
+  SelectedTCElement := nil;
   SelectedElement := nil;
-  SelectedvElement := nil;
   SelectionInfo := ELEMENT_DOES_NOT_MATCH;
 end;
 
@@ -473,7 +473,7 @@ end;
 
 function TDocument.IsSomethingSelected: Boolean;
 begin
-  Result := (SelectedElement <> nil) or (SelectedvElement <> nil);
+  Result := (SelectedElement <> nil) or (SelectedTCElement <> nil);
 end;
 
 function TDocument.GetListForElement(AType: TCTool): PTCElementList;
@@ -490,27 +490,27 @@ end;
 
 function TDocument.GetSelectedComponent: PTCComponent;
 begin
-  Result := PTCComponent(SelectedElement);
+  Result := PTCComponent(SelectedTCElement);
 end;
 
 function TDocument.GetSelectedWire: PTCWire;
 begin
-  Result := PTCWire(SelectedElement);
+  Result := PTCWire(SelectedTCElement);
 end;
 
 function TDocument.GetSelectedText: PTCText;
 begin
-  Result := PTCText(SelectedElement);
+  Result := PTCText(SelectedTCElement);
 end;
 
 function TDocument.GetSelectedPolyline: PTCPolyline;
 begin
-  Result := PTCPolyline(SelectedElement);
+  Result := PTCPolyline(SelectedTCElement);
 end;
 
 function TDocument.GetSelectedRasterImage: PTCRasterImage;
 begin
-  Result := PTCRasterImage(SelectedElement);
+  Result := PTCRasterImage(SelectedTCElement);
 end;
 
 initialization

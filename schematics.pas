@@ -302,6 +302,7 @@ var
   TmpWire: TCWire;
   TmpText: TCText;
   TmpPolyline: TCPolyline;
+  lInfo: TvRenderInfo;
 begin
   { Preview when placing an element }
   ACanvas.Pen.Color := clRed;
@@ -324,7 +325,7 @@ begin
       Delegate.NewWire.DestPos.X := Delegate.MouseMoveDocPos.X;
       Delegate.NewWire.DestPos.Y := Delegate.MouseMoveDocPos.Y;
 
-      Delegate.NewWire.Render(ACanvas);
+      Delegate.NewWire.Render(ACanvas, lInfo);
 //      vItemsDrawer.DrawWire(ACanvas, Delegate.NewWire);
     end;
   end;
@@ -385,7 +386,7 @@ begin
   end;
   end;// case
 
-  if vDocument.SelectedvElement is TvText then
+  if vDocument.SelectedElement is TvText then
   begin
 {    TmpText := vDocument.GetSelectedText^;
     TmpText.Pos := Delegate.MouseMoveDocPos;
@@ -402,9 +403,9 @@ begin
    toolWire: vItemsDrawer.DrawWireSelection(ACanvas, vDocument.GetSelectedWire, vDocument.SelectionInfo);
    //toolText: vItemsDrawer.DrawTextSelection(ACanvas, vDocument.GetSelectedText);
   end;
-  if vDocument.SelectedvElement is TvText then
+  if vDocument.SelectedElement is TvText then
   begin
-    vItemsDrawer.DrawTextSelection(ACanvas, vDocument.SelectedvElement as TvText);
+    vItemsDrawer.DrawTextSelection(ACanvas, vDocument.SelectedElement as TvText);
   end;
 end;
 
@@ -443,7 +444,7 @@ begin
   if AEditMode and vDocument.ShowGrid then DrawGrid(ACanvas);
 
   { FPVectorial }
-  DrawFPVectorialToCanvas(vDocument.GetPage(0), ACanvas, ADestX, ADestY, AMulX, AMulY);
+  DrawFPVectorialToCanvas(vDocument.GetPage(0) as TvVectorialPage, ACanvas, ADestX, ADestY, AMulX, AMulY);
 
   { RasterImages }
   vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
@@ -465,9 +466,6 @@ begin
 
   { Raster Images }
   vDocument.RasterImages.ForEachDoPaint(ACanvas, vItemsDrawer.DrawRasterImage);
-
-  { Ellipses }
-  vDocument.Ellipses.ForEachDoPaint(ACanvas, vItemsDrawer.DrawEllipse);
 
   // Extra visual effects in edit mode
   if AEditMode then DrawEditModeVisualClues(ACanvas);
